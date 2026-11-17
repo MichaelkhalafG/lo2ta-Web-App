@@ -1,12 +1,17 @@
 <?php
 
+use App\Mail\AccountActionMail;
+use App\Mail\NewBudgetMail;
 use App\Mail\SystemTestMail;
 
 /*
 | Mail templates the outbox can send, by code. Each class implements App\Support\Mail\OutboxTemplate.
-| The seller, buyer and deal e-mails are added in their phases (PLAN 2.2.7, 2.3, 2.4).
+| Wording lives in lang/{locale}/mail.php (placeholders until the client's texts arrive, PLAN 6 row 18).
 */
 
 return [
     'system.test' => SystemTestMail::class,
+    'account.verify_email' => AccountActionMail::class,
+    'account.reset_password' => AccountActionMail::class,
+    'admin.new_budget' => NewBudgetMail::class,
 ];

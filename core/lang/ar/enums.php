@@ -60,6 +60,11 @@ return [
         'ready' => 'جاهزة للاستلام',
         'under_construction' => 'تحت الإنشاء',
     ],
+    'DeliveryPreference' => [
+        'ready' => 'جاهزة للاستلام',
+        'under_construction' => 'تحت الإنشاء',
+        'either' => 'أي حالة',
+    ],
     'InstallmentFrequency' => [
         'monthly' => 'شهري',
         'quarterly' => 'ربع سنوي',

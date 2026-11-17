@@ -36,6 +36,8 @@ return [
 
     // Buyer requests (Q15)
     'max_open_requests_per_buyer' => ['type' => 'int', 'group' => 'buyer', 'default' => 5, 'min' => 1, 'max' => 50],
+    // PLAN 2.3: "Areas (multi, up to N)".
+    'budget_max_areas' => ['type' => 'int', 'group' => 'buyer', 'default' => 10, 'min' => 1, 'max' => 50, 'public' => true],
 
     // Calculator (PLAN 4.2; provisional until researched)
     'penalty_basis' => ['type' => 'enum', 'group' => 'calculator', 'default' => 'total', 'options' => ['total', 'paid'], 'public' => true, 'provisional' => true],

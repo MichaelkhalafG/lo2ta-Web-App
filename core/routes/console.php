@@ -8,3 +8,6 @@ use Illuminate\Support\Facades\Schedule;
 */
 
 Schedule::command('outbox:send')->everyMinute()->withoutOverlapping();
+
+// Public sign-in tokens expire after 30 days (config/sanctum.php); expired rows are removed once a day.
+Schedule::command('sanctum:prune-expired --hours=24')->dailyAt('03:30');

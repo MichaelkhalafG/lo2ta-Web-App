@@ -43,6 +43,31 @@ export async function siteTexts(group: string, locale: Locale): Promise<Texts> {
   return body.data;
 }
 
+export type AreaTree = {
+  slug: string;
+  name: string;
+  areas: { slug: string; code: string | null; name: string; districts: { slug: string; name: string }[] }[];
+}[];
+export type CompoundItem = { slug: string; name: string; developer: string | null; area: string | null };
+export type Choices = Record<"main_types" | "installment_frequencies" | "delivery_preferences", { code: string; label: string }[]>;
+
+/** Governorate > area > district, active only (PLAN 3.3). */
+export async function areaTree(locale: Locale): Promise<AreaTree> {
+  return (await coreGet<{ data: AreaTree }>("areas", locale, ["places"])).data;
+}
+
+export async function compoundList(locale: Locale): Promise<CompoundItem[]> {
+  return (await coreGet<{ data: CompoundItem[] }>("compounds", locale, ["places"])).data;
+}
+
+export async function choices(locale: Locale): Promise<Choices> {
+  return (await coreGet<{ data: Choices }>("choices", locale, ["choices"])).data;
+}
+
+export async function publicSettings(locale: Locale): Promise<Record<string, number | boolean | string>> {
+  return (await coreGet<{ data: Record<string, number | boolean | string> }>("settings", locale, ["settings"])).data;
+}
+
 /** One text, or its key when missing, so a gap shows on the page instead of disappearing. */
 export function text(texts: Texts, key: string): string {
   return texts[key] ?? key;

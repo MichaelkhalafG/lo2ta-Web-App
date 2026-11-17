@@ -60,6 +60,11 @@ return [
         'ready' => 'Ready',
         'under_construction' => 'Under construction',
     ],
+    'DeliveryPreference' => [
+        'ready' => 'Ready',
+        'under_construction' => 'Under construction',
+        'either' => 'Either',
+    ],
     'InstallmentFrequency' => [
         'monthly' => 'Monthly',
         'quarterly' => 'Quarterly',

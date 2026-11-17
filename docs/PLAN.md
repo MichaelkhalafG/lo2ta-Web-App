@@ -825,8 +825,8 @@ page works; **F** = a fact we must not invent (left visibly empty until supplied
 | 15 | Contact facts: phone, e-mail, address, working hours, social profiles | | | F |
 | 16 | Company facts for markup and footer: legal name, founding year | | | F |
 | 17 | Compound intros (per compound) | ✓ | ✓ | P (short, factual) → C |
-| 18 | E-mail templates (about 20, listed in 2.x) | ✓ | ✓ | P → C |
-| 19 | Form labels, hints, validation and error messages | ✓ | ✓ | P (we write; client reviews) |
+| 18 | E-mail templates (about 20, listed in 2.x). Written so far as placeholders (`core/lang/{ar,en}/mail.php`): confirm your e-mail, reset your password, new budget (to the team) | ✓ | ✓ | P → C |
+| 19 | Form labels, hints, validation and error messages (account pages: `web/messages/*.json` `account`; core validation and account messages: `core/lang/{ar,en}/validation.php`, `accounts.php`) | ✓ | ✓ | P (we write; client reviews) |
 | 20 | Unit state and deal stage labels shown to users | ✓ | ✓ | P |
 | 21 | Meta titles and descriptions per page | ✓ | ✓ | P → C |
 | 22 | Logo files (have: navy and transparent PNG), favicon, social image | | | have / need SVG |
@@ -878,9 +878,13 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] Areas in three levels; public fields per page (2.5); privacy test with the seller's name
 
 **Phase 3: Accounts**
-- [ ] Register, verify, login, reset, return-to-action
-- [ ] Favorites
-- [ ] Buyer budget form and "My account"
+- [x] Register (Egyptian mobile, consent, honeypot), e-mail confirmation (signed link, 24 h), sign-in, sign-out,
+      forgot and reset (60 min, signs out everywhere), resend; e-mail only, through the outbox (RUN D10, D11, D17, D18)
+- [x] Return-to-action: `next` and `intent` (favorite, budget, sell) carried through sign-in and registration
+- [x] Favorites (public units only; departed units marked) and the heart button (RUN D19)
+- [x] Buyer budget form (capacity, types, areas and districts, compounds, delivery) and the team e-mail (RUN D12,
+      D14, D15); My account with details, confirmation status and profile edit (RUN D13)
+- [x] Tests: 24 account tests; the private-fields scan now covers the account routes; end-to-end run in a browser
 
 **Phase 4: Seller**
 - [ ] 6-step wizard with drafts and cross-field checks

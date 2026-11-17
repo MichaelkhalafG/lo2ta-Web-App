@@ -5,6 +5,7 @@ use App\Models\Feature;
 use App\Models\Unit;
 use App\Models\UnitDocument;
 use App\Models\UnitPhoto;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,17 +83,23 @@ it('answers exactly the approved unit keys', function () {
 it('never sends a private value from any keyed GET route', function () {
     $unit = sentinelUnit();
 
+    // A buyer who saved the unit, so the account routes (favorites) are scanned too: a buyer must never see the
+    // seller's details or the unit's private columns through their own account either.
+    $buyer = User::factory()->create();
+    $buyer->favorites()->attach($unit->id, ['created_at' => now()]);
+    $token = $buyer->createToken('web')->plainTextToken;
+
     $routes = collect(Route::getRoutes()->getRoutes())
         ->filter(fn ($r) => str_starts_with($r->uri(), 'api/v1/') && in_array('GET', $r->methods(), true))
         ->map(fn ($r) => str_replace('{code}', (string) $unit->code, $r->uri()))
         ->values();
 
-    expect($routes)->not->toBeEmpty();
+    expect($routes)->not->toBeEmpty()->and($routes)->toContain('api/v1/me/favorites');
 
     foreach ($routes as $uri) {
         foreach (['ar', 'en'] as $locale) {
             $url = '/'.$uri.'?locale='.$locale.(str_contains($uri, 'site-texts') ? '&group=seller' : '');
-            $body = $this->get($url, apiHeaders())->assertOk()->getContent();
+            $body = $this->get($url, [...apiHeaders(), 'Authorization' => 'Bearer '.$token])->assertOk()->getContent();
 
             expect($body)->not->toContain('SENTINEL')
                 ->and($body)->not->toContain('sentinel-seller')

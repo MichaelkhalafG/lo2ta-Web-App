@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // The public site (Next.js). Links in e-mails to users (verify, reset) point here, never to core.
+    'frontend_url' => rtrim(is_string($frontend = env('FRONTEND_URL')) ? $frontend : 'http://127.0.0.1:3000', '/'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

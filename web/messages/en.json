@@ -42,5 +42,120 @@
     "currency": "EGP",
     "comingSoon": "This page is built in a later phase.",
     "home": "Home"
+  },
+  "account": {
+    "pending": "Sending…",
+    "fields": {
+      "name": "Full name",
+      "email": "E-mail",
+      "phone": "Mobile number",
+      "password": "Password",
+      "passwordConfirm": "Confirm password",
+      "newPassword": "New password",
+      "language": "Language of messages",
+      "website": "Leave this field empty"
+    },
+    "login": {
+      "title": "Sign in",
+      "intro": "Sign in with your e-mail and password.",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?",
+      "noAccount": "No account yet?",
+      "register": "Create one",
+      "resetDone": "Your password was changed. Sign in with the new one.",
+      "why": "Sign in and we will finish what you were doing."
+    },
+    "register": {
+      "title": "Create an account",
+      "intro": "One account to sell and to buy. Every message reaches you by e-mail.",
+      "emailHint": "The confirmation link and every update reach you by e-mail only.",
+      "phoneHint": "For contact only; never shown to anyone.",
+      "passwordHint": "At least 8 characters.",
+      "terms": "I have read and accept the <terms>terms and conditions</terms> and the <privacy>privacy policy</privacy>.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "login": "Sign in"
+    },
+    "forgot": {
+      "title": "Forgot your password",
+      "intro": "Enter the e-mail you registered with. If it has an account, we will send a link to choose a new password.",
+      "submit": "Send the link",
+      "sent": "If {email} has an account with us, a link arrives within minutes. It works for 60 minutes.",
+      "back": "Back to sign in"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "intro": "Choose a new password for your account. Every other device will be signed out.",
+      "submit": "Save password"
+    },
+    "verify": {
+      "title": "Confirm your e-mail",
+      "ok": "Your e-mail is confirmed. Thank you.",
+      "failed": "This link is not valid or has expired. Sign in and ask for a new one.",
+      "toAccount": "Go to your account"
+    },
+    "nav": {
+      "label": "My account",
+      "overview": "My account",
+      "budget": "My budget",
+      "favorites": "Favorites",
+      "logout": "Sign out"
+    },
+    "overview": {
+      "title": "My account",
+      "intro": "Welcome, {name}. Your details, your budget and the units you saved.",
+      "email": "E-mail",
+      "verified": "Confirmed",
+      "unverified": "Not confirmed yet",
+      "notVerified": "Your e-mail {email} is not confirmed yet. Confirm it to send a sale request or a unit request.",
+      "resend": "Send the confirmation link again",
+      "resent": "We sent the link. Check your inbox.",
+      "resendFailed": "Could not send now. Try again in a minute.",
+      "budget": "My budget",
+      "budgetSet": "Registered. You can change it any time.",
+      "budgetNone": "No budget registered yet.",
+      "favorites": "Saved units",
+      "later": "Your units for sale and your requests will appear here once selling and unit requests open in later phases.",
+      "details": "Your details",
+      "save": "Save details",
+      "saved": "Your details were saved.",
+      "languageHint": "The language of the e-mails we send you."
+    },
+    "budget": {
+      "title": "My budget",
+      "intro": "Tell us the cash you have and the installment you are comfortable with, and our team suggests the units that fit. There are no automatic alerts.",
+      "capacity": "What you can pay",
+      "cash": "Cash available now (EGP)",
+      "cashHint": "What you can pay the owner now.",
+      "installment": "Comfortable installment (EGP)",
+      "installmentHint": "The amount of one installment you can carry.",
+      "frequency": "Installment frequency",
+      "target": "Target contract price (optional, EGP)",
+      "targetHint": "If you have a ceiling for the original contract price.",
+      "types": "Unit type",
+      "areas": "Areas",
+      "areasHint": "Choose one to {max} areas or districts.",
+      "areasSearch": "Search an area",
+      "compounds": "Specific compounds (optional)",
+      "compoundsHint": "Leave empty if any compound in the chosen areas fits.",
+      "more": "More details",
+      "bedrooms": "Minimum bedrooms (optional)",
+      "delivery": "Delivery",
+      "save": "Save budget",
+      "saved": "Your budget was saved. Our team will e-mail you when a unit fits.",
+      "fix": "Check the marked fields."
+    },
+    "favorites": {
+      "title": "Favorites",
+      "empty": "You have not saved any unit yet.",
+      "browse": "Browse opportunities",
+      "unavailable": "This unit is no longer available."
+    },
+    "favorite": {
+      "label": "Save",
+      "saved": "Saved",
+      "save": "Save unit {code}",
+      "remove": "Remove unit {code} from favorites"
+    }
   }
 }

@@ -33,7 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.active' => EnsureAdminActive::class,
         ]);
         // Guests of the dashboard go to its login; a signed-in admin on the login page goes home.
-        $middleware->redirectGuestsTo(fn () => route('dashboard.login'));
+        // API guests get a JSON 401 (null = no redirect), never the dashboard login page.
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : route('dashboard.login'));
         $middleware->redirectUsersTo(fn () => route('dashboard.home'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {

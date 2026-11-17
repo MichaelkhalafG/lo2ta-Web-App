@@ -78,9 +78,12 @@ final class ActivityLogger
             return ['admin', $admin->id];
         }
 
-        $user = Auth::guard('web')->user();
-        if ($user instanceof User) {
-            return ['user', $user->id];
+        // Public users act through the API with a Sanctum token (RUN D10); the web guard is kept for completeness.
+        foreach (['sanctum', 'web'] as $guard) {
+            $user = Auth::guard($guard)->user();
+            if ($user instanceof User) {
+                return ['user', $user->id];
+            }
         }
 
         return ['system', null];
