@@ -27,8 +27,12 @@ composer install
 Copy-Item .env.example .env   # only if .env does not exist yet
 php artisan key:generate
 php artisan migrate
+php artisan db:seed            # reference data (add-only) + sample data (scratch/test databases only)
+php artisan admin:create you@example.com "Your name" --role=admin   # asks for the password at a hidden prompt
 pnpm install
 pnpm build
+
+# Set the same long random CORE_API_KEY in core\.env and web\.env.local (the web server sends it as X-Api-Key).
 
 # Web
 Set-Location "D:\coding\l2ta website\web"
@@ -52,6 +56,11 @@ pnpm typecheck; pnpm lint; pnpm lint:rtl
 ```
 
 The test suite refuses to run unless mail uses the `array` mailer and the database name ends in `_test`.
+
+## Scheduler and mail
+
+The host runs one cron line every minute: `cd <core> && php artisan schedule:run`. It sends due rows of the mail
+outbox (`outbox:send`). `php artisan mail:test you@example.com` sends one test mail through the outbox.
 
 ## Rules that shape the code
 

@@ -10,3 +10,6 @@ parameters:
         - database
         - routes
     tmpDir: storage/framework/phpstan
+    # Read each model's casts() array itself, so enum, date and array casts type the properties. Without it Larastan
+    # only sees the declared return type (array<string, string>) and every cast column looks like a plain string.
+    parseModelCastsMethod: true

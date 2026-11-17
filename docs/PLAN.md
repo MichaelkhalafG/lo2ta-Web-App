@@ -1,7 +1,7 @@
 # Plan: installment contract transfer platform (Egypt)
 
-Status: **reviewed by Michael on 2026-11-17.** Items marked "decided 2026-11-17" are fixed; items marked "proposal"
-wait for review. No feature code is written until the proposals in 2.2 are approved.
+Status: **reviewed by Michael on 2026-11-17.** Items marked "decided 2026-11-17" or "approved 2026-11-17" are fixed; the
+proposals in 2.2 and 3.7 were approved on 2026-11-17 with the notes recorded where they apply. Phase 1 has started.
 
 Sources: the agreement (13 November 2026), Michael's brief, `HANDOVER_FOR_NEW_PROJECT_2026-11-17.md`, and the
 aqarexit study in `docs/research/`.
@@ -118,8 +118,8 @@ E-mails: verify your e-mail · reset your password · (optional) welcome.
 ### 2.2 Seller flow (decided 2026-11-17)
 
 Michael's seller spec of 2026-11-17 replaces the earlier draft of this section and his earlier partial messages where
-they differ. Items marked **proposal** (sub-types, features, finishing, editing after publishing, ID retention, the
-unit code details, the points in 2.2.9) wait for his review. Wording in quotes is placeholder text for the client to
+they differ. The items first written as proposals (sub-types, features, finishing, editing after publishing, ID
+retention, the unit code details, the points in 2.2.9) were approved 2026-11-17, with Michael's notes recorded in place. Wording in quotes is placeholder text for the client to
 confirm (section 6).
 
 #### 2.2.1 Entry
@@ -130,7 +130,7 @@ confirm (section 6).
   rejected, and any unit found to come from one is removed."
 - On opening step 1 of a unit for the first time, a blocking modal: "No over price, ever. If your unit is published
   and you ask for an over price, it is removed." The seller must confirm ("I understand, I list without over") to
-  continue. The confirmation is stored with a timestamp and the text version (per unit, **proposal**).
+  continue. The confirmation is stored with a timestamp and the text version (per unit, approved 2026-11-17).
 - Every step autosaves as a draft ("saved ✓"); the seller can leave and resume from My account. Required fields are
   marked *.
 
@@ -139,7 +139,7 @@ confirm (section 6).
 | Step | Title AR / EN | Fields |
 |---|---|---|
 | 1 | العقد / Contract | Developer * (managed list, or "other" + text) · Project / compound * (list filtered by developer, or "other" + text) · Area * (searchable two-level list, or "my area is not in the list" + text) · Main type * and sub-type * (2.2.3) · Contract number * (private) · Unit number as in the contract * (private) · Contract year * (dropdown, recent years first). The duplicate check runs at the end of this step and again on submit |
-| 2 | الوحدة / Unit | Size m² * · garden m² · roof m² · Floor * · Bedrooms *, bathrooms * (residential only) · Finishing * (2.2.4) · Delivery status * (ready / under construction + expected delivery year) · Façade orientation (optional) · Features (multi, 2.2.5) · Short description * (min and max length: **proposal** 60 and 1,200 characters; aqarexit's minimum is not in their public material). Every field that does not apply to the chosen sub-type is hidden (matrix in 2.2.3) |
+| 2 | الوحدة / Unit | Size m² * · garden m² · roof m² · Floor * · Bedrooms *, bathrooms * (residential only) · Finishing * (2.2.4) · Delivery status * (ready / under construction + expected delivery year) · Façade orientation (optional) · Features (multi, 2.2.5) · Short description * (60 to 1,200 characters, approved 2026-11-17; both are settings). Every field that does not apply to the chosen sub-type is hidden (matrix in 2.2.3) |
 | 3 | الفلوس والأقساط / Money and installments | Total contract price * · Total paid to date * · Today's market price for a similar unit (seller's estimate) * · Installment amount *, frequency * (monthly / quarterly / semi-annual / annual) · Next installment due date * (unless installments are finished) · Years of installments left (optional; 0 if finished; shown next to the installment) · Annual extra payment yes/no (+ amount) · Ready to give up part of what I paid to sell faster yes/no (+ the lowest amount accepted) · Overdue installments yes/no (+ count and amount; hint: most developers refuse a transfer before arrears are paid) · Maintenance deposit still due (optional) |
 | 4 | المستندات / Documents | Contract copy * (PDF or images, several files) · Installment schedule * · National ID copy * (front and back) · Payment receipts (optional by default; "required" is a setting) · Latest developer statement (optional) |
 | 5 | الصور / Photos | 1 to 10 photos *, drag to reorder, the first is the cover · Floor plan image (optional, shown as a plain image) · Warning: no photos showing personal data, the unit number or documents |
@@ -148,6 +148,11 @@ confirm (section 6).
 Shown on step 3: "you recover what you paid, with no over"; "the buyer continues the remaining installments as they
 are"; if the seller accepts less, the amount they will receive instead.
 
+**Estimated net amount** (step 3 and the review step; decided 2026-11-17 after the client's answer that the seller
+pays the developer's transfer fee): net = paid − the developer's transfer fee − any amount given up (paid − lowest
+accepted). The fee line reads "the developer's transfer fee (paid by you to the developer, not to Lokta)"; the "0%
+Lokta commission" wording stays, because the fee belongs to the developer.
+
 **Computed and checked on step 3** (limits per field as in 2: money > 0 and ≤ 1,000,000,000; installment ≤
 100,000,000):
 
@@ -155,7 +160,7 @@ are"; if the seller accepts less, the amount they will receive instead.
 - paid < total (see 2.2.9 point 1 for fully paid contracts).
 - installment ≤ remaining.
 - installment × installments left (years left × payments per year) roughly matches remaining: a **warning**, not a
-  block, with a tolerance setting (proposal: 10%; annual extra payments counted in).
+  block, with a tolerance setting (10%, approved 2026-11-17; annual extra payments and the delivery payment counted in).
 - next due date in the future (see 2.2.9 point 2 for overdue units).
 - delivery year ≥ contract year.
 - lowest accepted amount < paid (and > 0).
@@ -168,10 +173,10 @@ included).
 within 48 hours and reply by e-mail". The exit report is generated at submit from the declared figures and again as
 a "verified" version after review; both are kept (Q8, decided 2026-11-17).
 
-#### 2.2.3 Sub-types and which fields apply (proposal)
+#### 2.2.3 Sub-types and which fields apply (approved 2026-11-17)
 
 Garden and roof are optional everywhere they appear. Land hides finishing, floor, bedrooms, bathrooms, garden and
-roof; its delivery status reads "utilities delivered / under development" (proposal).
+roof; its delivery status reads "utilities delivered / under development".
 
 | Code | AR | EN | Main type | Floor | Bed / bath | Garden | Roof |
 |---|---|---|---|---|---|---|---|
@@ -194,21 +199,19 @@ roof; its delivery status reads "utilities delivered / under development" (propo
 | `kiosk` | كشك | Kiosk | commercial | ✓ | – | – | – |
 | `showroom` | معرض (شوروم) | Showroom | commercial | ✓ | – | – | – |
 | `warehouse` | مخزن | Warehouse | commercial | ✓ | – | – | – |
-| `office` | مكتب إداري | Office | administrative | ✓ | – | – | – |
-| `administrative_unit` | وحدة إدارية | Administrative unit | administrative | ✓ | – | – | – |
+| `office` | مكتب / وحدة إدارية | Office / administrative unit | administrative | ✓ | – | – | – |
 | `clinic` | عيادة | Clinic | administrative | ✓ | – | – | – |
 | `residential_land` | أرض سكنية | Residential land plot | land | – | – | – | – |
 | `commercial_land` | أرض تجارية | Commercial land plot | land | – | – | – | – |
 | `administrative_land` | أرض إدارية | Administrative land plot | land | – | – | – | – |
 | `industrial_land` | أرض صناعية | Industrial land plot | land | – | – | – | – |
 
-Open points in this list: `office` and `administrative_unit` overlap (proposal: keep one, "مكتب / وحدة إدارية");
-`clinic` is mapped to administrative (medical buildings are licensed as administrative in most compounds; commercial
-is the alternative); `i_villa` keeps the floor field although it is a villa type.
+Settled with the approval: office and administrative unit are one sub-type (`office`, "مكتب / وحدة إدارية");
+`clinic` is administrative; `i_villa` keeps the floor field although it is a villa type. 25 sub-types in all.
 
 Floor values: basement, ground, mezzanine, 1 to 40. Size m² is the plot area for land.
 
-#### 2.2.4 Finishing (proposal; hidden for land)
+#### 2.2.4 Finishing (approved 2026-11-17; hidden for land)
 
 | Code | AR | EN |
 |---|---|---|
@@ -221,7 +224,7 @@ Floor values: basement, ground, mezzanine, 1 to 40. Size m² is the plot area fo
 Façade orientation (optional): any of north, east, south, west (one to four sides), shown combined with the north
 arrow: شمالي (بحري) / North, شرقي / East, جنوبي (قبلي) / South, غربي / West; e.g. "شمالي شرقي / North-east".
 
-#### 2.2.5 Features (proposal; multi-select, shown only where they apply)
+#### 2.2.5 Features (approved 2026-11-17; multi-select, shown only where they apply)
 
 | Group | Code | AR | EN | Applies to |
 |---|---|---|---|---|
@@ -279,7 +282,7 @@ add or remove it later; both are logged with a reason. Who verified and when is 
 opportunities page has a "verified only" filter; otherwise unverified units are ranked normally. (This settles the
 badge question from the earlier review: no options needed.)
 
-The admin can edit the market price estimate and set the "لقطة" deal tag (English label: **proposal** "Lokta deal");
+The admin can edit the market price estimate and set the "لقطة" deal tag (English label "Lokta deal", approved 2026-11-17);
 both are logged.
 
 **Default sort** on opportunities: units whose seller accepts less first (as aqarexit), then newest. The unit page
@@ -299,12 +302,12 @@ draft → submitted → changes_requested → submitted → … → published �
 
 - My account shows each unit's state, its documents' review status and the next step.
 - Withdraw at any time (reason optional); the admin is notified. While a deal is open on the unit, the button sends a
-  withdrawal request that the admin handles (**proposal**, 2.2.9 point 5).
+  withdrawal request that the admin handles (approved 2026-11-17, 2.2.9 point 5).
 - E-mails to the seller: received · changes requested · rejected · published · verified · a deal started on your unit
   · deal completed · withdrawn. To the admin team: new unit submitted · resubmitted after changes · documents
   re-uploaded · seller withdrew a unit.
 
-**Editing a published unit (proposal):**
+**Editing a published unit (approved 2026-11-17: tiers as below, option A):**
 
 | Tier | Fields | What happens |
 |---|---|---|
@@ -319,12 +322,12 @@ How "back to review" behaves:
 
 | Option | Cost | Risk |
 |---|---|---|
-| **A. Unit stays live with the old values until the admin approves the change (recommended)** | one pending-changes table | buyers briefly see older figures (paid to date grows every month, so this happens often) |
+| **A. Unit stays live with the old values until the admin approves the change (approved 2026-11-17)** | one pending-changes table | buyers briefly see older figures (paid to date grows every month, so this happens often) |
 | B. Unit is unpublished until the admin approves | none extra | every monthly installment update takes the unit off the market |
 
-#### 2.2.8 Unit code and ID retention (proposal)
+#### 2.2.8 Unit code and ID retention (approved 2026-11-17)
 
-**Unit code** `LK-{area code}-{serial}`, e.g. `LK-NC-0124`; area codes live in the areas table. Proposal: one global
+**Unit code** `LK-{area code}-{serial}`, e.g. `LK-NC-0124`; area codes live in the areas table. One global
 serial (4 digits, grows past 9999), assigned at first submit; the e-mails before publishing use the serial as the
 reference (`#0124`); the full code is formed at publish, when the area is certain (a seller's "other" area is mapped
 by the admin first), and it never changes after that, even if the area is corrected.
@@ -333,32 +336,33 @@ by the admin first), and it never changes after that, even if the area is correc
 
 | Option | Rule | Cost | Risk |
 |---|---|---|---|
-| **A. 90 days (recommended)** | ID files deleted 90 days after the unit is sold, withdrawn or rejected; drafts never submitted lose their ID files after 180 days without activity; the record stays (type, sha256, reviewed by and when, deleted at); both periods are settings | a daily scheduled job | none known; 90 days covers a late dispute about a completed deal |
+| **A. 90 days (approved 2026-11-17)** | ID files deleted 90 days after the unit is sold, withdrawn or rejected; drafts never submitted lose their ID files after 180 days without activity; the record stays (type, sha256, reviewed by and when, deleted at); both periods are settings | a daily scheduled job | none known; 90 days covers a late dispute about a completed deal |
 | B. 30 days | same, shorter | same | a dispute after 30 days has no ID copy |
 | C. Kept until the client's lawyer sets a period | none now | ID copies pile up with no end date |
 
 Contract, schedule, receipts and statement are kept until the client sets a period (they back the commission record).
-The privacy policy (client text, section 6) must state the rule chosen.
+The privacy policy (client text, section 6, row 8a) must state this rule.
 
-#### 2.2.9 Points to settle in the spec (proposal for each)
+#### 2.2.9 Points settled in the spec (each approved 2026-11-17)
 
 1. **Fully paid contracts.** "paid < total" blocks a contract that is fully paid but not yet delivered, while "years
-   left: 0 if finished" allows it. Proposal: paid ≤ total; when paid = total, the installment fields are hidden and
+   left: 0 if finished" allows it. Rule: paid ≤ total; when paid = total, the installment fields are hidden and
    "installments finished" is shown.
-2. **Overdue and the next due date.** With overdue installments the next due date can be in the past. Proposal: the
+2. **Overdue and the next due date.** With overdue installments the next due date can be in the past. Rule: the
    date must be in the future unless "overdue" is yes.
 3. **Delivery payment.** Many Egyptian contracts have a lump sum due at delivery (دفعة الاستلام), which breaks the
-   installment × installments-left warning. Proposal: an optional "payment due at delivery" field on step 3, counted
+   installment × installments-left warning. Rule: an optional "payment due at delivery" field on step 3, counted
    in the check and shown to buyers.
 4. **Duplicate check on step 1.** The message must not reveal which unit matched; checks are rate-limited per user and
    every hit is logged for the admin.
 5. **Withdrawing during an open deal** (2.2.7): a request to the admin rather than an immediate withdrawal.
-6. **Contact details in the description.** Proposal: phone numbers, e-mails and links are refused in the description
+6. **Contact details in the description.** Rule: phone numbers, e-mails and links are refused in the description
    (owner-only rule, no going around the platform).
-7. **Photos of units under construction.** The seller may have none of the unit itself; proposal: allow project
-   photos or renders, with a hint.
+7. **Photos of units under construction.** The seller may have none of the unit itself: project photos or
+   renders are allowed, and each such photo carries a visible label "صورة من المشروع / Project image", set by the
+   seller at upload and editable by the admin (Michael's note on the approval).
 8. **Exit report before the market research.** The step 6 preview needs calculator settings, which phase 6 researches.
-   Proposal: load the settings with clearly marked provisional values in phase 1 and research them before launch.
+   Rule: the settings are loaded with clearly marked provisional values in phase 1 and researched before launch.
 
 #### 2.2.10 Not building
 
@@ -370,7 +374,7 @@ page, a public revision log, architect-annotated plans, inspection report upload
 - The agreement's seller line names "رفع العقد وإيصالات السداد" (contract and receipt uploads). Receipts stay
   uploadable, optional by default with a "required" setting, so the line is met.
 - Clause 2 lists the site pages and says "nothing else"; a `/buyers` page (Q12) is not on that list, and clause 9
-  calls any unlisted page extra work. Michael's call whether to absorb it.
+  calls any unlisted page extra work. **Michael absorbs it at no extra charge (decided 2026-11-17).**
 - Nothing in the spec is on clause 9's excluded list (AI assistant, investors page, buyer alerts, units map, logo,
   social designs, ads and tracking, online payment, WhatsApp, SMS).
 
@@ -425,9 +429,10 @@ opened (buyer + unit linked) → buyer confirmed (viewing / call done) → selle
 E-mails go to both parties at: opened, developer approval obtained, completed, cancelled.
 
 **Commission record:** deal, base amount = **total contract price** (Q3, decided 2026-11-17, as aqarexit), rate
-(from settings, 1% today, frozen on the deal), amount, VAT if applicable (asked of the client), status
-`expected → due (on completion) → invoiced → collected | waived (reason)`, dates, reference, notes. Who pays the
-developer's transfer fee is asked of the client too.
+(from settings, 1% today, frozen on the deal), amount, VAT (setting `vat_bp` = 0: the client confirmed no VAT on the
+1%, decided 2026-11-17), status `expected → due (on completion) → invoiced → collected | waived (reason)`, dates,
+reference, notes. The developer's transfer fee is paid by the seller to the developer and is not part of the
+commission record.
 
 **Roles (Q5, decided 2026-11-17):** `admin` (everything, settings, users) and `reviewer` (units, documents, requests,
 deals; no settings, no commissions). Every write is in the activity log. The dashboard is in Arabic and English.
@@ -501,7 +506,7 @@ Decided 2026-11-17: A blocks, B (file sha256) only warns the admin.
 | `activity_log` | who, what, before/after |
 | `mail_outbox` | handover 2.5: row first, then send; retried by the scheduler |
 
-### 3.7 Migrations for the seller flow (proposal)
+### 3.7 Migrations for the seller flow (approved 2026-11-17)
 
 In run order. Nothing is deployed yet, so the skeleton's own `users` migration is edited rather than altered.
 Money is `BIGINT UNSIGNED` whole EGP; every choice is a short code string; private columns never appear in a
@@ -511,14 +516,14 @@ public API resource (one whitelist test).
 |---|---|---|
 | 1 | `users` (edit skeleton) | + `phone` (string 20), `locale` (char 2, default `ar`) |
 | 2 | `admin_users`, `admin_roles` | name, email unique, password, role (`admin` / `reviewer`), locale, is_active, last_login_at |
-| 3 | `settings` | key unique, value JSON, type, group, updated_by → admin_users. Seller-flow keys: `receipts_required`, `installment_check_tolerance_pct`, `id_retention_days`, `draft_id_retention_days`, `description_min`, `description_max`, `photo_max_count`, calculator keys (4.2) |
+| 3 | `settings` | key unique, value JSON, type, group, updated_by → admin_users. Seller-flow keys: `receipts_required`, `installment_check_tolerance_pct`, `id_retention_days`, `draft_id_retention_days`, `description_min`, `description_max`, `photo_max_count`, `buyer_fee_bp` (100), `vat_bp` (0), `transfer_fee_payer` (seller), `transfer_fee_mode`, `transfer_fee_bp` / `transfer_fee_fixed`, calculator keys (4.2) |
 | 4 | `areas` | parent_id (null = governorate), code (string 4, unique, nullable on governorates), name_ar, name_en, slug unique, sort, is_active |
 | 5 | `developers` | name_ar, name_en, slug unique, is_active |
 | 6 | `compounds` | developer_id, area_id, name_ar, name_en, slug unique, is_active; index (developer_id) |
 | 7 | `features` | code unique, group, name_ar, name_en, applies_to (JSON list of main types), sort, is_active (seeded from 2.2.5) |
-| 8 | `units` | **owner and state:** seller_id → users, state (8 codes, 2.2.6), step_reached, serial unique nullable (at first submit), code unique nullable (at publish), slug unique nullable · **step 1:** developer_id / developer_other, compound_id / compound_other, area_id / area_other, main_type, sub_type, contract_number, unit_number (both private), contract_year · **duplicate keys:** contract_key, unit_key (normalised, indexed) and `active_contract_key`, `active_unit_key` (unique, filled only while submitted, changes_requested, published or reserved; MariaDB has no partial indexes, and NULLs do not collide) · **step 2:** size_m2, garden_m2, roof_m2 (decimal 8,2), floor (small int; basement −1, ground 0, mezzanine as a code), bedrooms, bathrooms, finishing, delivery_status, delivery_year, facade (4-bit set), description · **step 3:** total_price, paid_amount, remaining_amount (stored generated column total − paid, for filters and sort), market_price_estimate, installment_amount, installment_frequency, next_due_date, years_left, annual_extra_amount (null = no), accepts_less, lowest_accepted_amount, has_overdue, overdue_count, overdue_amount, maintenance_due, delivery_payment (if 2.2.9 point 3 is accepted) · **flags:** verified_at, verified_by, deal_tag (bool) · **dates:** submitted_at, published_at, withdrawn_at, withdraw_reason, rejected_at · indexes for the default sort (accepts_less, published_at) and the listing filters |
+| 8 | `units` | **owner and state:** seller_id → users, state (8 codes, 2.2.6), step_reached, serial unique nullable (at first submit), code unique nullable (at publish), slug unique nullable · **step 1:** developer_id / developer_other, compound_id / compound_other, area_id / area_other, main_type, sub_type, contract_number, unit_number (both private), contract_year · **duplicate keys:** contract_key, unit_key (normalised, indexed) and `active_contract_key`, `active_unit_key` (unique, filled only while submitted, changes_requested, published or reserved; MariaDB has no partial indexes, and NULLs do not collide) · **step 2:** size_m2, garden_m2, roof_m2 (decimal 8,2), floor (a short code: basement, ground, mezzanine, 1 to 40; built as a code rather than a number so mezzanine needs no special value, 2026-11-17), bedrooms, bathrooms, finishing, delivery_status, delivery_year, facade (4-bit set), description · **step 3:** total_price, paid_amount, remaining_amount (stored generated column total − paid, for filters and sort), market_price_estimate, installment_amount, installment_frequency, next_due_date, years_left, annual_extra_amount (null = no), accepts_less, lowest_accepted_amount, has_overdue, overdue_count, overdue_amount, maintenance_due, delivery_payment (2.2.9 point 3) · **flags:** verified_at, verified_by, deal_tag (bool) · **dates:** submitted_at, published_at, withdrawn_at, withdraw_reason, rejected_at · indexes for the default sort (accepts_less, published_at) and the listing filters |
 | 9 | `unit_feature` | unit_id, feature_id; primary key on both |
-| 10 | `unit_photos` | unit_id, kind (`photo` / `floor_plan`), path base, sort, width, height, bytes |
+| 10 | `unit_photos` | unit_id, kind (`photo` / `floor_plan`), is_project_image (the "صورة من المشروع / Project image" label), path base, sort, width, height, bytes |
 | 11 | `unit_documents` | unit_id, type (`contract`, `schedule`, `national_id_front`, `national_id_back`, `receipt`, `statement`), path (private disk), original_name, mime, bytes, sha256 (indexed, for the 3.4 B warning), status (`uploaded` / `approved` / `needs_replacement`), review_note, reviewed_by, reviewed_at, purge_after, purged_at |
 | 12 | `unit_declarations` | unit_id, user_id, kind (`no_over`, `owner_not_broker`, `data_matches`, `terms_privacy`), text_version, accepted_at, ip |
 | 13 | `unit_reviews` | unit_id, admin_id, outcome (`changes_requested`, `rejected`, `published`, `published_verified`), reason, notes per field or document (JSON), created_at |
@@ -540,9 +545,10 @@ Deals, commissions, budgets, favorites and requests come in later migrations (ph
 **Seller tab:** total contract price, total paid so far, contract date (or years paid), developer (optional, picks
 up that developer's policy), overdue installments (optional).
 
-**Buyer tab:** contract price (old), developer price today for a similar unit, transfer fee payer (from settings).
+**Buyer tab:** contract price (old), developer price today for a similar unit. No transfer fee in the buyer's figures
+(decided 2026-11-17).
 
-### 4.2 Formula (proposal; every constant is a setting)
+### 4.2 Formula (as proposed, decided 2026-11-17; transfer fee and VAT updated the same day; every constant is a setting)
 
 ```
 S = settings, or the developer's policy when one exists
@@ -558,15 +564,18 @@ Cancellation
   zone          = wipeout | deep_loss (> S.deep_loss_ratio) | moderate_loss
 
 Transfer through the platform
-  recovery      = paid                                       # 0% seller fee
-  transfer_fee  = contract_price * S.developer_transfer_fee_pct, shown with who pays it (S.transfer_fee_payer)
-  seller_net    = recovery - (transfer_fee if seller pays)
-  advantage     = seller_net - refund (nominal and present value)
+  recovery      = paid                                       # 0% Lokta commission for the seller
+  transfer_fee  = S.transfer_fee_mode == pct ? contract_price * S.transfer_fee_bp : S.transfer_fee_fixed
+                  # paid by S.transfer_fee_payer (default seller, decided 2026-11-17) to the developer, not to Lokta;
+                  # a developer policy can override mode, rate or amount
+  given_up      = accepts_less ? paid - lowest_accepted : 0
+  seller_net    = recovery - (transfer_fee if payer is seller) - given_up
+  advantage     = seller_net - refund (nominal, and present value when S.show_present_value)
 
 Buyer
   fee           = round(contract_price * S.buyer_fee_pct)    # 1%
-  fee_vat       = fee * S.vat_pct if applicable (Q3)
-  gain          = developer_price_today - contract_price - fee - fee_vat - (transfer_fee if buyer pays)
+  fee_vat       = fee * S.vat_bp                            # vat_bp = 0 (client confirmed, decided 2026-11-17)
+  gain          = developer_price_today - contract_price - fee - fee_vat   # no transfer fee on the buyer side
 ```
 
 ### 4.3 Market values to research (each with a source and a date, stored in settings)
@@ -577,13 +586,12 @@ Buyer
    fixed).
 3. Late-payment penalties: rate and basis (per month or per year, on the overdue amount), grace period, when
    cancellation is triggered (number of missed installments).
-4. Developer assignment (transfer) fee: percentage or fixed amount, its basis, and who usually pays (buyer, seller,
-   split).
+4. Developer assignment (transfer) fee: percentage or fixed amount and its basis (the payer is decided: the seller).
 5. Conditions on assignment: minimum paid share before a developer allows transfer, blackout periods, approval time.
 6. Maintenance deposit at delivery (percentage of price) and whether it transfers.
 7. A discount rate for the present-value line (for example the Central Bank of Egypt's rate); the line is a
    setting, OFF by default (decided 2026-11-17).
-8. VAT treatment of a brokerage commission (14%?), confirmed by the client (Eng. Enas).
+8. ~~VAT on the commission~~: settled, the client confirmed no VAT on the 1% (`vat_bp` = 0).
 
 Method: public sources only (developer contract terms published online, law firm and press articles, court
 summaries), at least two independent sources per value, each recorded with URL and date; values marked "market
@@ -662,7 +670,8 @@ page works; **F** = a fact we must not invent (left visibly empty until supplied
 | 6 | Privacy policy | ✓ | ✓ | C (legal; Eng. Enas) |
 | 7 | Terms and conditions | ✓ | ✓ | C (legal) |
 | 8 | Seller notices and declarations: owner-only notice, no-over modal, owner-not-broker, data matches documents (2.2.1, 2.2.2) | ✓ | ✓ | P → C (legal) |
-| 8a | Privacy policy paragraph on national ID copies and their retention (2.2.8) | ✓ | ✓ | C (legal) |
+| 8a | Privacy policy paragraph on national ID copies and their retention: 90 days after sold, withdrawn or rejected; 180 days for abandoned drafts (2.2.8, option A) | ✓ | ✓ | C (legal; the client's text, added 2026-11-17) |
+| 8c | Transfer fee note: "the developer's transfer fee (paid by you to the developer, not to Lokta)" on step 3, the review step, the calculator and the exit report | ✓ | ✓ | P → C |
 | 8b | Seller e-mails (8, 2.2.7) and the "48 hours" promise | ✓ | ✓ | P → C |
 | 9 | Buyer fee consent wording | ✓ | ✓ | C (legal) |
 | 10 | Calculator and exit report disclaimers | ✓ | ✓ | C (legal) |
@@ -695,14 +704,23 @@ first payment and all client texts) is a contract matter for Michael.
 
 **Phase 1: Foundations**
 - [x] Decisions from section 8 recorded (2026-11-17)
-- [ ] Proposals in 2.2 (sub-types, features, finishing, editing after publish, ID retention, unit code, 2.2.9)
-      reviewed by Michael
-- [ ] Migrations for the agreed model (3.7 first); seeders for areas with codes, features, sample developers and
-      compounds (scratch only)
-- [ ] Admin auth, roles, activity log, mail outbox
-- [ ] `site_texts` with placeholder flag; `settings` with typed values, calculator values marked provisional
-      (2.2.9 point 8)
-- [ ] Public API v1 skeleton with server key (handover 2.2) and the field-whitelist test
+- [x] Proposals in 2.2 and 3.7 approved by Michael (2026-11-17)
+- [x] Migrations for the agreed model (3.7, all 18 tables; rollback and re-run proven on scratch)
+- [x] Seeders: ReferenceSeeder (roles, 24 settings, 7 governorates and 25 areas with codes, 35 features, 15
+      placeholder texts; add-only, never overwrites a dashboard edit) and SampleSeeder (invented developers and
+      compounds; refuses any database not ending in _scratch or _test)
+- [ ] Areas list (`core/database/data/areas.php`) reviewed by Michael: the seed is a first draft
+- [x] Admin auth (guard `admin`, `admin_users`), roles admin and reviewer with gates, sign-in throttle, switched-off
+      accounts signed out, dashboard in Arabic and English; `php artisan admin:create` (password at a hidden prompt)
+- [x] Activity log: dashboard-authored models log create, update and delete by themselves (hidden fields never
+      logged); sign-in, failed sign-in and sign-out logged; a test per model
+- [x] Mail outbox: row first, send in the request, `outbox:send` every minute with back-off, dead after 6 tries;
+      `php artisan mail:test {email}`
+- [x] `site_texts` with placeholder flag; `settings` typed and validated, in a versioned file cache, calculator
+      and transfer-fee values marked provisional (2.2.9 point 8)
+- [x] Public API v1 skeleton behind the server key (fails closed), language by `?locale=`; settings, site texts,
+      areas, developers, compounds, features, units list and unit by code; the field-whitelist test (exact keys
+      plus a sentinel scan of every keyed GET route)
 
 **Phase 2: Visual identity and site shell** (agreement: palette, fonts, page design, UX; 3 free revision rounds)
 - [ ] Palette, Arabic and Latin fonts, components; dark luxury direction
@@ -747,6 +765,8 @@ first payment and all client texts) is a contract matter for Michael.
 **Phase 9: Delivery**
 - [ ] Placeholder report from the dashboard: every text still waiting for the client
 - [ ] Deploy scripts per handover 3 (numbered steps, STOP, backups, rehearsal on a scratch copy), live checks
+- [ ] Host `.htaccess` API allow-list names every `/api/v1` route (handover 2.4), kept in the repository with a test
+      that compares it with routes/api.php; `CORE_API_KEY` set in core `.env` and web variables (same value)
 - [ ] Hand-over notes for the client team
 
 ---
@@ -759,7 +779,7 @@ Michael's review of 2026-11-17. "As recommended" means the recommendation in the
 |---|---|---|
 | Q1 | URL scheme (1.1) | A: Arabic at root, English under `/en`, Latin slugs (decided 2026-11-17) |
 | Q2 | Site name | Arabic "لقطة", English "Lokta", domain loktaeg.com (decided 2026-11-17) |
-| Q3 | Commission base, VAT, transfer fee | Base: total contract price at 1%, as aqarexit (decided 2026-11-17). VAT and who pays the developer's transfer fee: **asked of the client**, open. What aqarexit shows: section 8.1 |
+| Q3 | Commission base, VAT, transfer fee | Base: total contract price at 1%, as aqarexit. No VAT on the 1% (`vat_bp` setting = 0). The seller pays the developer's transfer fee (`transfer_fee_payer` = seller; rate or amount a setting, a developer policy can override); shown to the seller as the developer's fee, never in the buyer's figures (all decided 2026-11-17, the last two from the client). What aqarexit shows: section 8.1 |
 | Q4 | aqarexit's portal screens | Michael walked the seller form to the review screen (nothing submitted); his findings are in 2.2 (decided 2026-11-17) |
 | Q5 | Dashboard language and roles | Arabic and English; roles admin + reviewer (decided 2026-11-17) |
 | Q6 | Data model 3.1–3.4 | A in 3.1, 3.2, 3.3; in 3.4 A blocks and B (file sha256) only warns the admin (decided 2026-11-17) |
@@ -782,7 +802,7 @@ Michael's review of 2026-11-17. "As recommended" means the recommendation in the
 | Calc | Calculator | As proposed in 4.2; the present-value line is a setting, OFF by default (decided 2026-11-17) |
 | Badge | What "verified" means | The team's optional judgement, set at publish or later, logged, never showing who or when (decided 2026-11-17, 2.2.6) |
 
-Still open: VAT and the transfer-fee payer (client), and the proposals in 2.2 (sub-types, features, finishing,
+Still open: none of the above. All proposals in 2.2 and 3.7 were approved on 2026-11-17 (sub-types, features, finishing,
 editing after publish, ID retention, unit code details, 2.2.9).
 
 ### 8.1 What aqarexit says on VAT, the transfer fee and seller documents

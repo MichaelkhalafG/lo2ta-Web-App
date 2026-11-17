@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // The Next.js site reads the API server-side with this key in the X-Api-Key header (handover 2.2).
+    // It never reaches the browser. Empty means the API refuses every keyed call (fails closed).
+    'web' => [
+        'server_key' => env('CORE_API_KEY', ''),
+    ],
+
 ];

@@ -1,21 +1,27 @@
 <?php
 
+use App\Http\Controllers\Dashboard\AuthController;
+use App\Http\Controllers\Dashboard\LocaleController;
+use App\Http\Controllers\Dashboard\OverviewController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
-| The core serves the API and the admin dashboard. Public pages live in the Next.js app (../web).
-| The setup page below exists only locally, to prove the Inertia + React + RTL wiring; the real
-| dashboard routes (behind admin auth) replace it in phase 1.
+| The core serves the API (routes/api.php) and the staff dashboard below. Public pages live in ../web.
+| Every dashboard write is recorded in activity_log (handover 2.3).
 */
 
-Route::get('/', fn () => redirect('/dashboard'));
+Route::get('/', fn () => redirect()->route('dashboard.home'));
 
-if (app()->isLocal()) {
-    Route::get('/dashboard', fn () => Inertia::render('Setup', [
-        'stack' => [
-            'laravel' => app()->version(),
-            'php' => PHP_VERSION,
-        ],
-    ]))->name('dashboard.setup');
-}
+Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
+    Route::post('locale', [LocaleController::class, 'update'])->name('locale');
+
+    Route::middleware('guest:admin')->group(function (): void {
+        Route::get('login', [AuthController::class, 'create'])->name('login');
+        Route::post('login', [AuthController::class, 'store'])->name('login.store');
+    });
+
+    Route::middleware(['auth:admin', 'admin.active'])->group(function (): void {
+        Route::get('/', OverviewController::class)->name('home');
+        Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
+    });
+});

@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+/*
+| The host runs exactly one cron line every minute: cd <core> && php artisan schedule:run (handover 2.5).
+| Everything else is scheduled here.
+*/
+
+Schedule::command('outbox:send')->everyMinute()->withoutOverlapping();

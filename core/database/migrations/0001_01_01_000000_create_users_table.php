@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone', 20)->comment('Egyptian mobile, normalised to 01XXXXXXXXX; required, not verified');
+            $table->char('locale', 2)->default('ar');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
