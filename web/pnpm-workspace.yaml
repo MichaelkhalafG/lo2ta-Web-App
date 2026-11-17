@@ -1,0 +1,7 @@
+# Install scripts are denied by default. Each entry here was reviewed: the native binaries
+# arrive as optional packages, so the scripts are not needed.
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  sharp: false
+  unrs-resolver: false

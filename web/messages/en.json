@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "siteName": "Site name (placeholder)"
+  },
+  "setup": {
+    "title": "Setup works",
+    "body": "A temporary page to confirm English renders left to right and the language links work.",
+    "start": "Line start",
+    "switch": "العربية"
+  }
+}

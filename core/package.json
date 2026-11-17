@@ -1,0 +1,35 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "packageManager": "pnpm@11.5.0",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc --noEmit && vite build",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint resources/js",
+        "lint:rtl": "node ../scripts/check-rtl.mjs resources/js"
+    },
+    "dependencies": {
+        "@inertiajs/core": "3.11.0",
+        "@inertiajs/react": "^3.11.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.0",
+        "@tailwindcss/vite": "^4.3.5",
+        "@types/node": "^24.0.0",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.2.0",
+        "@vitejs/plugin-react": "^6.3.0",
+        "eslint": "^10.15.0",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "globals": "^16.0.0",
+        "laravel-vite-plugin": "^3.2.1",
+        "tailwindcss": "^4.3.5",
+        "typescript": "~6.0.3",
+        "typescript-eslint": "~8.72.2",
+        "vite": "^8.3.8"
+    }
+}

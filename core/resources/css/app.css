@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../js';
+
+/*
+ * Design tokens are placeholders until the visual identity (agreement, clause 2) is approved.
+ * Layout uses logical properties only (ms/me/ps/pe/start/end), so the same markup serves RTL and LTR.
+ */
+@theme {
+    --font-sans: ui-sans-serif, system-ui, 'Segoe UI', Tahoma, Arial, sans-serif;
+}

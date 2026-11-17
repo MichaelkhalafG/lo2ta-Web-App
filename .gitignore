@@ -1,0 +1,31 @@
+# Repository root. Each app (core/, web/) has its own .gitignore as well.
+
+# Client and working files kept beside the code but never in the repository
+/Agreement*.pdf
+/HANDOVER*.md
+/desktop.ini
+/folderico-*.ico
+/*.png
+/*.dc.html
+/commit-*.ps1
+
+# Research raw data stays out of the repository (handover 5.4); notes in docs/research are tracked
+/research-raw/
+
+# Secrets and local environment files, anywhere
+.env
+.env.*
+!.env.example
+
+# Dumps and backups, anywhere
+*.sql
+!deploy/**/*.sql
+*.sql.gz
+*.dump
+*.patch
+
+# OS and editor noise
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
