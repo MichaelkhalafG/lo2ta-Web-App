@@ -1,7 +1,8 @@
 # Installment contract transfer platform (Egypt)
 
 Bilingual (Arabic first, RTL; English second) marketplace for transferring installment real estate contracts.
-The public site name is not decided yet; code uses the internal name "lo2ta".
+Site name: لقطة (Arabic) and Lokta (English), domain loktaeg.com. Internal identifiers keep "lo2ta" (repository,
+packages, local databases).
 
 ## Layout
 

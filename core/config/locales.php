@@ -9,7 +9,7 @@ return [
     'default' => 'ar',
 
     'supported' => [
-        'ar' => ['name' => 'العربية', 'dir' => 'rtl', 'hreflang' => 'ar-EG'],
-        'en' => ['name' => 'English', 'dir' => 'ltr', 'hreflang' => 'en'],
+        'ar' => ['name' => 'العربية', 'dir' => 'rtl', 'hreflang' => 'ar-EG', 'site_name' => 'لقطة'],
+        'en' => ['name' => 'English', 'dir' => 'ltr', 'hreflang' => 'en', 'site_name' => 'Lokta'],
     ],
 ];

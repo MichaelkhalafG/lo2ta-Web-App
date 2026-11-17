@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "lo2ta/core",
     "type": "project",
-    "description": "Lo2ta core: API, admin dashboard, mail and sitemaps.",
+    "description": "Lokta core: API, admin dashboard, mail and sitemaps.",
     "keywords": [
         "laravel",
         "framework"
