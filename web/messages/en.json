@@ -2,10 +2,45 @@
   "meta": {
     "siteName": "Lokta"
   },
-  "setup": {
-    "title": "Setup works",
-    "body": "A temporary page to confirm English renders left to right and the language links work.",
-    "start": "Line start",
-    "switch": "العربية"
+  "nav": {
+    "main": "Main menu",
+    "skip": "Skip to content",
+    "opportunities": "Opportunities",
+    "compounds": "Compounds",
+    "developers": "Developers",
+    "tools": "Tools",
+    "about": "About",
+    "buyers": "For buyers",
+    "sell": "Sell your unit",
+    "login": "Sign in",
+    "calculator": "Exit calculator",
+    "calculatorHint": "See what you would recover if you sold your contract today.",
+    "reports": "Reports & indicators",
+    "reportsHint": "Area prices and the gap between contract and market prices.",
+    "how": "How it works",
+    "howHint": "From the first sale request to the transfer at the developer.",
+    "aboutUs": "About us",
+    "aboutUsHint": "The architect and the lawyer behind Lokta.",
+    "faq": "FAQ",
+    "faqHint": "Transfers, installments and fees.",
+    "contact": "Contact",
+    "privacy": "Privacy policy",
+    "terms": "Terms",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "switchLanguage": "عربي",
+    "switchLanguageLabel": "اعرض الصفحة دي بالعربي"
+  },
+  "footer": {
+    "platform": "Platform",
+    "tools": "Tools",
+    "clients": "For you",
+    "brand": "Lokta",
+    "rights": "© {year} Lokta"
+  },
+  "common": {
+    "currency": "EGP",
+    "comingSoon": "This page is built in a later phase.",
+    "home": "Home"
   }
 }

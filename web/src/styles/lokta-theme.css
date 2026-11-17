@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Lokta · لقطة — public site theme (Tailwind CSS v4).
+   Our corrected copy of docs/design/tokens/lokta-tailwind.css (REV 4), approved 2026-11-17:
+   - no font-size on html (the browser default stays); body is 15px / 1.85 expressed in rem;
+   - type sizes in rem so they follow the reader's browser font setting; lines and borders stay in px;
+   - mobile type sizes as tokens (text-*-m), used mobile-first: `text-h1-m md:text-h1`;
+   - gold hover only on links inside content blocks (.lk-content), never on every link;
+   - fonts come from next/font/local (files committed in src/fonts), never a Google Fonts link.
+   Colours must match docs/design/tokens/lokta-tokens.css: scripts/check-tokens.mjs fails on any drift.
+   Dark only. RTL first: logical utilities only (ms/me/ps/pe/start/end); `pnpm lint:rtl` enforces it.
+   ========================================================================== */
+
+@theme {
+  /* Reset Tailwind defaults so only brand values exist */
+  --color-*: initial;
+  --radius-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --spacing-*: initial;
+
+  /* ---------- Colors ---------- */
+  --color-bg-0: #090C11;
+  --color-bg-1: #0D1118;
+  --color-surface-1: #131922;
+  --color-surface-2: #1A222E;
+  --color-surface-3: #232D3B;
+  --color-line: #263142;
+  --color-line-strong: #5C6B80;
+  --color-frame: #8492A6;
+  --color-text-1: #EDF1F6;
+  --color-text-2: #AEB9C8;
+  --color-text-3: #8492A6;
+  --color-gold: #D6AC55;          /* contract price, primary action, the لقطة tag ONLY (≤ 2% of a screen) */
+  --color-gold-bright: #EBC772;
+  --color-gold-tint: rgb(214 172 85 / 0.16);
+  --color-on-gold: #0D1118;
+  --color-verified: #5ED2E4;
+  --color-verified-fill: #0F3540;
+  --color-success: #48C792;
+  --color-success-tint: rgb(72 199 146 / 0.14);
+  --color-warning: #F0A452;
+  --color-warning-tint: rgb(240 164 82 / 0.14);
+  --color-error: #F37474;
+  --color-error-tint: rgb(243 116 116 / 0.14);
+  --color-paper: #E6E1D6;         /* one light band per page at most: the seller section */
+  --color-paper-ink: #141820;
+  --color-paper-ink-2: #4A5262;
+  --color-paper-line: #B9B2A3;
+  --color-gold-ink: #7A5818;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* ---------- Type scale (rem; 1rem = the browser default, 16px unless the reader changed it) ---------- */
+  --text-display-xl: 6rem;        --text-display-xl--line-height: 1.1;    --text-display-xl--font-weight: 700;
+  --text-display-xl-m: 2.625rem;  --text-display-xl-m--line-height: 1.1;  --text-display-xl-m--font-weight: 700;
+  /* Token override (Michael, 2026-11-17): the home hero headline stays at 86px as on the board's screen 06.1,
+     not display-xl's 96px. */
+  --text-hero: 5.375rem;          --text-hero--line-height: 1.1;          --text-hero--font-weight: 700;
+  --text-display: 4rem;           --text-display--line-height: 1.15;      --text-display--font-weight: 700;
+  --text-display-m: 1.875rem;     --text-display-m--line-height: 1.2;     --text-display-m--font-weight: 700;
+  --text-display-light: 3.25rem;  --text-display-light--line-height: 1.2; --text-display-light--font-weight: 300;
+  --text-display-light-m: 2.625rem; --text-display-light-m--line-height: 1.15; --text-display-light-m--font-weight: 300;
+  --text-h1: 2.75rem;             --text-h1--line-height: 1.28;           --text-h1--font-weight: 700;
+  --text-h1-m: 1.625rem;          --text-h1-m--line-height: 1.35;         --text-h1-m--font-weight: 700;
+  --text-h2: 1.875rem;            --text-h2--line-height: 1.35;           --text-h2--font-weight: 600;
+  --text-h2-m: 1.5rem;            --text-h2-m--line-height: 1.4;          --text-h2-m--font-weight: 600;
+  --text-h3: 1.25rem;             --text-h3--line-height: 1.5;            --text-h3--font-weight: 600;
+  --text-lead: 1.125rem;          --text-lead--line-height: 1.85;
+  --text-body: 0.9375rem;         --text-body--line-height: 1.85;
+  --text-small: 0.8125rem;        --text-small--line-height: 1.7;
+  --text-price: 2.625rem;         --text-price--line-height: 1.05;        --text-price--font-weight: 600;
+  --text-price-card: 1.625rem;    --text-price-card--line-height: 1.1;    --text-price-card--font-weight: 600;
+  --text-annotation: 0.75rem;     --text-annotation--line-height: 1.4;    --text-annotation--font-weight: 500;
+  --text-micro: 0.6875rem;        --text-micro--line-height: 1.3;         /* card labels: 11px, never smaller */
+  --tracking-display: -0.01em;    /* Latin display only; Arabic stays at 0 */
+  --tracking-wordmark: 0.24em;
+
+  /* ---------- Spacing (4px base; p-1 = 4px … p-24 = 96px) ---------- */
+  --spacing: 4px;
+  --spacing-gutter: 48px;
+  --spacing-gutter-mobile: 20px;
+  --spacing-control-lg: 52px;
+  --spacing-control-md: 44px;
+  --spacing-control-sm: 40px;
+  --spacing-header: 80px;
+
+  /* ---------- Radius ---------- */
+  --radius: 2px;
+  --radius-sm: 2px;               /* everything rectangular */
+  --radius-none: 0;               /* toggles, segmented controls, the لقطة tag */
+  --radius-full: 9999px;          /* section marks, stamp, north arrow only */
+
+  /* ---------- Motion ---------- */
+  --ease-draw: cubic-bezier(.25, .8, .25, 1);
+  --animate-draw: lk-draw 900ms var(--ease-draw) both;
+  --animate-fade: lk-fade 500ms ease-out both;
+  @keyframes lk-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes lk-fade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Fonts: the variables are set on <html> by next/font/local (src/app/fonts.ts), so they are read inline.
+   Each Alexandria file covers one script (unicode-range), so the stack lists all three; Plex Mono has no Arabic,
+   so Arabic inside an annotation (م²) falls back to Alexandria. */
+@theme inline {
+  --font-sans: var(--font-alexandria-latin), var(--font-alexandria-latin-ext), var(--font-alexandria-arabic), 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: var(--font-plex-mono), var(--font-alexandria-arabic), ui-monospace, monospace;
+}
+
+/* Line weights and durations as plain variables (use with arbitrary values: border-[length:var(--stroke-frame)]) */
+:root {
+  --stroke-hair: 1px;
+  --stroke-frame: 1.5px;
+  --stroke-active: 2px;
+  --stroke-measure: 3px;
+  --duration-ui: 150ms;
+  --duration-value: 300ms;
+  --duration-fade: 500ms;
+  --duration-draw: 900ms;
+  --stagger-draw: 420ms;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-bg-0);
+    color: var(--color-text-1);
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+  :focus-visible { outline: var(--stroke-active) solid var(--color-text-1); outline-offset: 3px; }
+  a { color: inherit; text-underline-offset: 6px; }
+}
+
+@layer components {
+  /* Rich text written by people (legal pages, FAQ answers, About): the only place links turn gold on hover. */
+  .lk-content a { color: var(--color-text-1); text-decoration: underline; text-decoration-color: var(--color-gold); }
+  .lk-content a:hover { color: var(--color-gold-bright); }
+  .lk-content p + p { margin-block-start: 1em; }
+}
+
+@utility tabular { font-variant-numeric: tabular-nums; }
+@utility origin-start { transform-origin: right; [dir="ltr"] & { transform-origin: left; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-draw, .animate-fade { animation: none; }
+}

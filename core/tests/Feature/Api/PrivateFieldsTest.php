@@ -43,7 +43,12 @@ function sentinelUnit(): Unit
         'active_unit_key' => 'SENTINEL-AUKEY-7739',
         'withdraw_reason' => 'SENTINEL-WREASON-7740',
     ])->save();
-    $unit->seller->forceFill(['email' => 'sentinel-seller-7741@example.test', 'phone' => '01099997742'])->save();
+    // PLAN 2.5: the seller's name, phone and e-mail never reach a public output.
+    $unit->seller->forceFill([
+        'name' => 'SENTINEL-SELLERNAME-7745',
+        'email' => 'sentinel-seller-7741@example.test',
+        'phone' => '01099997742',
+    ])->save();
 
     UnitDocument::query()->create([
         'unit_id' => $unit->id,

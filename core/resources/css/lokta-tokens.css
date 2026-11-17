@@ -1,0 +1,87 @@
+/* ==========================================================================
+   Lokta · لقطة — design tokens for the staff dashboard (dark only).
+   The dashboard's copy of docs/design/tokens/lokta-tokens.css (REV 4). The apps cannot share one file, so
+   scripts/check-tokens.mjs fails if any colour here differs from the reference.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Ground */
+  --lk-bg-0: #090C11;
+  --lk-bg-1: #0D1118;
+  --lk-surface-1: #131922;
+  --lk-surface-2: #1A222E;
+  --lk-surface-3: #232D3B;
+
+  /* Lines */
+  --lk-line: #263142;
+  --lk-line-strong: #5C6B80;
+  --lk-frame: #8492A6;
+
+  /* Text */
+  --lk-text-1: #EDF1F6;
+  --lk-text-2: #AEB9C8;
+  --lk-text-3: #8492A6;
+
+  /* Gold: the one primary action of a screen only */
+  --lk-gold: #D6AC55;
+  --lk-gold-bright: #EBC772;
+  --lk-gold-tint: rgba(214, 172, 85, 0.16);
+  --lk-on-gold: #0D1118;
+
+  /* Signal */
+  --lk-verified: #5ED2E4;
+  --lk-verified-fill: #0F3540;
+  --lk-success: #48C792;
+  --lk-success-tint: rgba(72, 199, 146, 0.14);
+  --lk-warning: #F0A452;
+  --lk-warning-tint: rgba(240, 164, 82, 0.14);
+  --lk-error: #F37474;
+  --lk-error-tint: rgba(243, 116, 116, 0.14);
+
+  /* Paper (not used in the dashboard; kept so the check covers every reference colour) */
+  --lk-paper: #E6E1D6;
+  --lk-paper-ink: #141820;
+  --lk-paper-ink-2: #4A5262;
+  --lk-paper-line: #B9B2A3;
+  --lk-gold-ink: #7A5818;
+}
+
+/* Fonts: the same OFL files the public site ships, copied into resources/fonts (self-hosted, no Google request). */
+@font-face {
+  font-family: 'Alexandria';
+  src: url('../fonts/alexandria-arabic-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'Alexandria';
+  src: url('../fonts/alexandria-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Alexandria';
+  src: url('../fonts/alexandria-latin-ext-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('../fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('../fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}

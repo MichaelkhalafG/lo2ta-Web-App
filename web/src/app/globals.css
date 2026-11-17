@@ -1,22 +1,7 @@
 @import "tailwindcss";
+@import "../styles/lokta-theme.css";
 
 /*
- * Placeholder tokens until the visual identity (agreement, clause 2) is approved: dark, luxury direction.
- * Layout uses logical utilities only (ms/me/ps/pe/start/end, text-start/text-end); `pnpm lint:rtl` enforces it.
+ * Public site styles. Brand values live in ../styles/lokta-theme.css (checked against the design tokens by
+ * scripts/check-tokens.mjs). Layout uses logical utilities only; `pnpm lint:rtl` enforces it.
  */
-:root {
-  --background: #0b0d12;
-  --foreground: #ecebe6;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Tahoma, Arial, sans-serif;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-}

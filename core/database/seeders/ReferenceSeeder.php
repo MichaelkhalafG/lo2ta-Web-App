@@ -51,26 +51,38 @@ class ReferenceSeeder extends Seeder
 
     private function areas(): void
     {
-        /** @var list<array{slug: string, ar: string, en: string, areas: list<array{slug: string, code: string, ar: string, en: string}>}> $rows */
+        /** @var list<array{slug: string, ar: string, en: string, areas: list<array{slug: string, code: string, ar: string, en: string, districts: list<array{slug: string, ar: string, en: string}>}>}> $rows */
         $rows = require database_path('data/areas.php');
         $added = 0;
-        foreach ($rows as $gSort => $gov) {
-            $parent = Area::query()->firstOrNew(['slug' => $gov['slug']]);
-            if (! $parent->exists) {
-                $parent->fill(['name_ar' => $gov['ar'], 'name_en' => $gov['en'], 'sort' => $gSort])->save();
+        $add = function (string $slug, array $values) use (&$added): Area {
+            $row = Area::query()->firstOrNew(['slug' => $slug]);
+            if (! $row->exists) {
+                /** @var array<string, mixed> $values */
+                $row->fill($values)->save();
                 $added++;
             }
+
+            return $row;
+        };
+
+        // Three levels (PLAN 3.3): governorate > area (carries the code) > district.
+        foreach ($rows as $gSort => $gov) {
+            $governorate = $add($gov['slug'], ['name_ar' => $gov['ar'], 'name_en' => $gov['en'], 'sort' => $gSort]);
             foreach ($gov['areas'] as $aSort => $area) {
-                $row = Area::query()->firstOrNew(['slug' => $area['slug']]);
-                if (! $row->exists) {
-                    $row->fill([
+                $parent = $add($area['slug'], [
+                    'parent_id' => $governorate->id,
+                    'code' => $area['code'],
+                    'name_ar' => $area['ar'],
+                    'name_en' => $area['en'],
+                    'sort' => $aSort,
+                ]);
+                foreach ($area['districts'] as $dSort => $district) {
+                    $add($district['slug'], [
                         'parent_id' => $parent->id,
-                        'code' => $area['code'],
-                        'name_ar' => $area['ar'],
-                        'name_en' => $area['en'],
-                        'sort' => $aSort,
-                    ])->save();
-                    $added++;
+                        'name_ar' => $district['ar'],
+                        'name_en' => $district['en'],
+                        'sort' => $dSort,
+                    ]);
                 }
             }
         }
@@ -100,8 +112,11 @@ class ReferenceSeeder extends Seeder
 
     private function siteTexts(): void
     {
-        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string}> $rows */
-        $rows = require database_path('data/site_texts.php');
+        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string}> $seller */
+        $seller = require database_path('data/site_texts.php');
+        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string}> $pages */
+        $pages = require database_path('data/site_texts_pages.php');
+        $rows = array_merge($seller, $pages);
         $added = 0;
         foreach ($rows as [$key, $group, $ar, $en, $note]) {
             $row = SiteText::query()->firstOrNew(['key' => $key]);

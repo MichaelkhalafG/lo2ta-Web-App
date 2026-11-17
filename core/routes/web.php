@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\ActivityController;
 use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\LocaleController;
 use App\Http\Controllers\Dashboard\OverviewController;
@@ -23,5 +24,6 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
     Route::middleware(['auth:admin', 'admin.active'])->group(function (): void {
         Route::get('/', OverviewController::class)->name('home');
         Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
+        Route::get('activity', ActivityController::class)->middleware('can:view-activity')->name('activity');
     });
 });

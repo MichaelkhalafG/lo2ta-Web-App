@@ -1,4 +1,6 @@
-import DashboardLayout from '@/Components/DashboardLayout';
+import { Badge } from '@/Components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import DashboardLayout from '@/Layouts/DashboardLayout';
 import { useT } from '@/lib/i18n';
 
 interface Props {
@@ -13,45 +15,57 @@ export default function Overview({ units, placeholderTexts, provisionalSettings,
     const t = useT();
 
     return (
-        <DashboardLayout title={t('overview.title')}>
-            <h1>{t('overview.title')}</h1>
-
-            <section aria-labelledby="units-heading">
-                <h2 id="units-heading">{t('overview.units')}</h2>
-                <dl>
-                    {units.map((u) => (
-                        <div key={u.state}>
-                            <dt>{u.label}</dt>
-                            <dd>{u.count}</dd>
-                        </div>
-                    ))}
-                </dl>
-            </section>
-
-            <section aria-labelledby="texts-heading">
-                <h2 id="texts-heading">{t('overview.placeholder_texts')}</h2>
-                <p>{placeholderTexts}</p>
-            </section>
-
-            <section aria-labelledby="settings-heading">
-                <h2 id="settings-heading">{t('overview.provisional_settings')}</h2>
-                {provisionalSettings.length === 0 ? (
-                    <p>{t('overview.none')}</p>
-                ) : (
-                    <ul dir="ltr">
-                        {provisionalSettings.map((key) => (
-                            <li key={key}>
-                                <code>{key}</code>
-                            </li>
+        <DashboardLayout title={t('overview.title')} crumbs={[{ label: t('overview.title') }]}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>{t('overview.units')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        {units.map((u) => (
+                            <div key={u.state} className="flex flex-col gap-1 border-s ps-3">
+                                <dt className="text-xs text-muted-foreground">{u.label}</dt>
+                                <dd className="font-mono text-xl tabular-nums">{u.count}</dd>
+                            </div>
                         ))}
-                    </ul>
-                )}
-            </section>
+                    </dl>
+                </CardContent>
+            </Card>
 
-            <section aria-labelledby="mail-heading">
-                <h2 id="mail-heading">{t('overview.mail_problems')}</h2>
-                <p>{mailProblems}</p>
-            </section>
+            <div className="grid gap-6 md:grid-cols-3">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('overview.placeholder_texts')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="font-mono text-2xl tabular-nums">{placeholderTexts}</CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('overview.mail_problems')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="font-mono text-2xl tabular-nums">{mailProblems}</CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('overview.provisional_settings')}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {provisionalSettings.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">{t('overview.none')}</p>
+                        ) : (
+                            <ul className="flex flex-wrap gap-1.5" dir="ltr">
+                                {provisionalSettings.map((key) => (
+                                    <li key={key}>
+                                        <Badge variant="warning" className="font-mono">
+                                            {key}
+                                        </Badge>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
         </DashboardLayout>
     );
 }

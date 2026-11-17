@@ -1,13 +1,132 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import './lokta-tokens.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../js';
 
 /*
- * Design tokens are placeholders until the visual identity (agreement, clause 2) is approved.
- * Layout uses logical properties only (ms/me/ps/pe/start/end), so the same markup serves RTL and LTR.
+ * Staff dashboard theme (approved 2026-11-17): shadcn/ui variable NAMES with Lokta VALUES, dark only.
+ * Components keep their shadcn classes (bg-background, border-input, ring-ring …); only the values change here.
+ * Layout uses logical properties only; `pnpm lint:rtl` enforces it.
  */
-@theme {
-    --font-sans: ui-sans-serif, system-ui, 'Segoe UI', Tahoma, Arial, sans-serif;
+:root {
+  --background: var(--lk-bg-0);
+  --foreground: var(--lk-text-1);
+  --card: var(--lk-surface-1);
+  --card-foreground: var(--lk-text-1);
+  --popover: var(--lk-surface-1);
+  --popover-foreground: var(--lk-text-1);
+  --primary: var(--lk-gold);
+  --primary-foreground: var(--lk-on-gold);
+  --secondary: var(--lk-surface-2);
+  --secondary-foreground: var(--lk-text-1);
+  --muted: var(--lk-bg-1);
+  --muted-foreground: var(--lk-text-3);
+  --accent: var(--lk-surface-2);
+  --accent-foreground: var(--lk-text-1);
+  --destructive: var(--lk-error);
+  --destructive-foreground: var(--lk-on-gold);
+  --border: var(--lk-line);
+  --input: var(--lk-line-strong);
+  --ring: var(--lk-text-1);
+
+  --sidebar: var(--lk-bg-1);
+  --sidebar-foreground: var(--lk-text-2);
+  --sidebar-muted: var(--lk-text-3);
+  --sidebar-accent: var(--lk-surface-2);
+  --sidebar-border: var(--lk-line);
+
+  --radius: 2px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+
+  /* Signal colours for unit states and badges (never gold for "checked"). */
+  --color-success: var(--lk-success);
+  --color-success-tint: var(--lk-success-tint);
+  --color-warning: var(--lk-warning);
+  --color-warning-tint: var(--lk-warning-tint);
+  --color-error: var(--lk-error);
+  --color-error-tint: var(--lk-error-tint);
+  --color-verified: var(--lk-verified);
+  --color-verified-fill: var(--lk-verified-fill);
+  --color-gold: var(--lk-gold);
+  --color-gold-bright: var(--lk-gold-bright);
+  --color-text-2: var(--lk-text-2);
+
+  /* Every rectangle is 2px (board 04). shadcn derives sm/md/lg/xl from --radius by subtraction, which would go
+     negative at 2px, so each step is pinned. rounded-full stays for real circles (stamp, avatar dot). */
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+
+  --font-sans: 'Alexandria', 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Alexandria', ui-monospace, monospace;
+
+  /* Shell metrics: the collapsed rail and the content offset can never drift apart. */
+  --spacing-sidebar: 17rem;
+  --spacing-sidebar-rail: 4.75rem;
+  --spacing-header: 4rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  /* Focus ring (board 04): 2px text-1, 3px offset, on every surface. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
+  }
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* A horizontal scrollbar the reader can see and grab on wide tables; the gutter keeps the layout still. */
+@utility scrollbar-visible {
+  scrollbar-width: auto;
+  scrollbar-color: var(--color-input) var(--color-muted);
+  scrollbar-gutter: stable;
 }

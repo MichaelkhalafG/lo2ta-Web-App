@@ -15,12 +15,11 @@ trait LogsActivity
     public static function bootLogsActivity(): void
     {
         static::created(static function (Model $model): void {
-            app(ActivityLogger::class)->record(
-                $model->getTable().'.created',
-                $model,
-                null,
-                self::loggable($model, $model->getAttributes()),
-            );
+            // The key and the timestamps are already on the log line itself.
+            $after = self::loggable($model, $model->getAttributes());
+            unset($after[$model->getKeyName()], $after['created_at'], $after['updated_at']);
+
+            app(ActivityLogger::class)->record($model->getTable().'.created', $model, null, $after);
         });
 
         static::updated(static function (Model $model): void {

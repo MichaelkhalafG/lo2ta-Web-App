@@ -8,6 +8,7 @@ use App\Models\Compound;
 use App\Models\Developer;
 use App\Models\Feature;
 use App\Support\Cache\VersionedCache;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -21,15 +22,26 @@ class ReferenceController extends Controller
         $locale = app()->getLocale();
 
         return response()->json(['data' => VersionedCache::remember('places', "areas:{$locale}", static function () use ($locale): array {
+            // Three levels (PLAN 3.3): governorate > area (with the unit-code code) > district.
+            $active = static fn (Relation $q): Relation => $q->where('is_active', true)->orderBy('sort')->orderBy('id');
             $governorates = Area::query()->active()->whereNull('parent_id')->orderBy('sort')->orderBy('id')
-                ->with(['children' => static fn ($q) => $q->where('is_active', true)->orderBy('sort')->orderBy('id')])
+                ->with(['children' => $active, 'children.children' => $active])
                 ->get();
 
             $out = [];
             foreach ($governorates as $gov) {
                 $areas = [];
                 foreach ($gov->children as $area) {
-                    $areas[] = ['slug' => $area->slug, 'code' => $area->code, 'name' => $area->nameFor($locale)];
+                    $districts = [];
+                    foreach ($area->children as $district) {
+                        $districts[] = ['slug' => $district->slug, 'name' => $district->nameFor($locale)];
+                    }
+                    $areas[] = [
+                        'slug' => $area->slug,
+                        'code' => $area->code,
+                        'name' => $area->nameFor($locale),
+                        'districts' => $districts,
+                    ];
                 }
                 $out[] = ['slug' => $gov->slug, 'name' => $gov->nameFor($locale), 'areas' => $areas];
             }

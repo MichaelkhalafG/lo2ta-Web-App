@@ -140,7 +140,7 @@ confirm (section 6).
 |---|---|---|
 | 1 | العقد / Contract | Developer * (managed list, or "other" + text) · Project / compound * (list filtered by developer, or "other" + text) · Area * (searchable two-level list, or "my area is not in the list" + text) · Main type * and sub-type * (2.2.3) · Contract number * (private) · Unit number as in the contract * (private) · Contract year * (dropdown, recent years first). The duplicate check runs at the end of this step and again on submit |
 | 2 | الوحدة / Unit | Size m² * · garden m² · roof m² · Floor * · Bedrooms *, bathrooms * (residential only) · Finishing * (2.2.4) · Delivery status * (ready / under construction + expected delivery year) · Façade orientation (optional) · Features (multi, 2.2.5) · Short description * (60 to 1,200 characters, approved 2026-11-17; both are settings). Every field that does not apply to the chosen sub-type is hidden (matrix in 2.2.3) |
-| 3 | الفلوس والأقساط / Money and installments | Total contract price * · Total paid to date * · Today's market price for a similar unit (seller's estimate) * · Installment amount *, frequency * (monthly / quarterly / semi-annual / annual) · Next installment due date * (unless installments are finished) · Years of installments left (optional; 0 if finished; shown next to the installment) · Annual extra payment yes/no (+ amount) · Ready to give up part of what I paid to sell faster yes/no (+ the lowest amount accepted) · Overdue installments yes/no (+ count and amount; hint: most developers refuse a transfer before arrears are paid) · Maintenance deposit still due (optional) |
+| 3 | الفلوس والأقساط / Money and installments | Total contract price * · Total paid to date * · Today's market price for a similar unit (seller's estimate) * · Installment amount *, frequency * (monthly / quarterly / semi-annual / annual) · Next installment due date * (unless installments are finished) · Years of installments left (optional; 0 if finished; shown next to the installment) · Annual extra payment yes/no (+ amount) · Ready to give up part of what I paid to sell faster yes/no (+ the lowest amount accepted) · Overdue installments yes/no (+ count and amount, and how they are settled: `self` = I pay them before the transfer, or `deduct` = deducted from the amount the buyer pays me, which the buyer pays to the developer instead; hint: most developers refuse a transfer before arrears are paid; 2.2.12) · Maintenance deposit still due (optional) |
 | 4 | المستندات / Documents | Contract copy * (PDF or images, several files) · Installment schedule * · National ID copy * (front and back) · Payment receipts (optional by default; "required" is a setting) · Latest developer statement (optional) |
 | 5 | الصور / Photos | 1 to 10 photos *, drag to reorder, the first is the cover · Floor plan image (optional, shown as a plain image) · Warning: no photos showing personal data, the unit number or documents |
 | 6 | المراجعة والإرسال / Review and submit | Read-only summary of steps 1 to 5, each with an "edit" link · Exit report preview (declared figures, current calculator settings) · Declarations, each required: I am the owner, not a broker or intermediary; the data matches my contract and documents; I accept the terms and privacy policy · Submit |
@@ -364,6 +364,49 @@ The privacy policy (client text, section 6, row 8a) must state this rule.
 8. **Exit report before the market research.** The step 6 preview needs calculator settings, which phase 6 researches.
    Rule: the settings are loaded with clearly marked provisional values in phase 1 and researched before launch.
 
+#### 2.2.12 Overdue installments: settlement (decided 2026-11-17)
+
+When overdue = yes, the seller chooses `overdue_settlement`:
+
+- `self`: the seller pays the arrears before the transfer. The amount they receive is unchanged; the review step
+  and exit report say "the transfer happens after you settle the arrears (X EGP)".
+- `deduct`: the arrears are deducted from the amount the buyer pays the seller; the buyer pays that part to the
+  developer. **The buyer's total does not change.**
+
+Where it shows:
+
+- Calculator and exit report: with `deduct`, the seller's net = received − transfer fee − arrears; with `self`, the
+  net is unchanged and the note above is shown.
+- Unit page (public): with `deduct`, under the amount for the owner: "of which X goes to the developer to settle
+  arrears" (as on the board's unit detail).
+- Dashboard: shown in unit review and on the deal screens.
+- Data: `units.overdue_settlement` (`self` | `deduct`, null when there are no arrears), added by a new migration in
+  phase 4; the public unit resource gains it (and the whitelist test with it).
+
+#### 2.2.13 Final board (docs/design) against this section (decided 2026-11-17)
+
+The board in `docs/design/Lokta Blueprint Identity.dc.html` (section 07) is final. Michael's answers on where it
+differed from 2.2:
+
+1. **Description moves to step 5**, "الصور والوصف / Photos & description", as on the board.
+2. **Transfer fee typed by the seller:** an optional % on step 3. If entered it applies to that unit; if not, the
+   developer policy; then the global setting. The admin sees it in review and can edit it (logged). New unit field
+   `transfer_fee_bp` (nullable); not public (it is the seller's cost, never in the buyer's figures).
+3. **Lowest accepted amount < paid** (strictly less), as in 2.2.2.
+4. **Contract date and delivery date as month + year:** new unit fields `contract_month` and `delivery_month` (1–12)
+   beside the years.
+5. **No separate request reference:** the confirmation and every e-mail use our unit code: `#0124` before publishing,
+   `LK-xx-0124` after. Our serial has no link to the real unit number.
+6. **Default sort** as in 2.2.6: sellers who accept less first, then newest.
+7. **Card labels at 11px minimum** (the board's 10px labels go up to 11px).
+8. **Documents:** PDF, JPG, PNG up to 10 MB per file; "Next" on step 4 stays blocked until every required file has
+   finished uploading.
+
+The home copy "we show the unit to serious investors" stays (copy only, not an investors section).
+
+Phase 4 migration (with 2.2.12): `transfer_fee_bp`, `contract_month`, `delivery_month`, `overdue_settlement` on
+`units`; `is_hidden` + `hidden_reason` on `unit_photos` (2.5).
+
 #### 2.2.10 Not building
 
 Construction progress %, inspection dates, per-unit reviewer names or dates, developer-approval status on the unit
@@ -437,6 +480,46 @@ commission record.
 **Roles (Q5, decided 2026-11-17):** `admin` (everything, settings, users) and `reviewer` (units, documents, requests,
 deals; no settings, no commissions). Every write is in the activity log. The dashboard is in Arabic and English.
 
+
+### 2.5 Privacy of the unit's identity, and the public fields per page (decided 2026-11-17)
+
+A buyer must never be able to find the unit or its owner and go around Lokta.
+
+**Never public**, on any page, card, API answer, sitemap, structured data, image or e-mail to a buyer:
+
+- the real unit number, contract number, building or block number, plot number;
+- the seller's name, phone, e-mail, or any document (or its file name or path);
+- an exact address or a map location;
+- photo location data: EXIF is stripped on upload; in review the admin checks photos for visible building numbers,
+  signs or documents and can hide a photo (logged, with a reason);
+- contact details in the description: refused on the seller form, and the same check runs on the admin's edits;
+- the seller's free text for "other" developer, compound or area (the admin maps it to the managed list before
+  publishing);
+- the seller's own transfer fee (`transfer_fee_bp`), review notes, who verified and when.
+
+**Public:** governorate, area, district, compound, developer, type, size, floor, finishing, delivery, orientation,
+features, the money figures, and our unit code.
+
+**Enforcement:** `Unit::PRIVATE` lists the private columns; the API answers only through `UnitResource` (hand-listed
+fields); `tests/Feature/Api/PrivateFieldsTest.php` fills every private column, the seller's name, phone and e-mail and
+a document path with sentinel values and fails if any appears in any keyed API answer. Phase 5 adds the same scan
+over the built public pages, the sitemaps and the structured data (crawler check), and phase 7 over buyer e-mails.
+
+**Public fields, page by page** (for Michael's review):
+
+| Where | Fields shown |
+|---|---|
+| Unit card (opportunities, compound page, home "لقطات الأسبوع") | cover photo (not hidden; "Project image" label if set); unit code; main type and sub-type; size m²; orientation; title built from sub-type, bedrooms and district (e.g. "شقة 3 غرف في التجمع الخامس"); district, area; delivery month.year; contract price (gold); similar unit today (market estimate); paid to owner and remaining (dimension line, %); installment count × amount and frequency; verified badge; "لقطة" tag; "owner accepts from X" when the seller accepts less |
+| Unit page | everything on the card, plus: governorate; compound and developer (linked); garden m², roof m², floor, bedrooms, bathrooms, finishing, delivery status; features; description; all photos (not hidden) and the floor plan; contract date month.year; money: contract price, paid, remaining, market estimate, installment amount, frequency, next due date, years left, the computed schedule, annual extra payment, delivery payment, maintenance due, overdue count and amount with "of which X goes to the developer to settle arrears" when the settlement is `deduct`; lowest accepted amount when opted in; the 1% fee as an amount; published date. No map: the location block names governorate, area, district, compound only |
+| Opportunities filters | main type; area and district; "you pay the owner up to"; installment up to; verified only; sort |
+| Compound page | compound name, developer, governorate / area / district, intro text, its unit cards |
+| Developer page (partnership) | page text and the partnership form only (no unit data) |
+| Sitemaps | URLs of static pages, published units (slug ends with the unit code), compounds; `lastmod` |
+| Structured data | `RealEstateListing` with name (the card title), URL, images (not hidden), offer (amount to the owner, EGP), `address` with `addressRegion` (governorate) and `addressLocality` (area, district) only; never a street, building or coordinates |
+| Social preview (Open Graph) | card title, unit code, cover photo |
+| E-mails to a buyer | unit code, card title, compound, district / area, money figures; never seller details |
+| Public API (`UnitResource`) | the unit-page fields above, as codes plus labels; phase 4 adds district, `contract_month`, `delivery_month`, `overdue_settlement` and the whitelist test with them |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -459,10 +542,69 @@ Per the handover, listings and lead forms are designed with Michael. The options
 
 Compound pages (in scope) need A.
 
-### 3.3 Areas
+### 3.3 Areas (decided 2026-11-17: three levels)
 
-**Recommended:** a two-level list (governorate → area/city) seeded from a reviewed file, editable in the dashboard;
-compounds belong to an area. Alternative: one flat list (simpler, weaker filters).
+Governorate > area > district (e.g. Cairo > New Cairo > Fifth Settlement), one `areas` table with `parent_id`
+(already in place). Compounds belong to the most specific level known; a unit stores the most specific level the
+seller picked.
+
+**Which level carries the unit code (proposal, recommended): the area.** A district takes its area's code (a unit in
+Fifth Settlement is `LK-NC-…`). Codes stay short and few (42 today), the board's example `LK-NC-0124` keeps working,
+and a code never says more about the location than the page already does. Alternative: a code per district (more
+codes to invent and keep unique, and longer unit codes).
+
+The revised list (`core/database/data/areas.php`; 10 governorates, 42 areas, 19 districts), for Michael and the
+client to complete:
+
+| Governorate | Area (code) | Districts |
+|---|---|---|
+| القاهرة / Cairo | القاهرة الجديدة / New Cairo (**NC**) | التجمع الخامس / Fifth Settlement · التجمع الأول / First Settlement · التجمع الثالث / Third Settlement · الرحاب / El Rehab · القطامية / Katameya · النرجس / El Narges · الياسمين / El Yasmeen · اللوتس / El Lotus · الأندلس / El Andalus · بيت الوطن / Beit El Watan · المربع الذهبي / Golden Square |
+| القاهرة / Cairo | العاصمة الإدارية الجديدة / New Administrative Capital (**AC**) | الحي السكني الثالث (R3) / Residential District 3 (R3) · الحي السكني الخامس (R5) / Residential District 5 (R5) · الحي السكني السابع (R7) / Residential District 7 (R7) · الحي السكني الثامن (R8) / Residential District 8 (R8) · داون تاون / Downtown · حي المال والأعمال / Central Business District |
+| القاهرة / Cairo | مدينة المستقبل / Mostakbal City (**MC**) | – |
+| القاهرة / Cairo | مدينتي / Madinaty (**MD**) | – |
+| القاهرة / Cairo | الشروق / El Shorouk (**SH**) | – |
+| القاهرة / Cairo | مدينة بدر / Badr City (**BD**) | – |
+| القاهرة / Cairo | هليوبوليس الجديدة / New Heliopolis (**NH**) | – |
+| القاهرة / Cairo | مصر الجديدة / Heliopolis (**HL**) | – |
+| القاهرة / Cairo | مدينة نصر / Nasr City (**NS**) | – |
+| القاهرة / Cairo | المعادي / Maadi (**MA**) | دجلة المعادي / Degla Maadi · زهراء المعادي / Zahraa El Maadi |
+| القاهرة / Cairo | المقطم / Mokattam (**MK**) | – |
+| الجيزة / Giza | الشيخ زايد / Sheikh Zayed (**SZ**) | – |
+| الجيزة / Giza | زايد الجديدة / New Zayed (**NZ**) | – |
+| الجيزة / Giza | السادس من أكتوبر / 6th of October (**OC**) | – |
+| الجيزة / Giza | حدائق أكتوبر / October Gardens (**OG**) | – |
+| الجيزة / Giza | القرية الذكية / Smart Village (**SV**) | – |
+| القليوبية / Qalyubia | العبور / El Obour (**OB**) | – |
+| الشرقية / Sharqia | العاشر من رمضان / 10th of Ramadan (**TR**) | – |
+| الإسكندرية / Alexandria | سموحة / Smouha (**SM**) | – |
+| الإسكندرية / Alexandria | سيدي جابر / Sidi Gaber (**SG**) | – |
+| الإسكندرية / Alexandria | سان ستيفانو / San Stefano (**ST**) | – |
+| الإسكندرية / Alexandria | المنتزه / Montaza (**MZ**) | – |
+| الإسكندرية / Alexandria | العجمي / Agami (**AG**) | – |
+| الإسكندرية / Alexandria | كينج مريوط / King Mariout (**KM**) | – |
+| الإسكندرية / Alexandria | برج العرب الجديدة / New Borg El Arab (**BA**) | – |
+| الدقهلية / Dakahlia | المنصورة الجديدة / New Mansoura (**NM**) | – |
+| مطروح (الساحل الشمالي) / Matrouh (North Coast) | الساحل الشمالي / North Coast (**SL**) | – |
+| مطروح (الساحل الشمالي) / Matrouh (North Coast) | العلمين الجديدة / New Alamein (**NA**) | – |
+| مطروح (الساحل الشمالي) / Matrouh (North Coast) | سيدي عبد الرحمن / Sidi Abdel Rahman (**SA**) | – |
+| مطروح (الساحل الشمالي) / Matrouh (North Coast) | الضبعة / El Dabaa (**DB**) | – |
+| مطروح (الساحل الشمالي) / Matrouh (North Coast) | رأس الحكمة / Ras El Hekma (**RH**) | – |
+| مطروح (الساحل الشمالي) / Matrouh (North Coast) | مرسى مطروح / Marsa Matrouh (**MM**) | – |
+| السويس / Suez | العين السخنة / Ain Sokhna (**SK**) | – |
+| السويس / Suez | الجلالة / Galala (**GL**) | – |
+| البحر الأحمر / Red Sea | الغردقة / Hurghada (**HG**) | – |
+| البحر الأحمر / Red Sea | الجونة / El Gouna (**GN**) | – |
+| البحر الأحمر / Red Sea | سهل حشيش / Sahl Hasheesh (**HS**) | – |
+| البحر الأحمر / Red Sea | مكادي / Makadi Bay (**MB**) | – |
+| البحر الأحمر / Red Sea | سوما باي / Soma Bay (**SB**) | – |
+| البحر الأحمر / Red Sea | مرسى علم / Marsa Alam (**MR**) | – |
+| جنوب سيناء / South Sinai | شرم الشيخ / Sharm El Sheikh (**SS**) | – |
+| جنوب سيناء / South Sinai | دهب / Dahab (**DH**) | – |
+
+Changes from the first draft: El Obour moved to Qalyubia and 10th of Ramadan sits in Sharqia (their real
+governorates); Borg El Arab reads New Borg El Arab; added Badr City, Heliopolis, Maadi, Mokattam, Smart Village,
+Sidi Gaber, San Stefano, Montaza, Agami, King Mariout, New Mansoura, El Dabaa, Marsa Matrouh, Makadi Bay, Marsa
+Alam, Dahab and the districts of New Cairo, the New Capital and Maadi.
 
 ### 3.4 Duplicate contract key
 
@@ -521,7 +663,7 @@ public API resource (one whitelist test).
 | 5 | `developers` | name_ar, name_en, slug unique, is_active |
 | 6 | `compounds` | developer_id, area_id, name_ar, name_en, slug unique, is_active; index (developer_id) |
 | 7 | `features` | code unique, group, name_ar, name_en, applies_to (JSON list of main types), sort, is_active (seeded from 2.2.5) |
-| 8 | `units` | **owner and state:** seller_id → users, state (8 codes, 2.2.6), step_reached, serial unique nullable (at first submit), code unique nullable (at publish), slug unique nullable · **step 1:** developer_id / developer_other, compound_id / compound_other, area_id / area_other, main_type, sub_type, contract_number, unit_number (both private), contract_year · **duplicate keys:** contract_key, unit_key (normalised, indexed) and `active_contract_key`, `active_unit_key` (unique, filled only while submitted, changes_requested, published or reserved; MariaDB has no partial indexes, and NULLs do not collide) · **step 2:** size_m2, garden_m2, roof_m2 (decimal 8,2), floor (a short code: basement, ground, mezzanine, 1 to 40; built as a code rather than a number so mezzanine needs no special value, 2026-11-17), bedrooms, bathrooms, finishing, delivery_status, delivery_year, facade (4-bit set), description · **step 3:** total_price, paid_amount, remaining_amount (stored generated column total − paid, for filters and sort), market_price_estimate, installment_amount, installment_frequency, next_due_date, years_left, annual_extra_amount (null = no), accepts_less, lowest_accepted_amount, has_overdue, overdue_count, overdue_amount, maintenance_due, delivery_payment (2.2.9 point 3) · **flags:** verified_at, verified_by, deal_tag (bool) · **dates:** submitted_at, published_at, withdrawn_at, withdraw_reason, rejected_at · indexes for the default sort (accepts_less, published_at) and the listing filters |
+| 8 | `units` | **owner and state:** seller_id → users, state (8 codes, 2.2.6), step_reached, serial unique nullable (at first submit), code unique nullable (at publish), slug unique nullable · **step 1:** developer_id / developer_other, compound_id / compound_other, area_id / area_other, main_type, sub_type, contract_number, unit_number (both private), contract_year · **duplicate keys:** contract_key, unit_key (normalised, indexed) and `active_contract_key`, `active_unit_key` (unique, filled only while submitted, changes_requested, published or reserved; MariaDB has no partial indexes, and NULLs do not collide) · **step 2:** size_m2, garden_m2, roof_m2 (decimal 8,2), floor (a short code: basement, ground, mezzanine, 1 to 40; built as a code rather than a number so mezzanine needs no special value, 2026-11-17), bedrooms, bathrooms, finishing, delivery_status, delivery_year, facade (4-bit set), description · **step 3:** total_price, paid_amount, remaining_amount (stored generated column total − paid, for filters and sort), market_price_estimate, installment_amount, installment_frequency, next_due_date, years_left, annual_extra_amount (null = no), accepts_less, lowest_accepted_amount, has_overdue, overdue_count, overdue_amount, overdue_settlement (`self` | `deduct`, 2.2.12; new migration in phase 4), maintenance_due, delivery_payment (2.2.9 point 3) · **flags:** verified_at, verified_by, deal_tag (bool) · **dates:** submitted_at, published_at, withdrawn_at, withdraw_reason, rejected_at · indexes for the default sort (accepts_less, published_at) and the listing filters |
 | 9 | `unit_feature` | unit_id, feature_id; primary key on both |
 | 10 | `unit_photos` | unit_id, kind (`photo` / `floor_plan`), is_project_image (the "صورة من المشروع / Project image" label), path base, sort, width, height, bytes |
 | 11 | `unit_documents` | unit_id, type (`contract`, `schedule`, `national_id_front`, `national_id_back`, `receipt`, `statement`), path (private disk), original_name, mime, bytes, sha256 (indexed, for the 3.4 B warning), status (`uploaded` / `approved` / `needs_replacement`), review_note, reviewed_by, reviewed_at, purge_after, purged_at |
@@ -569,7 +711,8 @@ Transfer through the platform
                   # paid by S.transfer_fee_payer (default seller, decided 2026-11-17) to the developer, not to Lokta;
                   # a developer policy can override mode, rate or amount
   given_up      = accepts_less ? paid - lowest_accepted : 0
-  seller_net    = recovery - (transfer_fee if payer is seller) - given_up
+  arrears       = has_overdue and overdue_settlement == deduct ? overdue_amount : 0   # 2.2.12; buyer total unchanged
+  seller_net    = recovery - (transfer_fee if payer is seller) - given_up - arrears
   advantage     = seller_net - refund (nominal, and present value when S.show_present_value)
 
 Buyer
@@ -723,9 +866,16 @@ first payment and all client texts) is a contract matter for Michael.
       plus a sentinel scan of every keyed GET route)
 
 **Phase 2: Visual identity and site shell** (agreement: palette, fonts, page design, UX; 3 free revision rounds)
-- [ ] Palette, Arabic and Latin fonts, components; dark luxury direction
-- [ ] Header, footer, language link, mobile navigation
-- [ ] Static pages with placeholders: home, about, how it works, FAQ, contact, privacy, terms
+- [x] Palette and type from the design tokens: public theme `web/src/styles/lokta-theme.css` (rem type, mobile
+      tokens, `text-hero` 86px override), dashboard theme `core/resources/css/app.css` + `lokta-tokens.css` (shadcn
+      variable names, Lokta values, radius pinned to 2px, dark only); `scripts/check-tokens.mjs` keeps both in step
+- [x] Fonts self-hosted (Alexandria Arabic/Latin, IBM Plex Mono; OFL) in both apps, no Google request
+- [x] Header (grouped menu, dropdowns, language link, sign-in), phone menu, footer
+- [x] Home from board 06.1; text pages about, how it works, FAQ, buyers, contact, privacy, terms (site texts,
+      placeholders flagged); placeholder pages for the screens of later phases
+- [x] Staff dashboard shell from the Watchizer copy (section 9): sidebar by role, header, language switch, tables,
+      forms, dialogs, error page, activity log screen (admin), translation coverage test
+- [x] Areas in three levels; public fields per page (2.5); privacy test with the seller's name
 
 **Phase 3: Accounts**
 - [ ] Register, verify, login, reset, return-to-action
@@ -835,3 +985,45 @@ opposite: "we never publish a unit before reviewing its contract, payment receip
 
 **Description length.** Not in their public material: the only minimum in the catalogue is 10 characters on the
 contact form (`contact.errors.messageShort`). The portal code that validates the description is behind `/app`.
+
+---
+
+## 9. Files copied from the Watchizer dashboard
+
+Rules (Michael, 2026-11-17): Watchizer (`D:\coding\watchizer website\new watchizer`) is read-only; files are copied,
+never linked; only UI and generic parts; nothing of Watchizer may remain after copying (a search for its names,
+routes, env names, colors and logos must return zero hits, with any kept term listed here). Every copied file is
+listed below with its source, its path here and what changed.
+
+| Source (Watchizer `core/`) | Path here (`core/`) | Changes |
+|---|---|---|
+| `resources/js/layouts/ManageLayout.tsx` | `resources/js/Layouts/DashboardLayout.tsx` | rewritten on the same structure: site name from shared props, no developer-credit footer, no theme toggle, rail state key renamed |
+| `resources/js/components/manage/Sidebar.tsx` | `resources/js/Components/shell/Sidebar.tsx` | rewritten on the same structure: Lokta wordmark instead of the logo, our icon registry, active item = surface-2 with a 2px text-1 rule, "later" items for screens of later phases |
+| `resources/js/components/manage/Header.tsx` | `resources/js/Components/shell/Header.tsx` | rewritten on the same structure: language switch posts to /dashboard/locale, user menu with role badge and sign-out only (no profile, no theme toggle) |
+| `resources/js/components/manage/ConfirmAction.tsx` | `resources/js/Components/shell/ConfirmAction.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/table/DataTable.tsx` | `resources/js/Components/table/DataTable.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; state resets moved from effects to render; new setFilters (several filters in one visit); export link computed per render |
+| `resources/js/components/table/QuickSearch.tsx` | `resources/js/Components/table/QuickSearch.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/table/DateRangeFilter.tsx` | `resources/js/Components/table/DateRangeFilter.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/table/ExportLink.tsx` | `resources/js/Components/table/ExportLink.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; reads our shared abilities |
+| `resources/js/components/form/Field.tsx` | `resources/js/Components/form/Field.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/form/TextField.tsx` | `resources/js/Components/form/TextField.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/form/PasswordField.tsx` | `resources/js/Components/form/PasswordField.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; physical right/pr classes made logical (end/pe) |
+| `resources/js/components/form/SwitchField.tsx` | `resources/js/Components/form/SwitchField.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; unused variable removed |
+| `resources/js/components/form/Combobox.tsx` | `resources/js/Components/form/Combobox.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; list id from useId; highlighted option reset in handlers, not in an effect |
+| `resources/js/components/form/ErrorSummary.tsx` | `resources/js/Components/form/ErrorSummary.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/form/FormActions.tsx` | `resources/js/Components/form/FormActions.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/form/FormTabs.tsx` | `resources/js/Components/form/FormTabs.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; the product-specific save note removed |
+| `resources/js/components/form/TranslatedField.tsx` | `resources/js/Components/form/TranslatedField.tsx` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/form/useDirtyGuard.ts` | `resources/js/Components/form/useDirtyGuard.ts` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme |
+| `resources/js/components/ui/{alert,badge,bidi,button,card,checkbox,dialog,dropdown-menu,input,label,popover,skeleton,switch,table}.tsx (14 files)` | `resources/js/Components/ui/ (same names)` | all comments removed; imports moved to `@/Components`; Tailwind 4 names; dark-only (every `dark:` variant dropped); Watchizer's blue `brand` accent replaced by Lokta values (checked = text-1, selected = surface-2); radius from the pinned 2px theme; Alert and Badge tones mapped to Lokta success / warning / error tints, Badge gains a verified variant; Switch square (toggles have no radius) |
+| `resources/js/lib/utils.ts` | `resources/js/lib/utils.ts` | comments removed; unchanged code (cn helper) |
+| `resources/js/pages/Auth/Login.tsx` | `resources/js/Pages/Auth/Login.tsx` | rewritten on the same split layout: Lokta wordmark panel, our login route and strings, language link |
+| `resources/js/pages/Manage/Error.tsx` | `resources/js/Pages/Error.tsx` | rewritten: one Error page for 403/404/419/500/503 in both languages, rendered by bootstrap/app.php for dashboard routes |
+| `resources/js/pages/Manage/NotFound/Index.tsx` | (none) | copied, then removed: the Error page covers 404 |
+| `resources/js/pages/Manage/Activity/Index.tsx` | `resources/js/Pages/Activity/Index.tsx` | rewritten over our activity_log (actor kind, action, subject, field changes, reason, date range); only the screen's layout pattern kept |
+| `app/Support/Table/TableQuery.php` | `app/Support/Table/TableQuery.php` | docblock prose removed (type tags kept); Watchizer's role class replaced by our gate `export-data`; its text helper by AppSupportDashboardText |
+| `app/Support/Table/TableExport.php` | `app/Support/Table/TableExport.php` | docblock prose removed; text helper replaced; Watchizer's Coerce helper replaced by a local text() function |
+
+Not copied: everything about products, orders, stock, storefronts, campaigns, the theme toggle, the developer-credit footer, the logo, the markdown and image fields, `lib/labels`, `lib/title`, Watchizer's translations, navigation class, roles and tests.
+
+**Cleanup search (2026-11-17, every tracked and new file except `docs/research`, `docs/design` and the handover):** terms watchizer, brand fashion, product(s), storefront, store(s), shop(s), watch(es), sku, wa_code, order(s), cart, stock, inventory, `/manage`, `VITE_APP_NAME`, `#465fff`, `232 100%`, `#18181b`, zinc, tailadmin. **Zero hits in code.** Kept on purpose (false positives): this register, `docs/RUN_2026-11-17.md` and `docs/PROGRESS_2026-11-17.md` (they name Watchizer as the source); PLAN 0 (the handover's multi-shop pattern we did not take) and PLAN 5.2 ("a bare Product" schema type); the English words "order" ("in order", "default order"); Laravel's cache `store`, `AuthController::store()` and the `no-store` header; our sub-type `shop` (a unit type) and the home text "shops"; Vite's `watch` option.

@@ -27,7 +27,9 @@ it('answers in the language asked for, Arabic by default', function () {
 
     expect($ar->json('data.0.name'))->toBe('القاهرة')
         ->and($en->json('data.0.name'))->toBe('Cairo')
-        ->and($en->json('data.0.areas.0'))->toBe(['slug' => 'new-cairo', 'code' => 'NC', 'name' => 'New Cairo'])
+        ->and($en->json('data.0.areas.0.slug'))->toBe('new-cairo')
+        ->and($en->json('data.0.areas.0.code'))->toBe('NC')
+        ->and($en->json('data.0.areas.0.districts.0'))->toBe(['slug' => 'fifth-settlement', 'name' => 'Fifth Settlement'])
         ->and($fr->json('data.0.name'))->toBe('القاهرة');
 });
 

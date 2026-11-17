@@ -9,6 +9,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -36,6 +38,20 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request) => $request->is('api/*') || ($request->expectsJson() && ! $request->hasHeader('X-Inertia')),
         );
+
+        // Dashboard errors render the dashboard's own Error page in the reader's language. 500 and 503 keep
+        // Laravel's debug page while debugging, so a developer still sees the trace.
+        $exceptions->respond(function (Response $response, Throwable $e, Request $request) {
+            $status = $response->getStatusCode();
+            $dashboard = $request->is('dashboard', 'dashboard/*');
+            $shown = in_array($status, [403, 404, 419], true) || (in_array($status, [500, 503], true) && ! config('app.debug'));
+
+            if ($dashboard && $shown && ! $request->is('api/*')) {
+                return Inertia::render('Error', ['status' => $status])->toResponse($request)->setStatusCode($status);
+            }
+
+            return $response;
+        });
     })->create();

@@ -59,8 +59,18 @@ it('labels every code of every enum in Arabic and English', function () {
 it('seeds reference data add-only and leaves dashboard edits alone', function () {
     $this->seed(ReferenceSeeder::class);
 
-    expect(Area::query()->whereNull('parent_id')->count())->toBe(7)
-        ->and(Area::query()->whereNotNull('parent_id')->whereNull('code')->count())->toBe(0)
+    $governorates = Area::query()->whereNull('parent_id')->pluck('id');
+    $areas = Area::query()->whereIn('parent_id', $governorates)->get();
+    $districts = Area::query()->whereIn('parent_id', $areas->pluck('id'))->get();
+
+    // Three levels (PLAN 3.3): the code sits on the area; governorates and districts have none.
+    expect($governorates)->toHaveCount(10)
+        ->and($areas)->toHaveCount(42)
+        ->and($areas->whereNull('code'))->toHaveCount(0)
+        ->and($districts)->toHaveCount(19)
+        ->and($districts->whereNotNull('code'))->toHaveCount(0)
+        ->and(Area::query()->whereIn('id', $governorates)->whereNotNull('code')->count())->toBe(0)
+        ->and(Area::query()->count())->toBe(71)
         ->and(Feature::query()->count())->toBe(35)
         ->and(SiteText::query()->where('is_placeholder', true)->count())->toBe(SiteText::query()->count());
 
