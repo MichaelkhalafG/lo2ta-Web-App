@@ -1,0 +1,116 @@
+/* ==========================================================================
+   Lokta · لقطة — Tailwind CSS v4 theme (Identity C "Blueprint", REV 4)
+   Usage (main CSS):   @import "tailwindcss";   @import "./lokta-tailwind.css";
+   Values match lokta-tokens.css. For RTL, use logical utilities: ms-*, me-*, ps-*, pe-*, start-*, end-*,
+   border-s, border-e, text-start, text-end. Put dir="rtl" lang="ar" on <html> for Arabic.
+   ========================================================================== */
+
+@theme {
+  /* Reset Tailwind defaults so only brand values exist */
+  --color-*: initial;
+  --radius-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --spacing-*: initial;
+
+  /* ---------- Colors ---------- */
+  --color-bg-0: #090C11;          /* bg-bg-0 · page */
+  --color-bg-1: #0D1118;          /* bg-bg-1 · fields, sticky bars, footer strip */
+  --color-surface-1: #131922;     /* bg-surface-1 · cards, deal panel, dropdowns */
+  --color-surface-2: #1A222E;     /* bg-surface-2 · hover, active row */
+  --color-surface-3: #232D3B;     /* bg-surface-3 · progress track, pressed */
+  --color-line: #263142;          /* border-line · hairlines (decorative) */
+  --color-line-strong: #5C6B80;   /* border-line-strong · fields, secondary buttons (3:1) */
+  --color-frame: #8492A6;         /* border-frame · title-block outer frame */
+  --color-text-1: #EDF1F6;        /* text-text-1 · headlines, values */
+  --color-text-2: #AEB9C8;        /* text-text-2 · body, secondary labels */
+  --color-text-3: #8492A6;        /* text-text-3 · captions, helpers */
+  --color-gold: #D6AC55;          /* text-gold / bg-gold · contract price, primary CTA, لقطة tag ONLY */
+  --color-gold-bright: #EBC772;   /* hover:bg-gold-bright */
+  --color-gold-tint: rgb(214 172 85 / 0.16); /* focus halo (ring-gold-tint) */
+  --color-on-gold: #0D1118;       /* text-on-gold */
+  --color-verified: #5ED2E4;      /* verified stamp, badge, toggle */
+  --color-verified-fill: #0F3540; /* bg behind verified badge / toggle track */
+  --color-success: #48C792;       /* "owner accepts from…", transferred */
+  --color-success-tint: rgb(72 199 146 / 0.14);
+  --color-warning: #F0A452;       /* next installment, under review */
+  --color-warning-tint: rgb(240 164 82 / 0.14);
+  --color-error: #F37474;         /* errors, reserved, destructive */
+  --color-error-tint: rgb(243 116 116 / 0.14);
+  --color-paper: #E6E1D6;         /* seller band only */
+  --color-paper-ink: #141820;
+  --color-paper-ink-2: #4A5262;
+  --color-paper-line: #B9B2A3;
+  --color-gold-ink: #7A5818;      /* gold text on paper */
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* ---------- Fonts ---------- */
+  --font-sans: 'Alexandria', 'Segoe UI', Tahoma, sans-serif;   /* font-sans · all text */
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;       /* font-mono · annotation only */
+
+  /* ---------- Type scale: text-{name} sets size + leading + weight ---------- */
+  --text-display-xl: 96px;  --text-display-xl--line-height: 1.1;   --text-display-xl--font-weight: 700;   /* hero; mobile: text-[42px] */
+  --text-display: 64px;     --text-display--line-height: 1.15;     --text-display--font-weight: 700;      /* page title */
+  --text-display-light: 52px; --text-display-light--line-height: 1.2; --text-display-light--font-weight: 300; /* quiet hero line */
+  --text-h1: 44px;          --text-h1--line-height: 1.28;          --text-h1--font-weight: 700;           /* unit title */
+  --text-h2: 30px;          --text-h2--line-height: 1.35;          --text-h2--font-weight: 600;           /* section title */
+  --text-h3: 20px;          --text-h3--line-height: 1.5;           --text-h3--font-weight: 600;           /* card / row title */
+  --text-lead: 18px;        --text-lead--line-height: 1.85;                                               /* intro paragraph */
+  --text-body: 15px;        --text-body--line-height: 1.85;                                               /* default */
+  --text-small: 13px;       --text-small--line-height: 1.7;                                               /* helpers, captions */
+  --text-price: 42px;       --text-price--line-height: 1.05;       --text-price--font-weight: 600;        /* gold contract price; add tabular-nums */
+  --text-price-card: 26px;  --text-price-card--line-height: 1.1;   --text-price-card--font-weight: 600;   /* price on unit card */
+  --text-annotation: 12px;  --text-annotation--line-height: 1.4;   --text-annotation--font-weight: 500;   /* with font-mono */
+  --tracking-display: -0.01em;   /* tracking-display · Latin display only */
+  --tracking-wordmark: 0.24em;   /* tracking-wordmark · "LOKTA" */
+
+  /* ---------- Spacing (p-*, m-*, gap-*: multiples of 4px) ---------- */
+  --spacing: 4px;                /* enables p-1 = 4px … p-24 = 96px */
+  --spacing-gutter: 48px;        /* px-gutter · desktop page margin */
+  --spacing-gutter-mobile: 20px; /* px-gutter-mobile */
+  --spacing-control-lg: 52px;    /* h-control-lg · buttons, fields */
+  --spacing-control-md: 44px;    /* h-control-md · min touch target */
+  --spacing-control-sm: 40px;    /* h-control-sm · header "Sell your unit" */
+  --spacing-header: 80px;        /* h-header */
+
+  /* ---------- Radius ---------- */
+  --radius: 2px;                 /* base radius variable */
+  --radius-sm: 2px;              /* rounded-sm · everything rectangular (buttons, fields, cards, badges) */
+  --radius-none: 0;              /* rounded-none · toggles, segmented controls */
+  --radius-full: 9999px;         /* rounded-full · section marks, stamp, north arrow only */
+
+  /* ---------- Motion ---------- */
+  --ease-draw: cubic-bezier(.25, .8, .25, 1);  /* ease-draw */
+  --animate-draw: lk-draw 900ms var(--ease-draw) both;  /* animate-draw · dimension segment; stagger with [animation-delay:420ms] */
+  --animate-fade: lk-fade 500ms ease-out both;          /* animate-fade · values above a line */
+  @keyframes lk-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes lk-fade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Line weights and durations as plain variables (use with arbitrary values: border-[length:var(--stroke-frame)]) */
+:root {
+  --stroke-hair: 1px;      /* rules, card borders, ticks */
+  --stroke-frame: 1.5px;   /* title-block / deal-panel frame */
+  --stroke-active: 2px;    /* active nav underline, focus ring, stamp ring */
+  --stroke-measure: 3px;   /* paid segment of a dimension line */
+  --duration-ui: 150ms;    /* hover */
+  --duration-value: 300ms; /* line resizing after input */
+  --duration-fade: 500ms;
+  --duration-draw: 900ms;
+  --stagger-draw: 420ms;
+}
+
+@layer base {
+  html { color-scheme: dark; background: var(--color-bg-0); color: var(--color-text-1); font-family: var(--font-sans); font-size: 15px; line-height: 1.85; }
+  :focus-visible { outline: var(--stroke-active) solid var(--color-text-1); outline-offset: 3px; }
+  a { color: var(--color-text-1); text-decoration-color: var(--color-gold); text-underline-offset: 6px; }
+  a:hover { color: var(--color-gold-bright); }
+}
+
+@utility tabular { font-variant-numeric: tabular-nums; }
+@utility origin-start { transform-origin: right; [dir="ltr"] & { transform-origin: left; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-draw, .animate-fade { animation: none; }
+}

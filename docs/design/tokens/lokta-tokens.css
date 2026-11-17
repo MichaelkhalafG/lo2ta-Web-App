@@ -1,0 +1,134 @@
+/* ==========================================================================
+   Lokta · لقطة — Identity C "Blueprint" — design tokens (REV 4 · 2026-11-17)
+   Dark only. Arabic RTL first: always use logical properties
+   (margin-inline-start, padding-inline-end, inset-inline-start, border-inline-start…).
+
+   Fonts (add to <head>):
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ---------- Ground ---------- */
+  --lk-bg-0: #090C11;          /* Page background. ~64% of every screen. */
+  --lk-bg-1: #0D1118;          /* Sunken areas: fields, sticky bars, footer strip, dropdown backdrop. */
+  --lk-surface-1: #131922;     /* Raised: unit cards, deal panel, dropdown panels. */
+  --lk-surface-2: #1A222E;     /* Hover rows, active nav or step row, secondary button hover. */
+  --lk-surface-3: #232D3B;     /* Progress tracks and pressed states only. Never put text-3 on it. */
+
+  /* ---------- Lines ---------- */
+  --lk-line: #263142;          /* Hairlines: table rules, card borders, separators. Decorative only. */
+  --lk-line-strong: #5C6B80;   /* Field borders, secondary buttons, toggles. 3.4:1 on surface-1 (WCAG UI). */
+  --lk-frame: #8492A6;         /* Outer frame of title blocks, figure blocks, deal panel. Use with --lk-stroke-frame. */
+
+  /* ---------- Text (all ≥ 4.5:1 on bg-0 … surface-2) ---------- */
+  --lk-text-1: #EDF1F6;        /* Headlines, values, primary labels. */
+  --lk-text-2: #AEB9C8;        /* Body copy, secondary labels, remaining segment of a dimension line. */
+  --lk-text-3: #8492A6;        /* Captions, field helpers, table headers, codes in passing. */
+
+  /* ---------- Gold (≤ 2% of any screen) ---------- */
+  --lk-gold: #D6AC55;          /* Only: contract price, primary button, لقطة tag, today's gap on the hero line. */
+  --lk-gold-bright: #EBC772;   /* Primary button hover. */
+  --lk-gold-tint: rgba(214, 172, 85, 0.16); /* 4px halo around a focused field. */
+  --lk-on-gold: #0D1118;       /* Text and arrow on gold. 9.4:1. */
+
+  /* ---------- Signal ---------- */
+  --lk-verified: #5ED2E4;      /* Verified stamp, square badge, "verified only" toggle. Never gold, never success. */
+  --lk-verified-fill: #0F3540; /* Fill behind the square verified badge and the toggle track. */
+  --lk-success: #48C792;       /* "Owner accepts from…", "transferred", completed steps. */
+  --lk-success-tint: rgba(72, 199, 146, 0.14);
+  --lk-warning: #F0A452;       /* Next installment due, "under review". */
+  --lk-warning-tint: rgba(240, 164, 82, 0.14);
+  --lk-error: #F37474;         /* Validation errors, "reserved", destructive actions. */
+  --lk-error-tint: rgba(243, 116, 116, 0.14);
+
+  /* ---------- Paper (max one light band per page: the seller section) ---------- */
+  --lk-paper: #E6E1D6;         /* Trace-paper band background. */
+  --lk-paper-ink: #141820;     /* Text and primary button on paper. 13.6:1. */
+  --lk-paper-ink-2: #4A5262;   /* Body text on paper. 6.0:1. */
+  --lk-paper-line: #B9B2A3;    /* Rules on paper. */
+  --lk-gold-ink: #7A5818;      /* Gold accent text on paper (step numbers). 5.0:1. */
+
+  /* ---------- Typography ---------- */
+  --lk-font-sans: 'Alexandria', 'Segoe UI', Tahoma, sans-serif;  /* Everything: Arabic + Latin headlines, body, prices, buttons. */
+  --lk-font-mono: 'IBM Plex Mono', ui-monospace, monospace;      /* Annotation only: dimension values, unit codes, dates, spec values. */
+
+  /* size / line-height / weight — mobile size in the comment */
+  --lk-text-display-xl: 96px;    --lk-leading-display-xl: 1.1;    --lk-weight-display-xl: 700;   /* Hero headline. Mobile 42px. */
+  --lk-text-display: 64px;       --lk-leading-display: 1.15;      --lk-weight-display: 700;      /* Page titles (Opportunities). Mobile 30px. */
+  --lk-text-display-light: 52px; --lk-leading-display-light: 1.2; --lk-weight-display-light: 300;/* Second, quieter hero line. Mobile same size as display-xl, weight 300. */
+  --lk-text-h1: 44px;            --lk-leading-h1: 1.28;           --lk-weight-h1: 700;           /* Unit title on detail. Mobile 26px. */
+  --lk-text-h2: 30px;            --lk-leading-h2: 1.35;           --lk-weight-h2: 600;           /* Section titles. Mobile 24px. */
+  --lk-text-h3: 20px;            --lk-leading-h3: 1.5;            --lk-weight-h3: 600;           /* Card titles, table row titles. */
+  --lk-text-lead: 18px;          --lk-leading-lead: 1.85;         --lk-weight-lead: 400;         /* Intro paragraphs under headlines. */
+  --lk-text-body: 15px;          --lk-leading-body: 1.85;         --lk-weight-body: 400;         /* Default body and UI text. Arabic needs the tall leading. */
+  --lk-text-small: 13px;         --lk-leading-small: 1.7;         --lk-weight-small: 400;        /* Helpers, captions, labels above values. */
+  --lk-text-price: 42px;         --lk-leading-price: 1.05;        --lk-weight-price: 600;        /* Contract price on detail (gold, tabular-nums). Card 26px. */
+  --lk-text-annotation: 12px;    --lk-leading-annotation: 1.4;    --lk-weight-annotation: 500;   /* Mono annotations. Never below 11px. */
+  --lk-tracking-display: -0.01em; /* Latin display only; leave Arabic at 0. */
+  --lk-tracking-wordmark: 0.24em; /* "LOKTA" next to the Arabic wordmark. */
+
+  /* ---------- Spacing (4px base) ---------- */
+  --lk-space-1: 4px;    /* Label to value inside a cell. */
+  --lk-space-2: 8px;    /* Field label to field; badge gaps. */
+  --lk-space-3: 12px;   /* Between small controls. */
+  --lk-space-4: 16px;   /* Cell padding in tables and title blocks. */
+  --lk-space-5: 20px;   /* Mobile page margin; card padding. */
+  --lk-space-6: 24px;   /* Gaps between fields and cards. */
+  --lk-space-8: 32px;   /* Panel padding. */
+  --lk-space-10: 40px;  /* Between groups inside a section. */
+  --lk-space-12: 48px;  /* Desktop page margin. */
+  --lk-space-14: 56px;  /* Between main column and aside; between detail sections. */
+  --lk-space-18: 72px;  /* Between columns in editorial bands. */
+  --lk-space-24: 96px;  /* Vertical padding of home sections: a deliberate rhythm change. */
+  --lk-gutter: var(--lk-space-12);
+  --lk-gutter-mobile: var(--lk-space-5);
+  --lk-control-lg: 52px; /* Primary/secondary buttons, fields. */
+  --lk-control-md: 44px; /* Compact buttons, menu rows. Minimum touch target. */
+  --lk-control-sm: 40px; /* Header "Sell your unit" only (desktop). */
+  --lk-header-height: 80px;
+
+  /* ---------- Radius ---------- */
+  --lk-radius: 2px;        /* Everything rectangular: buttons, fields, cards, panels, badges. */
+  --lk-radius-none: 0;     /* Toggles, segmented controls inside a frame, the لقطة tag (cut with clip-path). */
+  --lk-radius-round: 50%;  /* Only: section marks, verified stamp, north arrow. */
+
+  /* ---------- Line weights ---------- */
+  --lk-stroke-hair: 1px;     /* Rules, borders, dimension extension ticks, remaining segment. */
+  --lk-stroke-frame: 1.5px;  /* Title-block and deal-panel outer frames, figure-block top rule. */
+  --lk-stroke-active: 2px;   /* Active nav underline, focus ring, verified stamp outer ring. */
+  --lk-stroke-measure: 3px;  /* Paid segment of a dimension line; completed part of the step line. */
+  --lk-tick-height: 15px;    /* Dimension-line ticks (13px in cards/mobile). Slash tick rotated 45°. */
+
+  /* ---------- Focus ---------- */
+  --lk-focus-ring: var(--lk-stroke-active) solid var(--lk-text-1);
+  --lk-focus-offset: 3px;
+
+  /* ---------- Motion (only where it explains) ---------- */
+  --lk-duration-ui: 150ms;      /* Hover and colour changes. */
+  --lk-duration-value: 300ms;   /* A dimension line resizing after the user edits a number. */
+  --lk-duration-fade: 500ms;    /* Values fading in above a dimension line. */
+  --lk-duration-draw: 900ms;    /* One dimension segment drawing in from the inline-start edge. */
+  --lk-stagger-draw: 420ms;     /* Delay between chained segments: paid → remaining → overall. */
+  --lk-delay-fade: 350ms;       /* Value labels start after their segment has begun. */
+  --lk-ease-draw: cubic-bezier(.25, .8, .25, 1);
+  --lk-ease-ui: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lk-duration-value: 0ms; --lk-duration-fade: 0ms; --lk-duration-draw: 0ms;
+    --lk-stagger-draw: 0ms; --lk-delay-fade: 0ms;
+  }
+}
+
+/* Dimension-line draw-in (play once, when the line enters the viewport).
+   <span class="lk-draw" style="--i:0"></span>  — --i = segment order. */
+@keyframes lk-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes lk-fade { from { opacity: 0; } to { opacity: 1; } }
+.lk-draw { transform-origin: right; animation: lk-draw var(--lk-duration-draw) var(--lk-ease-draw) calc(var(--i, 0) * var(--lk-stagger-draw)) both; }
+[dir="ltr"] .lk-draw { transform-origin: left; }
+.lk-fade { animation: lk-fade var(--lk-duration-fade) var(--lk-ease-ui) calc(var(--lk-delay-fade) + var(--i, 0) * var(--lk-stagger-draw)) both; }
+@media (prefers-reduced-motion: reduce) { .lk-draw, .lk-fade { animation: none; } }
