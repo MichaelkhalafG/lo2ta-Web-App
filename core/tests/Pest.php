@@ -15,6 +15,8 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)->use(RefreshDatabase::class)->in('Feature');
 pest()->extend(TestCase::class)->in('Arch');
 
+require_once __DIR__.'/Support/seller.php';
+
 /**
  * Headers the Next.js server sends on keyed API calls.
  *

@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Never served by Laravel's signed /storage route: documents and draft photos leave only through the
+            // owner or staff routes (Michael's upload rules, 2026-11-18).
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

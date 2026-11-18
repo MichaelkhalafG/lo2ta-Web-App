@@ -64,6 +64,19 @@ export async function choices(locale: Locale): Promise<Choices> {
   return (await coreGet<{ data: Choices }>("choices", locale, ["choices"])).data;
 }
 
+/** The choices with the seller form's lists and the sub-type field matrix (PLAN 2.2.3). */
+export async function sellChoices(locale: Locale): Promise<import("./sell").SellChoices> {
+  return (await coreGet<{ data: import("./sell").SellChoices }>("choices", locale, ["choices"])).data;
+}
+
+export async function developerList(locale: Locale): Promise<import("./sell").DeveloperItem[]> {
+  return (await coreGet<{ data: import("./sell").DeveloperItem[] }>("developers", locale, ["places"])).data;
+}
+
+export async function featureList(locale: Locale): Promise<import("./sell").FeatureItem[]> {
+  return (await coreGet<{ data: import("./sell").FeatureItem[] }>("features", locale, ["places"])).data;
+}
+
 export async function publicSettings(locale: Locale): Promise<Record<string, number | boolean | string>> {
   return (await coreGet<{ data: Record<string, number | boolean | string> }>("settings", locale, ["settings"])).data;
 }

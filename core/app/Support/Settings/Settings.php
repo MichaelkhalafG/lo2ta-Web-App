@@ -148,18 +148,18 @@ final class Settings
     }
 
     /**
-     * @return array<string, array{type: string, group: string, default: int|bool|string, min?: int, max?: int, options?: list<string>, public?: bool, provisional?: bool}>
+     * @return array<string, array{type: string, group: string, default: int|bool|string, min?: int, max?: int, options?: list<string>, public?: bool, provisional?: bool, format?: string}>
      */
     public static function definitions(): array
     {
-        /** @var array<string, array{type: string, group: string, default: int|bool|string, min?: int, max?: int, options?: list<string>, public?: bool, provisional?: bool}> $defs */
+        /** @var array<string, array{type: string, group: string, default: int|bool|string, min?: int, max?: int, options?: list<string>, public?: bool, provisional?: bool, format?: string}> $defs */
         $defs = config('settings');
 
         return $defs;
     }
 
     /**
-     * @param  array{type: string, group: string, default: int|bool|string, min?: int, max?: int, options?: list<string>, public?: bool, provisional?: bool}  $def
+     * @param  array{type: string, group: string, default: int|bool|string, min?: int, max?: int, options?: list<string>, public?: bool, provisional?: bool, format?: string}  $def
      */
     private function coerce(string $key, array $def, mixed $value): int|bool|string
     {
@@ -194,6 +194,10 @@ final class Settings
             case 'string':
                 if (! is_string($value)) {
                     throw new InvalidArgumentException("Setting {$key} needs text.");
+                }
+                $value = trim($value);
+                if (($def['format'] ?? null) === 'email_or_empty' && $value !== '' && filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                    throw new InvalidArgumentException("Setting {$key} needs an e-mail address or nothing.");
                 }
 
                 return $value;

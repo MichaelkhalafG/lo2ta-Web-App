@@ -65,6 +65,10 @@ return [
         'under_construction' => 'تحت الإنشاء',
         'either' => 'أي حالة',
     ],
+    'OverdueSettlement' => [
+        'self' => 'المالك يسدّدها قبل التنازل',
+        'deduct' => 'تُخصم من المبلغ اللي يستلمه المالك',
+    ],
     'InstallmentFrequency' => [
         'monthly' => 'شهري',
         'quarterly' => 'ربع سنوي',

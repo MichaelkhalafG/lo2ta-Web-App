@@ -17,7 +17,7 @@ use Illuminate\Validation\ValidationException;
  */
 class FavoritesController extends Controller
 {
-    private const WITH = ['developer', 'compound', 'area', 'features', 'photos'];
+    private const WITH = UnitResource::WITH;
 
     public function index(Request $request): JsonResponse
     {

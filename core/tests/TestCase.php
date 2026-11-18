@@ -26,4 +26,20 @@ abstract class TestCase extends BaseTestCase
             throw new RuntimeException('Tests must run on a *_test database.');
         }
     }
+
+    /**
+     * Every API request authenticates from its own headers, as in production. Inside one test the application is
+     * shared, and Sanctum's guard would otherwise keep the user of the previous request, so a request with another
+     * seller's token, or none, could pass as the first seller and make an ownership test meaningless.
+     * The dashboard's session guard (actingAs) is left alone.
+     */
+    public function call($method, $uri, $parameters = [], $cookies = [], $files = [], $server = [], $content = null)
+    {
+        $guard = $this->app['auth']->guard('sanctum');
+        if (method_exists($guard, 'forgetUser')) {
+            $guard->forgetUser();
+        }
+
+        return parent::call($method, $uri, $parameters, $cookies, $files, $server, $content);
+    }
 }

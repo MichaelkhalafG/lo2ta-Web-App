@@ -31,5 +31,7 @@ class AppServiceProvider extends ServiceProvider
         foreach (['manage-settings', 'manage-site-texts', 'manage-admins', 'manage-commissions', 'view-activity', 'export-data'] as $ability) {
             Gate::define($ability, static fn (AdminUser $admin): bool => $admin->isAdmin());
         }
+        // Units' private files: both staff roles review units (PLAN 2.4, 2.2.15); each opening is logged.
+        Gate::define('view-documents', static fn (AdminUser $admin): bool => $admin->is_active);
     }
 }

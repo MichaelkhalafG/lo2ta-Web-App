@@ -16,7 +16,7 @@ class UnitsController extends Controller
 {
     private const PER_PAGE = 24;
 
-    private const WITH = ['developer', 'compound', 'area', 'features', 'photos'];
+    private const WITH = UnitResource::WITH;
 
     public function index(): AnonymousResourceCollection
     {

@@ -6,12 +6,11 @@ use App\Enums\DeliveryPreference;
 use App\Enums\InstallmentFrequency;
 use App\Enums\MainType;
 use App\Http\Controllers\Controller;
-use App\Models\AdminUser;
 use App\Models\Area;
 use App\Models\BuyerBudget;
 use App\Models\Compound;
 use App\Support\Activity\ActivityLogger;
-use App\Support\Mail\Outbox;
+use App\Support\Mail\TeamNotice;
 use App\Support\Settings\Settings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,7 +34,7 @@ class BudgetController extends Controller
         return response()->json(['data' => $budget instanceof BuyerBudget ? self::present($budget) : null]);
     }
 
-    public function update(Request $request, Settings $settings, Outbox $outbox, ActivityLogger $log): JsonResponse
+    public function update(Request $request, Settings $settings, TeamNotice $team, ActivityLogger $log): JsonResponse
     {
         $user = MeController::user($request);
         $request->validate([
@@ -83,15 +82,13 @@ class BudgetController extends Controller
         ]);
 
         if ($first) {
-            // RUN D14: the team is every active admin account until the client names a team mailbox.
-            foreach (AdminUser::query()->where('is_active', true)->get() as $admin) {
-                $outbox->send($admin->email, $admin->name, in_array($admin->locale, ['ar', 'en'], true) ? $admin->locale : 'ar', 'admin.new_budget', [
-                    'buyer' => $user->name,
-                    'cash' => number_format($budget->cash_available),
-                    'installment' => number_format($budget->max_installment),
-                    'verified' => $user->hasVerifiedEmail() ? '✓' : '✗',
-                ]);
-            }
+            // The team mailbox (setting team_email), or every active admin until it exists (RUN D14).
+            $team->send('admin.new_budget', [
+                'buyer' => $user->name,
+                'cash' => number_format($budget->cash_available),
+                'installment' => number_format($budget->max_installment),
+                'verified' => $user->hasVerifiedEmail() ? '✓' : '✗',
+            ]);
         }
 
         return response()->json(['data' => self::present($budget->load(['areas', 'compounds']))], $first ? 201 : 200);

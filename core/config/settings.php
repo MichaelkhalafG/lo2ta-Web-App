@@ -31,11 +31,37 @@ return [
     'description_max' => ['type' => 'int', 'group' => 'seller', 'default' => 1200, 'min' => 100, 'max' => 5000, 'public' => true],
     'photo_min_count' => ['type' => 'int', 'group' => 'seller', 'default' => 1, 'min' => 1, 'max' => 10, 'public' => true],
     'photo_max_count' => ['type' => 'int', 'group' => 'seller', 'default' => 10, 'min' => 1, 'max' => 30, 'public' => true],
+    // Upload limits (PLAN 2.2.13 point 8 and 2.2.14, Michael 2026-11-18). One size cap for documents and photos.
+    'upload_max_mb' => ['type' => 'int', 'group' => 'seller', 'default' => 10, 'min' => 1, 'max' => 10, 'public' => true],
+    // Stored uploads per account, all units together (Michael 2026-11-18, option A): keeps one account from filling
+    // the hosting disk. Counts the stored (re-encoded) bytes of documents not yet purged and of photos.
+    'upload_max_account_mb' => ['type' => 'int', 'group' => 'seller', 'default' => 300, 'min' => 10, 'max' => 5000, 'public' => true],
+    'photo_min_px' => ['type' => 'int', 'group' => 'seller', 'default' => 800, 'min' => 400, 'max' => 2000, 'public' => true],
+    // Files per document type per unit; the national ID front and back are one file each, fixed in code.
+    'doc_max_contract' => ['type' => 'int', 'group' => 'seller', 'default' => 15, 'min' => 1, 'max' => 50, 'public' => true],
+    'doc_max_schedule' => ['type' => 'int', 'group' => 'seller', 'default' => 5, 'min' => 1, 'max' => 50, 'public' => true],
+    'doc_max_receipt' => ['type' => 'int', 'group' => 'seller', 'default' => 30, 'min' => 1, 'max' => 100, 'public' => true],
+    'doc_max_statement' => ['type' => 'int', 'group' => 'seller', 'default' => 3, 'min' => 1, 'max' => 20, 'public' => true],
+    // Pixel limits, checked from the file header before any decoding (Michael 2026-11-18: the browser shrinks photos
+    // to 2560 px and scans to 4000 px; the server refuses anything larger than this, so a crafted image can never
+    // exhaust the 256M PHP memory of the host).
+    'image_max_mp' => ['type' => 'int', 'group' => 'seller', 'default' => 25, 'min' => 1, 'max' => 25, 'public' => true],
+    'image_max_side_px' => ['type' => 'int', 'group' => 'seller', 'default' => 8000, 'min' => 1000, 'max' => 8000, 'public' => true],
+    // Rate limits per hour (Michael 2026-11-18, "moderate"). Over the limit: 429 with the seconds to wait.
+    'rl_upload_user' => ['type' => 'int', 'group' => 'limits', 'default' => 100, 'min' => 1, 'max' => 10000],
+    'rl_upload_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 200, 'min' => 1, 'max' => 10000],
+    'rl_submit_user' => ['type' => 'int', 'group' => 'limits', 'default' => 5, 'min' => 1, 'max' => 1000],
+    'rl_submit_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 10, 'min' => 1, 'max' => 1000],
+    'rl_draft_user' => ['type' => 'int', 'group' => 'limits', 'default' => 120, 'min' => 1, 'max' => 10000],
+    'rl_dupcheck_user' => ['type' => 'int', 'group' => 'limits', 'default' => 20, 'min' => 1, 'max' => 1000],
     'id_retention_days' => ['type' => 'int', 'group' => 'seller', 'default' => 90, 'min' => 1, 'max' => 3650],
     'draft_id_retention_days' => ['type' => 'int', 'group' => 'seller', 'default' => 180, 'min' => 1, 'max' => 3650],
 
     // Buyer requests (Q15)
     'max_open_requests_per_buyer' => ['type' => 'int', 'group' => 'buyer', 'default' => 5, 'min' => 1, 'max' => 50],
+    // Team notices (Michael 2026-11-18): one of the agreement's two official mailboxes, e.g. info@loktaeg.com. Empty
+    // until the mailbox exists: then every active admin account gets the notice (RUN D14).
+    'team_email' => ['type' => 'string', 'group' => 'team', 'default' => '', 'format' => 'email_or_empty'],
     // PLAN 2.3: "Areas (multi, up to N)".
     'budget_max_areas' => ['type' => 'int', 'group' => 'buyer', 'default' => 10, 'min' => 1, 'max' => 50, 'public' => true],
 

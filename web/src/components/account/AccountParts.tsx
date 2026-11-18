@@ -17,6 +17,7 @@ export function AccountNav() {
   const pathname = usePathname();
   const items = [
     { href: "/account", label: t("overview") },
+    { href: "/account/units", label: t("units") },
     { href: "/account/budget", label: t("budget") },
     { href: "/account/favorites", label: t("favorites") },
   ];
@@ -27,11 +28,11 @@ export function AccountNav() {
         <Link
           key={item.href}
           href={item.href}
-          aria-current={pathname === item.href ? "page" : undefined}
-          className={`relative px-3 py-3 text-body transition-colors duration-150 hover:text-text-1 ${pathname === item.href ? "text-text-1" : "text-text-2"}`}
+          aria-current={pathname === item.href || (item.href !== "/account" && pathname.startsWith(`${item.href}/`)) ? "page" : undefined}
+          className={`relative px-3 py-3 text-body transition-colors duration-150 hover:text-text-1 ${pathname === item.href || (item.href !== "/account" && pathname.startsWith(`${item.href}/`)) ? "text-text-1" : "text-text-2"}`}
         >
           {item.label}
-          {pathname === item.href ? <span aria-hidden="true" className="absolute start-3 end-3 bottom-0 h-0.5 bg-text-1" /> : null}
+          {pathname === item.href || (item.href !== "/account" && pathname.startsWith(`${item.href}/`)) ? <span aria-hidden="true" className="absolute start-3 end-3 bottom-0 h-0.5 bg-text-1" /> : null}
         </Link>
       ))}
       <form action={logoutAction} className="ms-auto">

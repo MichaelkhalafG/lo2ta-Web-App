@@ -63,7 +63,11 @@ enum SubType: string
         return $this->mainType() === MainType::Residential;
     }
 
-    /** Studios have no separate bedroom: bedrooms is fixed at 0. */
+    /**
+     * Studios have no separate bedroom: bedrooms is fixed at 0.
+     *
+     * @return int<0, max>|null
+     */
     public function fixedBedrooms(): ?int
     {
         return $this === self::Studio ? 0 : null;

@@ -165,8 +165,8 @@ Lokta commission" wording stays, because the fee belongs to the developer.
 - delivery year ≥ contract year.
 - lowest accepted amount < paid (and > 0).
 
-**Documents** are stored on a private disk, served only through admin-only signed routes, and never appear in any
-public resource. **Photos** are resized to fixed widths, converted to WebP, and stripped of all EXIF data (location
+**Documents** are stored on a private disk, served only to the unit's seller and to staff (2.2.15, which replaces
+"admin-only signed routes"), and never appear in any public resource. **Photos** are resized to fixed widths, converted to WebP, and stripped of all EXIF data (location
 included).
 
 **After submit:** a confirmation screen and e-mail: received, reference number, the exit report PDF, and "we review
@@ -364,6 +364,64 @@ The privacy policy (client text, section 6, row 8a) must state this rule.
 8. **Exit report before the market research.** The step 6 preview needs calculator settings, which phase 6 researches.
    Rule: the settings are loaded with clearly marked provisional values in phase 1 and researched before launch.
 
+#### 2.2.14 Uploads, declarations and the exit report wording (decided by Michael 2026-11-18)
+
+- **Photos (step 5):** JPG, PNG or WebP, up to 10 MB each (`upload_max_mb`), at least 800 px on the long side
+  (`photo_min_px`). The server stores a WebP of at most 2000 px and strips all EXIF. HEIC photos (the iPhone default)
+  are converted to JPG in the seller's browser before upload; the library loads on step 5 only.
+- **Documents (step 4):** PDF, JPG or PNG up to 10 MB per file (2.2.13 point 8). Files per type per unit, as settings:
+  contract 15 (`doc_max_contract`), schedule 5 (`doc_max_schedule`), receipts 30 (`doc_max_receipt`), developer
+  statement 3 (`doc_max_statement`); national ID front 1 and back 1, fixed.
+- **Declarations:** owner not broker, data matches the documents, terms and privacy; accepted on the first submit and
+  again on every resubmit (after "changes requested", or after editing a published unit's figures). Each acceptance is
+  stored with the text version, time and IP; a wording change applies to new submits only. The no-over confirmation
+  stays per unit on step 1 (2.2.1).
+- **Exit report wording:** every heading and explanation is a site text flagged placeholder, holding a neutral label
+  and no legal or advisory sentence. While any placeholder text or provisional calculator value is used, each page
+  carries a visible band "Draft: texts and rates not final". The client's texts replace them in the dashboard (PLAN 6
+  rows 10 and 11).
+
+#### 2.2.15 Upload and wizard security (Michael's rules and answers, 2026-11-18)
+
+Michael's rules: type from the content only; photos re-encoded and the original never kept; documents outside the web
+root, served only to the owner or staff, random names; nothing executable, blocked at server level too; size, count
+and pixel limits before processing; PDFs checked; rate limits per user and per IP; ownership on every endpoint; tests
+for each. This replaces "served only through admin-only signed routes" in 2.2.2: the owner may download their own
+documents. As built (core, `app/Support/Uploads`, `app/Support/Seller`):
+
+- **Type:** magic bytes and libmagic must agree (JPEG, PNG, WebP for photos; PDF, JPEG, PNG for documents); the name,
+  extension and client Content-Type are never read. A PDF must start with `%PDF-` at byte 0.
+- **Images (photos and image documents, Michael's answer):** the header is read first (no decode); over 8000 px a side
+  or 25 MP (`image_max_side_px`, `image_max_mp`) or over the memory left is refused; then decoded and written as a new
+  file: photos as WebP of at most 2000 px, image documents in their own format at full size. EXIF and any trailing
+  bytes do not survive. The browser shrinks photos to 2560 px and scans to 4000 px before upload (web side).
+- **PDFs (Michael's answers):** refused if they hold JavaScript, embedded files, file attachments, launch actions, XFA,
+  rich media or embedded go-to actions, anywhere: the plain file, compressed object streams, encrypted object streams
+  (decrypted in memory with the empty password: RC4-40/128, AES-128, AES-256 R5 and R6), or objects hidden in another
+  stream's bytes. Refused too: a password needed to open, anything not readable with certainty, decompression over
+  16 MB per object stream or 32 MB per file. Accepted with the reviewer flag `encrypted`: files that open without a
+  password. The flag is never shown to the seller.
+- **Storage:** everything on the private disk under 40 random hex characters; the uploaded name is kept for display
+  only. A photo gets a public copy (new random name) only when its unit is published and it is not hidden; hiding
+  deletes the copy. Laravel's own private-file serving is switched off.
+- **Serving:** owner routes and staff routes (`view-documents`: both staff roles, every document opening logged) stream
+  with `nosniff`, a sandbox CSP, `no-store` and a generated file name; PDFs always as downloads.
+- **Server level:** `php artisan uploads:harden` writes the `.htaccess` files (docs/DEPLOY_NOTES.md section 1).
+- **Limits (Michael's answer, settings):** uploads 100 per hour per user and 200 per IP; submit 5 per user and 10 per
+  IP; draft saves 120 per user; duplicate checks 20 per user. File 10 MB; counts as 2.2.14.
+- **Ownership:** every seller route looks the row up by its public ID (ULID) and the owner in one query; anything else
+  answers 404. Tested for each route with another seller's token, a guessed ID and a sequential number.
+- **Account limits (Michael 2026-11-18):** stored uploads at most 300 MB per account, all units together
+  (`upload_max_account_mb`); at most 10 open drafts per account (approved).
+- **HEIC in the browser (Michael 2026-11-18):** heic-to 1.6.6 (LGPL-3.0), a separate chunk loaded only when a HEIC
+  photo is picked; its licence notice and source link go in the site credits (web/THIRD_PARTY_NOTICES.md until the
+  credits page exists).
+- **Staff rule (Michael 2026-11-18):** documents are opened only in an up-to-date viewer; there is no antivirus on
+  shared hosting (docs/ADMIN_GUIDE.md).
+- **Smaller choices made while building (reversible, each a line or two):** submit also requires the no-over confirmation on record for the unit; documents can be
+  uploaded while a unit is submitted, published or reserved (new receipts, 2.2.7) and then notify the team, but are
+  deleted only while the steps are editable.
+
 #### 2.2.12 Overdue installments: settlement (decided 2026-11-17)
 
 When overdue = yes, the seller chooses `overdue_settlement`:
@@ -481,7 +539,7 @@ commission record.
 deals; no settings, no commissions). Every write is in the activity log. The dashboard is in Arabic and English.
 
 
-### 2.5 Privacy of the unit's identity, and the public fields per page (decided 2026-11-17)
+### 2.5 Privacy of the unit's identity, and the public fields per page (decided 2026-11-17; table approved 2026-11-18)
 
 A buyer must never be able to find the unit or its owner and go around Lokta.
 
@@ -505,7 +563,8 @@ fields); `tests/Feature/Api/PrivateFieldsTest.php` fills every private column, t
 a document path with sentinel values and fails if any appears in any keyed API answer. Phase 5 adds the same scan
 over the built public pages, the sitemaps and the structured data (crawler check), and phase 7 over buyer e-mails.
 
-**Public fields, page by page** (for Michael's review):
+**Public fields, page by page** (approved by Michael 2026-11-18, with the exact floor shown on the unit page; the admin
+checks photos in review for building numbers, signs or documents and can hide a photo, logged):
 
 | Where | Fields shown |
 |---|---|
@@ -830,6 +889,7 @@ page works; **F** = a fact we must not invent (left visibly empty until supplied
 | 20 | Unit state and deal stage labels shown to users | ✓ | ✓ | P |
 | 21 | Meta titles and descriptions per page | ✓ | ✓ | P → C |
 | 22 | Logo files (have: navy and transparent PNG), favicon, social image | | | have / need SVG |
+| 23 | Seller wizard texts: the web pages (`web/messages/*.json` `sell`, `account.units`), step checks, duplicate notice, upload refusals; e-mails "received", "withdrawn" and the team notices (`core/lang/{ar,en}/seller.php`, `uploads.php`, `mail.php` `unit_received`, `unit_team`, `unit_notice`). The exit report labels are site texts (group `exit_report`, rows 10 and 11) | ✓ | ✓ | P → C |
 
 ---
 
@@ -886,13 +946,19 @@ first payment and all client texts) is a contract matter for Michael.
       D14, D15); My account with details, confirmation status and profile edit (RUN D13)
 - [x] Tests: 24 account tests; the private-fields scan now covers the account routes; end-to-end run in a browser
 
-**Phase 4: Seller**
-- [ ] 6-step wizard with drafts and cross-field checks
-- [ ] Uploads (documents, photos) with limits and private storage for documents
-- [ ] Duplicate contract block
-- [ ] Exit report PDF (AR + EN)
-- [ ] Unit status in "My account"; seller e-mails; editing after publish and withdrawal
-- [ ] ID retention job (2.2.8)
+**Phase 4: Seller** (started 2026-11-18)
+- [x] Migration from 2.2.13 and 2.2.12: transfer fee per unit, contract and delivery months, overdue settlement,
+      photo hiding; team mailbox setting; upload limit settings (2.2.14) (Michael 2026-11-18)
+- [x] 6-step wizard, server side (core API): drafts, autosave, cross-field checks, declarations, submit (2026-11-18)
+- [x] 6-step wizard, web pages: /sell with the no-over modal, /sell/{id}/1..6 with autosave, the live exit report and
+      the browser-side shrink and HEIC conversion (heic-to 1.6.6, LGPL-3.0, Michael 2026-11-18), /sell/{id}/done
+- [x] Uploads (documents, photos) with limits and private storage for documents; security as 2.2.15 (2026-11-18)
+- [x] Duplicate contract block (step 1 and submit, logged, rate limited) (2026-11-18)
+- [x] Exit report PDF (AR + EN): calculator engine (4.2) in core, mPDF with Alexandria, generated at submit,
+      attached to the seller's e-mail, owner download; "verified" version on publish comes with phase 7
+- [x] Unit status in "My account" (/account/units and the unit page); seller e-mails (received, withdrawn; the review
+      outcomes come with phase 7); editing after publish (tiers 2.2.7) and withdrawal (request during a deal)
+- [x] ID retention job (2.2.8): `ids:purge`, daily 04:00 Cairo, with --dry-run
 
 **Phase 5: Listings**
 - [ ] Opportunities page: filters, sort, pagination, server-rendered cards

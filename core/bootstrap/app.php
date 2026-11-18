@@ -5,6 +5,7 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequireServerKey;
 use App\Http\Middleware\SetApiLocale;
 use App\Http\Middleware\SetDashboardLocale;
+use App\Support\Uploads\UploadRefused;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -41,6 +42,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || ($request->expectsJson() && ! $request->hasHeader('X-Inertia')),
         );
+
+        // A refused upload (PLAN 2.2.15): 422 with the reason, nothing stored.
+        $exceptions->render(fn (UploadRefused $e) => response()->json([
+            'message' => $e->text(),
+            'errors' => ['file' => [$e->text()]],
+            'reason' => $e->reason,
+        ], 422));
 
         // Dashboard errors render the dashboard's own Error page in the reader's language. 500 and 503 keep
         // Laravel's debug page while debugging, so a developer still sees the trace.

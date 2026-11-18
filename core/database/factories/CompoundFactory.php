@@ -38,7 +38,8 @@ class CompoundFactory extends Factory
 
         return Area::query()->create([
             'parent_id' => $governorate->id,
-            'code' => 'T'.strtoupper(base_convert((string) ($n % 1296), 10, 36)),
+            // Four characters: real area codes are two letters (PLAN 3.3), so a test area never takes one.
+            'code' => 'Z'.str_pad(strtoupper(base_convert((string) ($n % 46656), 10, 36)), 3, '0', STR_PAD_LEFT),
             'name_ar' => "منطقة {$n}",
             'name_en' => "Area {$n}",
             'slug' => "area-{$n}",

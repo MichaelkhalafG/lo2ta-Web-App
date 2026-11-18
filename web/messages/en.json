@@ -99,7 +99,8 @@
       "overview": "My account",
       "budget": "My budget",
       "favorites": "Favorites",
-      "logout": "Sign out"
+      "logout": "Sign out",
+      "units": "My units"
     },
     "overview": {
       "title": "My account",
@@ -156,6 +157,385 @@
       "saved": "Saved",
       "save": "Save unit {code}",
       "remove": "Remove unit {code} from favorites"
+    },
+    "units": {
+      "title": "My units",
+      "intro": "Every unit you listed, its state and the next step.",
+      "empty": "You have not listed a unit yet.",
+      "sell": "Start selling your unit",
+      "untitled": "Unit",
+      "another": "List another unit",
+      "exitReport": "Exit report",
+      "next": {
+        "draft": "Continue",
+        "submitted": "Under review",
+        "changes_requested": "Edit and resend",
+        "rejected": "Details",
+        "published": "Manage",
+        "reserved": "Manage",
+        "sold": "Details",
+        "withdrawn": "Details"
+      },
+      "stateNote": {
+        "draft": "A draft not sent yet.",
+        "submitted": "We review the details and documents within 48 hours.",
+        "changes_requested": "The team asked for changes; you have them by e-mail.",
+        "rejected": "The unit was rejected; you have the reason by e-mail.",
+        "published": "The unit is live on the site.",
+        "reserved": "A deal is open on the unit.",
+        "sold": "The unit is sold.",
+        "withdrawn": "The unit is withdrawn from the site."
+      }
+    }
+  },
+  "sell": {
+    "frame": {
+      "title": "Sell your unit",
+      "saving": "Saving…",
+      "saved": "Draft saved · {time}",
+      "saveFailed": "Not saved, try again",
+      "draft": "Draft",
+      "saveExit": "Save and exit",
+      "ownerOnlyTitle": "Owners only."
+    },
+    "steps": {
+      "1": "Contract",
+      "2": "Unit",
+      "3": "Price and installments",
+      "4": "Documents",
+      "5": "Photos and description",
+      "6": "Review and submit",
+      "label": "Form steps"
+    },
+    "common": {
+      "backToList": "Back to the list",
+      "pick": "Choose",
+      "month": {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
+      },
+      "egp": "EGP",
+      "yes": "Yes",
+      "no": "No",
+      "back1": "← Back: contract",
+      "back2": "← Back: unit",
+      "back3": "← Back: price and installments",
+      "back4": "← Back: documents"
+    },
+    "step1": {
+      "title": "Contract",
+      "intro": "As written in your contract with the developer.",
+      "developer": "Developer",
+      "developerPick": "Choose the developer",
+      "developerMissing": "Developer not listed? Type it",
+      "compound": "Compound / project",
+      "compoundPick": "Choose the project",
+      "compoundMissing": "Not listed? Type it",
+      "area": "Area",
+      "areaPick": "Choose the area",
+      "areaHint": "Filled from the project; you can change it",
+      "areaMissing": "My area is not in the list",
+      "mainType": "Type",
+      "subType": "Sub-type",
+      "contractNumber": "Contract number",
+      "unitNumber": "Unit number as in the contract",
+      "contractYear": "Contract year",
+      "contractMonth": "Contract month",
+      "private": "The contract and unit numbers are never public; we use them for the review only.",
+      "next": "Next: unit"
+    },
+    "step2": {
+      "title": "Unit",
+      "intro": "Details of the {type}. Fields that do not apply to this type are hidden.",
+      "needStep1": "Complete the contract first (the sub-type).",
+      "next": "Next: price and installments",
+      "plot": "Plot area",
+      "size": "Size",
+      "garden": "Garden",
+      "roof": "Roof",
+      "floor": "Floor",
+      "floors": {
+        "basement": "Basement",
+        "ground": "Ground",
+        "mezzanine": "Mezzanine"
+      },
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "finishing": "Finishing",
+      "delivery": "Delivery status",
+      "deliveryLand": "Utilities",
+      "landStatus": {
+        "ready": "Utilities delivered",
+        "under_construction": "Under development"
+      },
+      "deliveryYear": "Expected delivery year",
+      "deliveryMonth": "Expected delivery month",
+      "facade": "Façade (optional)",
+      "sides": {
+        "north": "North",
+        "east": "East",
+        "south": "South",
+        "west": "West"
+      },
+      "featureGroups": {
+        "unit": "Unit features",
+        "building": "Building",
+        "compound": "Compound",
+        "view": "View"
+      }
+    },
+    "step3": {
+      "title": "Price and installments",
+      "intro": "Type the figures as in your contract and payment receipts. The report beside you updates as you type.",
+      "noOver": "No over price, ever: the most you ask is what you paid.",
+      "contract": "Contract",
+      "total": "Total contract price",
+      "totalHint": "As written in the developer's contract",
+      "paid": "Total paid to date",
+      "paidHint": "Paid cannot be more than the contract price",
+      "market": "Your estimate for a similar unit today",
+      "marketHint": "Your estimate; the team may review it",
+      "installments": "Remaining installments",
+      "installmentsNote": "Hidden when the contract is fully paid",
+      "finished": "Installments finished: the contract is fully paid.",
+      "installment": "Installment amount",
+      "frequency": "Frequency",
+      "nextDue": "Next installment date",
+      "yearsLeft": "Years of installments left",
+      "years": "years",
+      "mismatch": "The remaining installments do not roughly add up to what remains. Check the figures (a warning, not a block).",
+      "annualQ": "Is there an annual extra payment?",
+      "annual": "Annual extra payment",
+      "deliveryPayment": "Payment at delivery (optional)",
+      "deliveryPaymentHint": "If an amount is due when the unit is handed over",
+      "overdueQ": "Any overdue installments?",
+      "overdueHint": "Most developers refuse a transfer before arrears are paid.",
+      "overdueCount": "Overdue installments",
+      "installmentUnit": "installments",
+      "overdueAmount": "Overdue total",
+      "settlementQ": "How are the arrears settled?",
+      "maintenance": "Maintenance deposit due (optional)",
+      "sale": "Sale",
+      "acceptsLessQ": "Ready to accept less to sell faster?",
+      "lowest": "Lowest amount you accept",
+      "lowestHint": "Must be less than what you paid",
+      "transferFee": "Developer's transfer fee (optional, % of the contract price)",
+      "transferFeeHint": "Paid by you directly to the developer, not to Lokta. Not sure? Leave it and we estimate it.",
+      "next": "Next: documents"
+    },
+    "exit": {
+      "label": "EXIT REPORT",
+      "waiting": "Type the contract price and the amount paid, and the report appears here.",
+      "title": "Estimated exit report",
+      "estimate": "ESTIMATE",
+      "live": "LIVE",
+      "cancelTitle": "If you cancel with the developer",
+      "cancelNote": "After the developer's deduction · over {years} years · market average, estimated",
+      "zone": {
+        "wipeout": "You could lose all you paid",
+        "deep_loss": "Heavy loss"
+      },
+      "sellTitle": "If you sell through Lokta · net",
+      "advantage": "In your favour: at least {amount} EGP",
+      "receive": "Received from the buyer",
+      "transferFee": "Developer's transfer fee",
+      "transferFeeNote": "Paid by you to the developer, not to Lokta",
+      "arrears": "Arrears to the developer",
+      "loktaFee": "Lokta commission",
+      "net": "Your estimated net",
+      "arrearsSelf": "The transfer happens after you settle the arrears ({amount} EGP).",
+      "provisional": "Rates are estimates until our market research is done."
+    },
+    "step4": {
+      "title": "Documents",
+      "intro": "A clear photo or a PDF of each document. The first four are needed for the review.",
+      "next": "Next: photos and description",
+      "tooLarge": "The file is larger than {mb} MB.",
+      "failed": "The upload failed. Try again.",
+      "waiting": "Wait until {name} finishes uploading",
+      "whoTitle": "Who sees the documents?",
+      "whoBuyers": "Buyers",
+      "whoTeam": "The Lokta review team",
+      "whoNote": "We use them only to check the details are consistent before publishing.",
+      "types": {
+        "contract": {
+          "title": "Contract copy",
+          "hint": "Every page, the signature page included"
+        },
+        "schedule": {
+          "title": "Installment schedule",
+          "hint": "From the developer or the contract annex"
+        },
+        "national_id_front": {
+          "title": "National ID · front",
+          "hint": "The contract owner's national ID card"
+        },
+        "national_id_back": {
+          "title": "National ID · back",
+          "hint": "The same card"
+        },
+        "receipt": {
+          "title": "Payment receipts",
+          "hint": "They speed up the review"
+        },
+        "statement": {
+          "title": "Latest developer statement",
+          "hint": "If you have one"
+        }
+      },
+      "required": "Required",
+      "optional": "Optional",
+      "needsReplacement": "Needs replacing",
+      "remove": "Remove",
+      "replace": "Replace",
+      "drop": "Drop the file here or choose it from your device"
+    },
+    "step5": {
+      "title": "Photos and description",
+      "intro": "One to 10 photos. The first is the cover.",
+      "next": "Next: review and submit",
+      "tooLarge": "The photo is larger than {mb} MB even after shrinking.",
+      "unreadable": "We could not read this photo. Try another one.",
+      "failed": "The upload failed. Try again.",
+      "photos": "Photos",
+      "photoAlt": "Photo {n}",
+      "cover": "Cover",
+      "hidden": "Hidden by the team",
+      "projectImage": "Project image",
+      "moveEarlier": "Move earlier",
+      "moveLater": "Move later",
+      "remove": "Remove",
+      "add": "Add photos (JPG, PNG or iPhone photos)",
+      "floorPlan": "Floor plan (optional)",
+      "addPlan": "Add the floor plan",
+      "description": "Short description",
+      "descriptionHint": "{min} to {max} characters. Phone numbers, e-mails and links are not allowed."
+    },
+    "step6": {
+      "title": "Review everything, then send it",
+      "intro": "You can go back to any step and change it before sending.",
+      "paid": "Paid {amount}",
+      "files": "{count} files",
+      "photos": "{count} photos · {chars} characters",
+      "incomplete": "Incomplete",
+      "edit": "Edit",
+      "declarations": "Declarations",
+      "submitting": "Sending…",
+      "submit": "Send for review"
+    },
+    "start": {
+      "start": "Start selling your unit",
+      "rule": "LOKTA RULE · 01",
+      "opening": "Opening…",
+      "go": "Agreed, let's start",
+      "cancel": "Not now"
+    },
+    "landing": {
+      "metaTitle": "Sell your unit",
+      "metaDescription": "List your installment unit contract on Lokta: 0% commission for the seller, and no over price.",
+      "title": "Sell your unit",
+      "intro": "List your contract for transfer in 6 steps. We review the details and documents and show the unit to serious buyers.",
+      "points": {
+        "fee": {
+          "title": "0% commission",
+          "body": "No commission for the seller. The developer's transfer fee is paid by you directly to the developer."
+        },
+        "noOver": {
+          "title": "No over price",
+          "body": "The most you ask is what you actually paid."
+        },
+        "review": {
+          "title": "Review within 48 hours",
+          "body": "Every step reaches you by e-mail."
+        }
+      },
+      "steps": {
+        "1": "Contract",
+        "2": "Unit",
+        "3": "Price, installments and the exit report",
+        "4": "Documents (private, for the team only)",
+        "5": "Photos and description",
+        "6": "Review and submit"
+      },
+      "throttled": "Too many attempts. Try again a little later.",
+      "draftFailed": "We could not open a new draft just now.",
+      "drafts": "Your drafts",
+      "untitled": "New draft",
+      "continue": "Continue",
+      "login": "Sign in and start",
+      "register": "Create an account"
+    },
+    "done": {
+      "title": "Sent for review.",
+      "sent": "Sent today",
+      "review": "Review of the details and documents",
+      "reviewWhen": "Within 48 hours",
+      "outcome": "Publishing or our notes",
+      "outcomeHow": "By e-mail",
+      "track": "Track your unit",
+      "home": "Home"
+    },
+    "manage": {
+      "withdrawRequested": "Your withdrawal request reached the team; they will contact you because a deal is open on the unit.",
+      "photosLive": "Photos you add or remove apply at once, and the team checks them.",
+      "documents": "Documents",
+      "documentsNote": "You can add new documents at any time (new receipts, for example). They are reviewed and do not change the listing.",
+      "pendingTitle": "Changes waiting for review",
+      "pendingNote": "The listing keeps the old figures until the team approves.",
+      "editTitle": "Edit the unit",
+      "editNote": "The description changes at once. Figures go to the team for review; the listing stays as it is until then.",
+      "description": "Description",
+      "nothing": "Nothing changed.",
+      "savedPending": "Saved. The figures went to the team for review.",
+      "savedLive": "Saved and live.",
+      "saving": "Saving…",
+      "save": "Save changes",
+      "withdrawRequestTitle": "Ask to withdraw the unit",
+      "withdrawTitle": "Withdraw the unit",
+      "withdrawRequestNote": "A deal is open on the unit, so your request goes to the team.",
+      "withdrawNote": "The unit leaves the site at once. You can list it again later.",
+      "reason": "Reason (optional)",
+      "withdrawSure": "I am sure I want to withdraw the unit",
+      "withdrawRequest": "Send the withdrawal request",
+      "withdraw": "Withdraw the unit"
+    },
+    "fields": {
+      "paid_amount": "Paid to date",
+      "market_price_estimate": "Similar unit today",
+      "installment_amount": "Installment",
+      "installment_frequency": "Frequency",
+      "next_due_date": "Next installment date",
+      "years_left": "Years of installments left",
+      "accepts_less": "Accepts less",
+      "lowest_accepted_amount": "Lowest amount accepted",
+      "has_overdue": "Overdue installments",
+      "overdue_count": "Overdue count",
+      "overdue_amount": "Overdue total",
+      "overdue_settlement": "Arrears settlement",
+      "maintenance_due": "Maintenance deposit due",
+      "transfer_fee_bp": "Transfer fee",
+      "size_m2": "Size",
+      "garden_m2": "Garden",
+      "roof_m2": "Roof",
+      "floor": "Floor",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "finishing": "Finishing",
+      "delivery_status": "Delivery status",
+      "delivery_year": "Delivery year",
+      "delivery_month": "Delivery month",
+      "annual_extra_amount": "Annual extra payment",
+      "delivery_payment": "Payment at delivery"
     }
   }
 }

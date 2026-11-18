@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\InstallmentFrequency;
+use App\Enums\OverdueSettlement;
 use App\Models\Area;
 use App\Models\Compound;
 use App\Models\Developer;
@@ -22,6 +23,9 @@ use Illuminate\Support\Facades\Storage;
  */
 class UnitResource extends JsonResource
 {
+    /** Relations the resource reads; every query that feeds it eager-loads exactly these. */
+    public const WITH = ['developer', 'compound', 'area.parent.parent', 'features', 'visiblePhotos'];
+
     /**
      * @return array<string, mixed>
      */
@@ -47,9 +51,10 @@ class UnitResource extends JsonResource
                 ? ['slug' => $developer->slug, 'name' => $developer->nameFor($locale)] : null,
             'compound' => $compound instanceof Compound
                 ? ['slug' => $compound->slug, 'name' => $compound->nameFor($locale)] : null,
-            'area' => $area instanceof Area
-                ? ['slug' => $area->slug, 'name' => $area->nameFor($locale)] : null,
+            // Governorate > area > district (PLAN 3.3, 2.5): names only, never an address or a map position.
+            'location' => self::location($area, $locale),
             'contract_year' => $unit->contract_year,
+            'contract_month' => $unit->contract_month,
             'size_m2' => $unit->size_m2,
             'garden_m2' => $unit->garden_m2,
             'roof_m2' => $unit->roof_m2,
@@ -59,6 +64,7 @@ class UnitResource extends JsonResource
             'finishing' => self::choice($unit->finishing),
             'delivery_status' => self::choice($unit->delivery_status),
             'delivery_year' => $unit->delivery_year,
+            'delivery_month' => $unit->delivery_month,
             'facade' => self::facade($unit->facade),
             'description' => $unit->description,
             'features' => $unit->features->map(static fn (Feature $f): array => [
@@ -66,9 +72,11 @@ class UnitResource extends JsonResource
                 'group' => $f->group->value,
                 'name' => $f->nameFor($locale),
             ])->values()->all(),
-            'photos' => $unit->photos->map(static fn (UnitPhoto $p): array => [
+            // Only photos the admin has not hidden (PLAN 2.5).
+            'photos' => $unit->visiblePhotos->map(static fn (UnitPhoto $p): array => [
                 'kind' => $p->kind->value,
-                'src' => Storage::disk('public')->url($p->path),
+                // The public copy only; the private path is never sent (visiblePhotos guarantees a public copy).
+                'src' => Storage::disk('public')->url((string) $p->public_path),
                 'width' => $p->width,
                 'height' => $p->height,
                 'is_project_image' => $p->is_project_image,
@@ -91,6 +99,10 @@ class UnitResource extends JsonResource
                 'has_overdue' => $unit->has_overdue,
                 'overdue_count' => $unit->has_overdue ? $unit->overdue_count : null,
                 'overdue_amount' => $unit->has_overdue ? $unit->overdue_amount : null,
+                'overdue_settlement' => $unit->has_overdue ? self::choice($unit->overdue_settlement) : null,
+                // "Of which X goes to the developer to settle arrears" (PLAN 2.2.12): only when deducted.
+                'to_developer_for_arrears' => $unit->has_overdue && $unit->overdue_settlement === OverdueSettlement::Deducted
+                    ? $unit->overdue_amount : null,
                 'maintenance_due' => $unit->maintenance_due,
             ],
         ];
@@ -107,6 +119,29 @@ class UnitResource extends JsonResource
         $label = $value->label();
 
         return ['code' => (string) $value->value, 'label' => is_string($label) ? $label : (string) $value->value];
+    }
+
+    /**
+     * The unit's place as governorate, area and district, from the most specific level the unit points at.
+     *
+     * @return array{governorate: array{slug: string, name: string}|null, area: array{slug: string, name: string}|null, district: array{slug: string, name: string}|null}|null
+     */
+    private static function location(?Area $place, string $locale): ?array
+    {
+        if (! $place instanceof Area) {
+            return null;
+        }
+
+        $chain = [];
+        for ($node = $place; $node instanceof Area && count($chain) < 3; $node = $node->parent) {
+            array_unshift($chain, ['slug' => $node->slug, 'name' => $node->nameFor($locale)]);
+        }
+
+        return [
+            'governorate' => $chain[0],
+            'area' => $chain[1] ?? null,
+            'district' => $chain[2] ?? null,
+        ];
     }
 
     /**

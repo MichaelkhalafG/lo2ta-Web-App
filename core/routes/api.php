@@ -7,7 +7,11 @@ use App\Http\Controllers\Api\V1\Account\MeController;
 use App\Http\Controllers\Api\V1\ChoicesController;
 use App\Http\Controllers\Api\V1\ContentController;
 use App\Http\Controllers\Api\V1\ReferenceController;
+use App\Http\Controllers\Api\V1\Seller\DocumentsController as SellerDocumentsController;
+use App\Http\Controllers\Api\V1\Seller\PhotosController as SellerPhotosController;
+use App\Http\Controllers\Api\V1\Seller\UnitsController as SellerUnitsController;
 use App\Http\Controllers\Api\V1\UnitsController;
+use App\Support\Seller\SellerUnits;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -57,6 +61,29 @@ Route::prefix('v1')->group(function (): void {
             Route::delete('me/favorites/{code}', [FavoritesController::class, 'destroy'])->where('code', '[A-Za-z0-9-]{3,16}');
             Route::get('me/budget', [BudgetController::class, 'show']);
             Route::put('me/budget', [BudgetController::class, 'update']);
+
+            // The seller wizard (PLAN 2.2, 2.2.15). {unit}, {document} and {photo} are public IDs, looked up together
+            // with the owner (SellerUnits): another seller's ID answers 404.
+            Route::get('me/units', [SellerUnitsController::class, 'index']);
+            Route::post('me/units', [SellerUnitsController::class, 'store']);
+            Route::prefix('me/units/{unit}')->where([
+                'unit' => SellerUnits::ID, 'document' => SellerUnits::ID, 'photo' => SellerUnits::ID,
+            ])->group(function (): void {
+                Route::get('/', [SellerUnitsController::class, 'show']);
+                Route::delete('/', [SellerUnitsController::class, 'destroy']);
+                Route::put('steps/{step}', [SellerUnitsController::class, 'saveStep'])->whereNumber('step');
+                Route::post('submit', [SellerUnitsController::class, 'submit']);
+                Route::get('exit-report', [SellerUnitsController::class, 'exitReport']);
+                Route::put('live', [SellerUnitsController::class, 'liveEdit']);
+                Route::post('withdraw', [SellerUnitsController::class, 'withdraw']);
+                Route::post('documents', [SellerDocumentsController::class, 'store']);
+                Route::get('documents/{document}', [SellerDocumentsController::class, 'show']);
+                Route::delete('documents/{document}', [SellerDocumentsController::class, 'destroy']);
+                Route::post('photos', [SellerPhotosController::class, 'store']);
+                Route::put('photos', [SellerPhotosController::class, 'update']);
+                Route::get('photos/{photo}', [SellerPhotosController::class, 'show']);
+                Route::delete('photos/{photo}', [SellerPhotosController::class, 'destroy']);
+            });
         });
     });
 });

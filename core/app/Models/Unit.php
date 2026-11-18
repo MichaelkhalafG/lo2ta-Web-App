@@ -6,6 +6,7 @@ use App\Enums\DeliveryStatus;
 use App\Enums\Finishing;
 use App\Enums\InstallmentFrequency;
 use App\Enums\MainType;
+use App\Enums\OverdueSettlement;
 use App\Enums\SubType;
 use App\Enums\UnitState;
 use Database\Factories\UnitFactory;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 /**
  * A seller's submission and its public listing (PLAN 3.1 option A).
@@ -32,20 +34,39 @@ class Unit extends Model
     public const PRIVATE = [
         'seller_id', 'contract_number', 'unit_number', 'contract_key', 'unit_key', 'active_contract_key',
         'active_unit_key', 'developer_other', 'compound_other', 'area_other', 'verified_by', 'withdraw_reason',
-        'step_reached', 'rejected_at', 'withdrawn_at', 'submitted_at',
+        'step_reached', 'rejected_at', 'withdrawn_at', 'submitted_at', 'transfer_fee_bp', 'public_id', 'recheck_after_edit_at', 'withdraw_requested_at',
+        'sold_at',
     ];
+
+    /** States in which the seller may still change the six steps (published edits come later, PLAN 2.2.7). */
+    public const EDITABLE = [UnitState::Draft, UnitState::ChangesRequested];
+
+    protected static function booted(): void
+    {
+        static::creating(static function (Unit $unit): void {
+            $unit->public_id ??= (string) Str::ulid();
+        });
+    }
+
+    public function isEditableBySeller(): bool
+    {
+        return in_array($this->state, self::EDITABLE, true);
+    }
 
     protected $fillable = [
         // Step 1
         'developer_id', 'developer_other', 'compound_id', 'compound_other', 'area_id', 'area_other',
-        'main_type', 'sub_type', 'contract_number', 'unit_number', 'contract_year',
+        'main_type', 'sub_type', 'contract_number', 'unit_number', 'contract_year', 'contract_month',
         // Step 2
         'size_m2', 'garden_m2', 'roof_m2', 'floor', 'bedrooms', 'bathrooms', 'finishing', 'delivery_status',
-        'delivery_year', 'facade', 'description',
+        'delivery_year', 'delivery_month', 'facade',
         // Step 3
         'total_price', 'paid_amount', 'market_price_estimate', 'installment_amount', 'installment_frequency',
         'next_due_date', 'years_left', 'annual_extra_amount', 'delivery_payment', 'accepts_less',
-        'lowest_accepted_amount', 'has_overdue', 'overdue_count', 'overdue_amount', 'maintenance_due',
+        'lowest_accepted_amount', 'has_overdue', 'overdue_count', 'overdue_amount', 'overdue_settlement',
+        'maintenance_due', 'transfer_fee_bp',
+        // Step 5 (the description moved here with the photos, PLAN 2.2.13 point 1)
+        'description',
     ];
 
     /**
@@ -60,6 +81,10 @@ class Unit extends Model
             'finishing' => Finishing::class,
             'delivery_status' => DeliveryStatus::class,
             'installment_frequency' => InstallmentFrequency::class,
+            'overdue_settlement' => OverdueSettlement::class,
+            'contract_month' => 'integer',
+            'delivery_month' => 'integer',
+            'transfer_fee_bp' => 'integer',
             'size_m2' => 'decimal:2',
             'garden_m2' => 'decimal:2',
             'roof_m2' => 'decimal:2',
@@ -82,6 +107,9 @@ class Unit extends Model
             'published_at' => 'immutable_datetime',
             'rejected_at' => 'immutable_datetime',
             'withdrawn_at' => 'immutable_datetime',
+            'recheck_after_edit_at' => 'immutable_datetime',
+            'withdraw_requested_at' => 'immutable_datetime',
+            'sold_at' => 'immutable_datetime',
         ];
     }
 
@@ -131,6 +159,17 @@ class Unit extends Model
     public function photos(): HasMany
     {
         return $this->hasMany(UnitPhoto::class)->orderBy('sort');
+    }
+
+    /**
+     * Photos a visitor may see: not hidden by the admin (PLAN 2.5). Every public answer uses this, never photos().
+     *
+     * @return HasMany<UnitPhoto, $this>
+     */
+    public function visiblePhotos(): HasMany
+    {
+        // Only photos with a public copy: written at publish, removed when the admin hides one (PLAN 2.2.15).
+        return $this->hasMany(UnitPhoto::class)->where('is_hidden', false)->whereNotNull('public_path')->orderBy('sort');
     }
 
     /**

@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Dashboard\ActivityController;
 use App\Http\Controllers\Dashboard\AuthController;
+use App\Http\Controllers\Dashboard\FilesController;
 use App\Http\Controllers\Dashboard\LocaleController;
 use App\Http\Controllers\Dashboard\OverviewController;
+use App\Support\Seller\SellerUnits;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,5 +27,9 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
         Route::get('/', OverviewController::class)->name('home');
         Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
         Route::get('activity', ActivityController::class)->middleware('can:view-activity')->name('activity');
+        Route::middleware('can:view-documents')->group(function (): void {
+            Route::get('files/documents/{document}', [FilesController::class, 'document'])->where('document', SellerUnits::ID)->name('files.document');
+            Route::get('files/photos/{photo}', [FilesController::class, 'photo'])->where('photo', SellerUnits::ID)->name('files.photo');
+        });
     });
 });

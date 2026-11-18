@@ -2,7 +2,10 @@
 
 use App\Mail\AccountActionMail;
 use App\Mail\NewBudgetMail;
+use App\Mail\SellerUnitNoticeMail;
 use App\Mail\SystemTestMail;
+use App\Mail\UnitReceivedMail;
+use App\Mail\UnitTeamNoticeMail;
 
 /*
 | Mail templates the outbox can send, by code. Each class implements App\Support\Mail\OutboxTemplate.
@@ -14,4 +17,7 @@ return [
     'account.verify_email' => AccountActionMail::class,
     'account.reset_password' => AccountActionMail::class,
     'admin.new_budget' => NewBudgetMail::class,
+    'seller.unit_received' => UnitReceivedMail::class,
+    'admin.unit_submitted' => UnitTeamNoticeMail::class,
+    'seller.unit_withdrawn' => SellerUnitNoticeMail::class,
 ];

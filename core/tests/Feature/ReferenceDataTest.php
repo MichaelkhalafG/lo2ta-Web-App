@@ -2,6 +2,7 @@
 
 use App\Enums\AdminRole;
 use App\Enums\DeclarationKind;
+use App\Enums\DeliveryPreference;
 use App\Enums\DeliveryStatus;
 use App\Enums\DocumentStatus;
 use App\Enums\DocumentType;
@@ -10,6 +11,7 @@ use App\Enums\Finishing;
 use App\Enums\InstallmentFrequency;
 use App\Enums\MailState;
 use App\Enums\MainType;
+use App\Enums\OverdueSettlement;
 use App\Enums\PhotoKind;
 use App\Enums\ReviewOutcome;
 use App\Enums\SubType;
@@ -44,7 +46,7 @@ it('labels every code of every enum in Arabic and English', function () {
     $enums = [UnitState::class, MainType::class, SubType::class, Finishing::class, DeliveryStatus::class,
         InstallmentFrequency::class, DocumentType::class, DocumentStatus::class, ReviewOutcome::class,
         DeclarationKind::class, PhotoKind::class, FeatureGroup::class, AdminRole::class, MailState::class,
-        TextSource::class];
+        TextSource::class, OverdueSettlement::class, DeliveryPreference::class];
 
     foreach ($enums as $enum) {
         foreach ($enum::cases() as $case) {

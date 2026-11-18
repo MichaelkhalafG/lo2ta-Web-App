@@ -30,4 +30,25 @@ return [
         'installment' => 'أقصى قسط مريح (ج.م)',
         'verified' => 'البريد مؤكَّد',
     ],
+    // Placeholder wording for the client to confirm (PLAN 6 row 23).
+    'unit_received' => [
+        'subject' => 'وصلنا طلب عرض وحدتك :reference',
+        'heading' => 'استلمنا بيانات وحدتك',
+        'reference' => 'رقم الطلب: :reference. استخدمه في أي تواصل معنا.',
+        'review' => 'هنراجع البيانات والمستندات خلال 48 ساعة ونرد عليك بالبريد الإلكتروني.',
+    ],
+    'unit_team' => [
+        'submitted' => 'وحدة جديدة للمراجعة :reference',
+        'resubmitted' => 'وحدة أعيد إرسالها بعد التعديل :reference',
+        'documents' => 'مستندات جديدة على الوحدة :reference',
+        'withdrawn' => 'البائع سحب الوحدة :reference',
+        'withdraw_request' => 'طلب سحب وحدة عليها صفقة مفتوحة :reference',
+        'next' => 'التفاصيل والمستندات في لوحة التحكم.',
+    ],
+    'unit_notice' => [
+        'withdrawn' => [
+            'subject' => 'تم سحب وحدتك :reference',
+            'body' => 'وحدتك :reference اتشالت من الموقع زي ما طلبت. تقدر تعرضها تاني في أي وقت من حسابك.',
+        ],
+    ],
 ];

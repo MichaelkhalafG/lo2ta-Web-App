@@ -17,15 +17,16 @@ use Illuminate\Support\Facades\Route;
 
 const APPROVED_UNIT_KEYS = [
     'code', 'slug', 'state', 'is_verified', 'deal_tag', 'published_at', 'main_type', 'sub_type', 'developer',
-    'compound', 'area', 'contract_year', 'size_m2', 'garden_m2', 'roof_m2', 'floor', 'bedrooms', 'bathrooms',
-    'finishing', 'delivery_status', 'delivery_year', 'facade', 'description', 'features', 'photos', 'money',
+    'compound', 'location', 'contract_year', 'contract_month', 'size_m2', 'garden_m2', 'roof_m2', 'floor', 'bedrooms',
+    'bathrooms', 'finishing', 'delivery_status', 'delivery_year', 'delivery_month', 'facade', 'description', 'features',
+    'photos', 'money',
 ];
 
 const APPROVED_MONEY_KEYS = [
     'total_price', 'paid_amount', 'remaining_amount', 'market_price_estimate', 'installment_amount',
     'installment_frequency', 'installments_per_year', 'next_due_date', 'years_left', 'annual_extra_amount',
     'delivery_payment', 'accepts_less', 'lowest_accepted_amount', 'has_overdue', 'overdue_count', 'overdue_amount',
-    'maintenance_due',
+    'overdue_settlement', 'to_developer_for_arrears', 'maintenance_due',
 ];
 
 function sentinelUnit(): Unit
@@ -43,6 +44,7 @@ function sentinelUnit(): Unit
         'active_contract_key' => 'SENTINEL-ACKEY-7738',
         'active_unit_key' => 'SENTINEL-AUKEY-7739',
         'withdraw_reason' => 'SENTINEL-WREASON-7740',
+        'transfer_fee_bp' => 1739,
     ])->save();
     // PLAN 2.5: the seller's name, phone and e-mail never reach a public output.
     $unit->seller->forceFill([
@@ -60,8 +62,16 @@ function sentinelUnit(): Unit
         'bytes' => 1000,
         'sha256' => str_repeat('a', 64),
     ]);
+    // A published photo: its private path must never show, only the public copy (PLAN 2.2.15).
     UnitPhoto::query()->create([
-        'unit_id' => $unit->id, 'path' => 'units/photo.webp', 'sort' => 0, 'width' => 1200, 'height' => 800, 'bytes' => 1,
+        'unit_id' => $unit->id, 'path' => 'photos/SENTINEL-PRIVPATH-7748.webp', 'public_path' => 'units/photo.webp',
+        'sort' => 0, 'width' => 1200, 'height' => 800, 'bytes' => 1,
+    ]);
+    // A photo the admin hid (it showed a building number): it must never reach a public answer (PLAN 2.5), even if a
+    // public copy were still on disk.
+    UnitPhoto::query()->create([
+        'unit_id' => $unit->id, 'path' => 'photos/SENTINEL-HIDDENPHOTO-7746.webp', 'public_path' => 'units/SENTINEL-HIDDENPUB-7749.webp',
+        'sort' => 1, 'width' => 1200, 'height' => 800, 'bytes' => 1, 'is_hidden' => true, 'hidden_reason' => 'SENTINEL-HIDDENWHY-7747',
     ]);
     $unit->features()->attach(Feature::query()->create([
         'code' => 'elevator', 'group' => 'building', 'name_ar' => 'أسانسير', 'name_en' => 'Elevator',
@@ -89,22 +99,39 @@ it('never sends a private value from any keyed GET route', function () {
     $buyer->favorites()->attach($unit->id, ['created_at' => now()]);
     $token = $buyer->createToken('web')->plainTextToken;
 
+    // The seller's own routes take the unit's real public IDs: the buyer is not the owner, so they must answer 404
+    // and leak nothing (Michael 2026-11-18: ownership on every endpoint).
+    $ids = [
+        '{code}' => (string) $unit->code,
+        '{unit}' => (string) $unit->public_id,
+        '{document}' => (string) $unit->documents()->value('public_id'),
+        '{photo}' => (string) $unit->photos()->value('public_id'),
+    ];
     $routes = collect(Route::getRoutes()->getRoutes())
         ->filter(fn ($r) => str_starts_with($r->uri(), 'api/v1/') && in_array('GET', $r->methods(), true))
-        ->map(fn ($r) => str_replace('{code}', (string) $unit->code, $r->uri()))
+        ->map(fn ($r) => $r->uri())
         ->values();
 
-    expect($routes)->not->toBeEmpty()->and($routes)->toContain('api/v1/me/favorites');
+    expect($routes)->not->toBeEmpty()->and($routes)->toContain('api/v1/me/favorites')->and($routes)->toContain('api/v1/me/units/{unit}/documents/{document}');
 
-    foreach ($routes as $uri) {
+    foreach ($routes as $route) {
+        $uri = strtr($route, $ids);
+        $ownerOnly = str_contains($route, '{unit}');
         foreach (['ar', 'en'] as $locale) {
             $url = '/'.$uri.'?locale='.$locale.(str_contains($uri, 'site-texts') ? '&group=seller' : '');
-            $body = $this->get($url, [...apiHeaders(), 'Authorization' => 'Bearer '.$token])->assertOk()->getContent();
+            $response = $this->get($url, [...apiHeaders(), 'Authorization' => 'Bearer '.$token]);
+            $ownerOnly ? $response->assertNotFound() : $response->assertOk();
+            $body = (string) $response->getContent();
 
             expect($body)->not->toContain('SENTINEL')
                 ->and($body)->not->toContain('sentinel-seller')
                 ->and($body)->not->toContain('01099997742')
-                ->and($body)->not->toContain('national_id');
+                // No document entry: the type codes are public in /choices, a document of the unit never is.
+                ->and($body)->not->toContain('"type":"national_id')
+                // The seller's own transfer fee (1739 bp); the general default rate in /settings is public by design.
+                ->and($body)->not->toContain('1739')
+                ->and($body)->not->toContain('is_hidden')
+                ->and($body)->not->toContain((string) $unit->public_id);
         }
     }
 });

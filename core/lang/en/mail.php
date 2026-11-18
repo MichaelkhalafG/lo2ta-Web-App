@@ -30,4 +30,25 @@ return [
         'installment' => 'Comfortable installment (EGP)',
         'verified' => 'E-mail confirmed',
     ],
+    // Placeholder wording for the client to confirm (PLAN 6 row 23).
+    'unit_received' => [
+        'subject' => 'We received your unit :reference',
+        'heading' => 'We received your unit details',
+        'reference' => 'Reference: :reference. Please quote it whenever you contact us.',
+        'review' => 'We review the details and documents within 48 hours and reply by e-mail.',
+    ],
+    'unit_team' => [
+        'submitted' => 'New unit to review :reference',
+        'resubmitted' => 'Unit resubmitted after changes :reference',
+        'documents' => 'New documents on unit :reference',
+        'withdrawn' => 'The seller withdrew unit :reference',
+        'withdraw_request' => 'Withdrawal request on a unit with an open deal :reference',
+        'next' => 'The details and documents are in the dashboard.',
+    ],
+    'unit_notice' => [
+        'withdrawn' => [
+            'subject' => 'Your unit :reference is withdrawn',
+            'body' => 'Your unit :reference is off the site, as you asked. You can list it again any time from your account.',
+        ],
+    ],
 ];

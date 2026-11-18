@@ -8,7 +8,7 @@ import { accountMetadata, requireAccount } from "@/lib/guard";
 import { pageLocale } from "@/lib/page";
 
 type FavoriteRow =
-  | { available: true; unit: { code: string; sub_type: { label: string } | null; area: { name: string } | null; compound: { name: string } | null } }
+  | { available: true; unit: { code: string; sub_type: { label: string } | null; location: { area: { name: string } | null; district: { name: string } | null } | null; compound: { name: string } | null } }
   | { available: false; unit: { code: string } };
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/account/favorites">): Promise<Metadata> {
@@ -42,7 +42,7 @@ export default async function FavoritesPage({ params }: PageProps<"/[locale]/acc
                 </span>
                 {row.available ? (
                   <Link href={`/units/${row.unit.code.toLowerCase()}`} className="text-body text-text-1 hover:underline">
-                    {[row.unit.sub_type?.label, row.unit.compound?.name, row.unit.area?.name].filter(Boolean).join(" · ")}
+                    {[row.unit.sub_type?.label, row.unit.compound?.name, row.unit.location?.district?.name ?? row.unit.location?.area?.name].filter(Boolean).join(" · ")}
                   </Link>
                 ) : (
                   <span className="text-body text-text-3">{t("unavailable")}</span>

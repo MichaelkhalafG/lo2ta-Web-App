@@ -65,6 +65,10 @@ return [
         'under_construction' => 'Under construction',
         'either' => 'Either',
     ],
+    'OverdueSettlement' => [
+        'self' => 'The owner pays them before the transfer',
+        'deduct' => 'Deducted from the amount the owner receives',
+    ],
     'InstallmentFrequency' => [
         'monthly' => 'Monthly',
         'quarterly' => 'Quarterly',
