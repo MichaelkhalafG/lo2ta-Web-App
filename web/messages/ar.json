@@ -100,7 +100,8 @@
       "budget": "ميزانيتي",
       "favorites": "المفضلة",
       "logout": "خروج",
-      "units": "وحداتي"
+      "units": "وحداتي",
+      "requests": "طلباتي"
     },
     "overview": {
       "title": "حسابي",
@@ -186,6 +187,14 @@
         "sold": "الوحدة اتباعت.",
         "withdrawn": "الوحدة مسحوبة من الموقع."
       }
+    },
+    "requests": {
+      "title": "طلباتي",
+      "intro": "الوحدات اللي طلبتها وحالة كل طلب.",
+      "empty": "لسه ما طلبتش وحدة.",
+      "browse": "شوف الفرص المتاحة",
+      "unitGone": "الوحدة مش معروضة دلوقتي",
+      "fee": "العمولة"
     }
   },
   "sell": {
@@ -537,5 +546,176 @@
       "annual_extra_amount": "الدفعة السنوية",
       "delivery_payment": "دفعة الاستلام"
     }
+  },
+  "listing": {
+    "card": {
+      "verified": "موثّقة",
+      "deal": "لقطة",
+      "reserved": "محجوزة",
+      "projectImage": "صورة من المشروع",
+      "contractPrice": "سعر التعاقد",
+      "similarToday": "وحدة مماثلة النهارده",
+      "payOwner": "تدفع للمالك",
+      "remaining": "باقي للمطوّر",
+      "ownerFrom": "المالك يقبل من",
+      "installments": "قسط",
+      "open": "افتح اللوحة",
+      "delivery": "استلام",
+      "facade": "واجهة",
+      "sides": {
+        "north": "بحري",
+        "east": "شرقي",
+        "south": "قبلي",
+        "west": "غربي"
+      },
+      "egp": "ج.م",
+      "noPhoto": "مفيش صور لسه"
+    },
+    "page": {
+      "count": "{count} وحدة متاحة.",
+      "titlePage": "{title} · صفحة {page}",
+      "types": "النوع",
+      "type": {
+        "all": "الكل",
+        "residential": "سكني",
+        "commercial": "تجاري",
+        "administrative": "إداري",
+        "land": "أراضٍ"
+      },
+      "area": "المنطقة",
+      "anyArea": "كل المناطق",
+      "allOf": "كل {name}",
+      "ownerMax": "تدفع للمالك",
+      "installmentMax": "القسط",
+      "anyAmount": "أي مبلغ",
+      "upTo": "حتى {amount}",
+      "sort": "الترتيب",
+      "sorts": {
+        "default": "المقترح",
+        "owner_low": "الأقل للمالك",
+        "installment_low": "الأقل قسطًا",
+        "newest": "الأحدث"
+      },
+      "verifiedOnly": "الموثّقة بس",
+      "apply": "اعرض",
+      "clear": "امسح الفلاتر",
+      "view": "طريقة العرض",
+      "views": {
+        "grid": "شبكة",
+        "list": "قائمة"
+      },
+      "empty": "مفيش وحدات بالفلاتر دي دلوقتي. جرّب توسّع البحث.",
+      "showMore": "اعرض كمان",
+      "loading": "بنحمّل…",
+      "pages": "الصفحات"
+    },
+    "unit": {
+      "breadcrumb": "مسار الصفحة",
+      "opportunities": "الفرص المتاحة",
+      "deal": "لقطة",
+      "reserved": "محجوزة",
+      "verified": "موثّقة",
+      "code": "رقم اللوحة",
+      "photos": "الصور",
+      "photoN": "صورة {n}",
+      "projectImage": "صورة من المشروع",
+      "specs": "المواصفات",
+      "size": "المساحة",
+      "garden": "الحديقة",
+      "roof": "الروف",
+      "rooms": "الغرف",
+      "roomsValue": "{bedrooms} غرف · {bathrooms} حمام",
+      "floor": "الدور",
+      "floors": {
+        "basement": "بدروم",
+        "ground": "أرضي",
+        "mezzanine": "ميزانين"
+      },
+      "facade": "الواجهة",
+      "sides": {
+        "north": "بحري",
+        "east": "شرقي",
+        "south": "قبلي",
+        "west": "غربي"
+      },
+      "finishing": "التشطيب",
+      "delivery": "الاستلام",
+      "contractDate": "تاريخ التعاقد",
+      "yearsLeft": "سنوات الأقساط الباقية",
+      "years": "{count} سنين",
+      "plan": "خطة السداد",
+      "paidPct": "مدفوع · {pct}%",
+      "remaining": "متبقٍ",
+      "remainingCount": "متبقٍ · {count} قسط {frequency}",
+      "contractPrice": "سعر التعاقد الأصلي",
+      "due": "الاستحقاق",
+      "amount": "القيمة",
+      "moreInstallments": "+ {count} قسط حتى {last} · عرض الجدول كامل",
+      "scheduleNote": "التواريخ محسوبة من قيمة القسط ودوريته وتاريخ القسط الجاي.",
+      "annualExtra": "دفعة سنوية إضافية",
+      "deliveryPayment": "دفعة الاستلام",
+      "maintenance": "وديعة الصيانة المستحقة",
+      "overdue": "أقساط متأخرة",
+      "overdueValue": "{count} قسط · {amount} ج.م",
+      "location": "الموقع",
+      "place": "المنطقة",
+      "compound": "الكمبوند",
+      "developer": "المطوّر",
+      "noMap": "مفيش خريطة: الموقع بالاسم بس لحماية خصوصية المالك.",
+      "description": "الوصف",
+      "floorPlan": "مخطط الوحدة",
+      "similarToday": "وحدة مماثلة النهارده",
+      "similarHint": "تقدير المالك، وبتراجعه لقطة",
+      "toOwner": "المطلوب للمالك",
+      "ownerFrom": "المالك يقبل من {amount}",
+      "arrears": "منها {amount} للمطوّر لتسوية متأخرات",
+      "noOver": "بحد أقصى اللي دفعه، ومفيش أوفر",
+      "toDeveloper": "المتبقي للمطوّر",
+      "fee": "عمولة لقطة على المشتري (1%)",
+      "feeWhen": "عند إتمام التنازل فقط",
+      "reservedNote": "فيه صفقة مفتوحة على الوحدة دي دلوقتي.",
+      "published": "منشورة"
+    },
+    "request": {
+      "open": "اطلب الوحدة",
+      "readiness": "إمتى تقدر تتحرك؟",
+      "readinessOptions": {
+        "now": "جاهز دلوقتي",
+        "within_3_months": "خلال شهر لـ3 شهور",
+        "looking": "بتفرّج بس"
+      },
+      "question": "سؤال للفريق (اختياري)",
+      "questionHint": "أرقام التليفون والإيميلات والروابط بتتخفي تلقائيًا.",
+      "send": "ابعت الطلب",
+      "sending": "بنبعت…",
+      "sent": "وصلنا طلبك. رقم الطلب: {reference}. هنتواصل معاك بالإيميل."
+    },
+    "compounds": {
+      "withUnits": "كمبوندات فيها وحدات متاحة",
+      "noUnits": "كمبوندات تانية",
+      "count": "{count} وحدة متاحة",
+      "pageTitle": "وحدات {name}",
+      "breadcrumb": "مسار الصفحة",
+      "index": "الكمبوندات",
+      "empty": "مفيش وحدات متاحة في الكمبوند ده دلوقتي.",
+      "all": "كل الفرص المتاحة"
+    }
+  },
+  "forms": {
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم التليفون",
+    "phoneOptional": "رقم الموبايل (اختياري)",
+    "message": "الرسالة",
+    "send": "ابعت",
+    "sending": "بنبعت…",
+    "thanks": "شكرًا، وصلتنا رسالتك وهنرد عليك بالإيميل.",
+    "thanksPartner": "شكرًا، وصلنا طلب الشراكة وهنتواصل معاك.",
+    "company": "اسم الشركة",
+    "contactName": "اسم المسؤول",
+    "jobTitleOptional": "الوظيفة (اختياري)",
+    "projectsOptional": "عدد المشروعات (اختياري)",
+    "contactTitle": "ابعتلنا رسالة",
+    "partnershipTitle": "طلب شراكة"
   }
 }

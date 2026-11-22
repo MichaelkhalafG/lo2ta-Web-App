@@ -3,7 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { ArrowButton } from "@/components/ArrowButton";
 import { Arrow } from "@/components/Arrow";
 import { HeroFigure } from "@/components/home/HeroFigure";
+import { UnitCard, type CardWords } from "@/components/listing/UnitCard";
 import { VerifiedStamp } from "@/components/VerifiedStamp";
+import { cardWords } from "@/lib/cardWords";
+import type { UnitCard as UnitCardData } from "@/lib/listing";
+import { unitList } from "@/lib/listingServer";
 import { Link } from "@/i18n/navigation";
 import { siteTexts, text } from "@/lib/core";
 import { paths } from "@/lib/nav";
@@ -35,13 +39,16 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const texts = await siteTexts("home", locale);
   const common = await getTranslations("common");
   const tx = (key: string) => text(texts, `home.${key}`);
+  // "لقطات الأسبوع": the units the team tagged; the newest three when none is tagged (PLAN D28).
+  const [tagged, words] = await Promise.all([unitList({ deal: true }, locale, 3), cardWords(locale)]);
+  const picks = tagged.data.length > 0 ? { cards: tagged.data, recent: false } : { cards: (await unitList({ sort: "newest" }, locale, 3)).data, recent: true };
 
   return (
     <>
       <Hero tx={tx} currency={common("currency")} />
       <Review tx={tx} />
       <SellerBand tx={tx} />
-      <Picks tx={tx} />
+      <Picks tx={tx} cards={picks.cards} recent={picks.recent} words={words} />
     </>
   );
 }
@@ -199,13 +206,13 @@ function SellerBand({ tx }: { tx: Tx }) {
   );
 }
 
-function Picks({ tx }: { tx: Tx }) {
+function Picks({ tx, cards, recent, words }: { tx: Tx; cards: UnitCardData[]; recent: boolean; words: CardWords }) {
   return (
     <section className="flex flex-col gap-9 px-gutter-mobile pt-16 pb-20 lg:px-gutter lg:pt-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-2.5">
           <h2 className="text-h2-m md:text-[2.5rem] md:leading-[1.3] md:font-bold">{tx("picks.title")}</h2>
-          <span className="text-body text-text-2">{tx("picks.subtitle")}</span>
+          <span className="text-body text-text-2">{recent ? tx("picks.recent") : tx("picks.subtitle")}</span>
         </div>
         <Link
           href={paths.opportunities}
@@ -214,7 +221,15 @@ function Picks({ tx }: { tx: Tx }) {
           {tx("picks.all")} <Arrow />
         </Link>
       </div>
-      <p className="border-t-[1.5px] border-text-3 pt-6 text-body text-text-2">{tx("picks.empty")}</p>
+      {cards.length === 0 ? (
+        <p className="border-t-[1.5px] border-text-3 pt-6 text-body text-text-2">{tx("picks.empty")}</p>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {cards.map((unit) => (
+            <UnitCard key={unit.code} unit={unit} words={words} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

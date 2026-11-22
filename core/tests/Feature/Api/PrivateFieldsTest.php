@@ -16,17 +16,24 @@ use Illuminate\Support\Facades\Route;
 */
 
 const APPROVED_UNIT_KEYS = [
-    'code', 'slug', 'state', 'is_verified', 'deal_tag', 'published_at', 'main_type', 'sub_type', 'developer',
+    'code', 'slug', 'title', 'state', 'is_verified', 'deal_tag', 'published_at', 'main_type', 'sub_type', 'developer',
     'compound', 'location', 'contract_year', 'contract_month', 'size_m2', 'garden_m2', 'roof_m2', 'floor', 'bedrooms',
     'bathrooms', 'finishing', 'delivery_status', 'delivery_year', 'delivery_month', 'facade', 'description', 'features',
-    'photos', 'money',
+    'photos', 'money', 'schedule',
 ];
 
 const APPROVED_MONEY_KEYS = [
     'total_price', 'paid_amount', 'remaining_amount', 'market_price_estimate', 'installment_amount',
     'installment_frequency', 'installments_per_year', 'next_due_date', 'years_left', 'annual_extra_amount',
     'delivery_payment', 'accepts_less', 'lowest_accepted_amount', 'has_overdue', 'overdue_count', 'overdue_amount',
-    'overdue_settlement', 'to_developer_for_arrears', 'maintenance_due',
+    'overdue_settlement', 'to_developer_for_arrears', 'maintenance_due', 'owner_from', 'paid_percent',
+    'installments_left', 'buyer_fee',
+];
+
+const APPROVED_CARD_KEYS = [
+    'code', 'slug', 'title', 'main_type', 'sub_type', 'size_m2', 'facade', 'place', 'delivery', 'total_price',
+    'market_price_estimate', 'paid_amount', 'remaining_amount', 'paid_percent', 'owner_from', 'accepts_less',
+    'installments', 'is_verified', 'deal_tag', 'is_reserved', 'cover',
 ];
 
 function sentinelUnit(): Unit
@@ -106,6 +113,7 @@ it('never sends a private value from any keyed GET route', function () {
         '{unit}' => (string) $unit->public_id,
         '{document}' => (string) $unit->documents()->value('public_id'),
         '{photo}' => (string) $unit->photos()->value('public_id'),
+        '{slug}' => (string) $unit->compound?->slug,
     ];
     $routes = collect(Route::getRoutes()->getRoutes())
         ->filter(fn ($r) => str_starts_with($r->uri(), 'api/v1/') && in_array('GET', $r->methods(), true))
@@ -134,6 +142,14 @@ it('never sends a private value from any keyed GET route', function () {
                 ->and($body)->not->toContain((string) $unit->public_id);
         }
     }
+});
+
+it('answers exactly the approved card keys on the opportunities list', function () {
+    sentinelUnit();
+
+    $cards = $this->getJson('/api/v1/units', apiHeaders())->assertOk()->json('data');
+
+    expect($cards)->toHaveCount(1)->and(array_keys($cards[0]))->toEqualCanonicalizing(APPROVED_CARD_KEYS);
 });
 
 it('lists every private column of units in Unit::PRIVATE', function () {

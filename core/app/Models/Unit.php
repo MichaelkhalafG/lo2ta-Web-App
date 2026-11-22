@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 /**
@@ -170,6 +171,18 @@ class Unit extends Model
     {
         // Only photos with a public copy: written at publish, removed when the admin hides one (PLAN 2.2.15).
         return $this->hasMany(UnitPhoto::class)->where('is_hidden', false)->whereNotNull('public_path')->orderBy('sort');
+    }
+
+    /**
+     * The card cover (PLAN 2.5): the first listing photo that is visible and has a public copy.
+     *
+     * @return HasOne<UnitPhoto, $this>
+     */
+    public function coverPhoto(): HasOne
+    {
+        return $this->hasOne(UnitPhoto::class)->ofMany(['sort' => 'min', 'id' => 'min'], function (Builder $query): void {
+            $query->where('kind', 'photo')->where('is_hidden', false)->whereNotNull('public_path');
+        });
     }
 
     /**

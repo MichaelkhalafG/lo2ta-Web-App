@@ -10,6 +10,8 @@ use App\Models\Developer;
 use App\Models\Feature;
 use App\Models\Unit;
 use App\Models\UnitPhoto;
+use App\Support\Listing\UnitFacts;
+use App\Support\Settings\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -41,6 +43,7 @@ class UnitResource extends JsonResource
         return [
             'code' => $unit->code,
             'slug' => $unit->slug,
+            'title' => UnitFacts::title($unit, $locale),
             'state' => $unit->state->value,
             'is_verified' => $unit->isVerified(),
             'deal_tag' => $unit->deal_tag,
@@ -65,7 +68,7 @@ class UnitResource extends JsonResource
             'delivery_status' => self::choice($unit->delivery_status),
             'delivery_year' => $unit->delivery_year,
             'delivery_month' => $unit->delivery_month,
-            'facade' => self::facade($unit->facade),
+            'facade' => self::facadeOf($unit->facade),
             'description' => $unit->description,
             'features' => $unit->features->map(static fn (Feature $f): array => [
                 'code' => $f->code,
@@ -104,7 +107,14 @@ class UnitResource extends JsonResource
                 'to_developer_for_arrears' => $unit->has_overdue && $unit->overdue_settlement === OverdueSettlement::Deducted
                     ? $unit->overdue_amount : null,
                 'maintenance_due' => $unit->maintenance_due,
+                // What a buyer reads off the money panel (board 06.3, PLAN 2.5).
+                'owner_from' => UnitFacts::ownerFrom($unit),
+                'paid_percent' => UnitFacts::paidPercent($unit),
+                'installments_left' => UnitFacts::installmentsLeft($unit),
+                'buyer_fee' => UnitFacts::buyerFee($unit, app(Settings::class)),
             ],
+            // Every installment date until the last (board 06.3), computed from the public money fields.
+            'schedule' => UnitFacts::schedule($unit),
         ];
     }
 
@@ -147,7 +157,7 @@ class UnitResource extends JsonResource
     /**
      * @return list<string>|null
      */
-    private static function facade(?int $bits): ?array
+    public static function facadeOf(?int $bits): ?array
     {
         if ($bits === null || $bits === 0) {
             return null;

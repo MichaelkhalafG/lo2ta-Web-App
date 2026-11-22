@@ -59,6 +59,12 @@ return [
 
     // Buyer requests (Q15)
     'max_open_requests_per_buyer' => ['type' => 'int', 'group' => 'buyer', 'default' => 5, 'min' => 1, 'max' => 50],
+    // Public forms (Michael 2026-11-22, "moderate"): per hour; honeypot on each form (Q18).
+    'rl_contact_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 5, 'min' => 1, 'max' => 1000],
+    'rl_partnership_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 3, 'min' => 1, 'max' => 1000],
+    'rl_request_user' => ['type' => 'int', 'group' => 'limits', 'default' => 10, 'min' => 1, 'max' => 1000],
+    'rl_request_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 20, 'min' => 1, 'max' => 1000],
+    'form_message_max' => ['type' => 'int', 'group' => 'limits', 'default' => 2000, 'min' => 200, 'max' => 10000, 'public' => true],
     // Team notices (Michael 2026-11-18): one of the agreement's two official mailboxes, e.g. info@loktaeg.com. Empty
     // until the mailbox exists: then every active admin account gets the notice (RUN D14).
     'team_email' => ['type' => 'string', 'group' => 'team', 'default' => '', 'format' => 'email_or_empty'],

@@ -18,6 +18,7 @@ export function AccountNav() {
   const items = [
     { href: "/account", label: t("overview") },
     { href: "/account/units", label: t("units") },
+    { href: "/account/requests", label: t("requests") },
     { href: "/account/budget", label: t("budget") },
     { href: "/account/favorites", label: t("favorites") },
   ];

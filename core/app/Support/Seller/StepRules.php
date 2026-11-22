@@ -16,6 +16,7 @@ use App\Models\Developer;
 use App\Models\Feature;
 use App\Models\Unit;
 use App\Support\Settings\Settings;
+use App\Support\Text\ContactDetails;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -179,19 +180,7 @@ final class StepRules
      */
     public static function hasContactDetails(string $text): bool
     {
-        $ascii = strtr($text, [
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4', '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
-            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4', '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
-        ]);
-        if (preg_match('/[A-Z0-9._%+\-]+\s*(@|\(at\)|\[at\])\s*[A-Z0-9.\-]+\.[A-Z]{2,}/i', $ascii) === 1) {
-            return true;
-        }
-        if (preg_match('/https?:\/\/|www\.|\b[a-z0-9\-]+\.(com|net|org|eg|io|me|co|info|biz|link|ly|app|site|online)\b/i', $ascii) === 1) {
-            return true;
-        }
-        $joined = (string) preg_replace('/(?<=\d)[\s\-.()\/]+(?=\d)/', '', $ascii);
-
-        return preg_match('/(?<!\d)(?:\+?20|0020|0)(?:1[0125]\d{8}|[2-9]\d{7,8})(?!\d)/', $joined) === 1;
+        return ContactDetails::has($text);
     }
 
     /**

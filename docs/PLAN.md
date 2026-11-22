@@ -579,6 +579,39 @@ checks photos in review for building numbers, signs or documents and can hide a 
 | E-mails to a buyer | unit code, card title, compound, district / area, money figures; never seller details |
 | Public API (`UnitResource`) | the unit-page fields above, as codes plus labels; phase 4 adds district, `contract_month`, `delivery_month`, `overdue_settlement` and the whitelist test with them |
 
+### 2.6 Listings, requests and public forms (phase 5, 2026-11-22)
+
+**Michael's answers (2026-11-22):**
+- "You pay the owner up to X" compares X with the lowest amount the owner accepts: what he paid, or his lowest
+  accepted amount when he opted in.
+- Form limits, as settings: contact 5 per hour per IP, partnership 3 per IP, unit requests 10 per user and 20 per IP;
+  messages at most 2,000 characters (`form_message_max`); the request question stays at 500. Honeypot on every form.
+- Contact form: name, e-mail, mobile (optional), message. Partnership form: company, contact person, job title
+  (optional), e-mail, phone, number of projects (optional), message. No automatic e-mail to the sender; a thank-you
+  on screen.
+- Listings: numbered pages of 24 with their own URLs, plus "show more" that adds the next page in place.
+
+**Choices made while building (for review; each reversible in a few lines):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D21 | A unit request needs a confirmed e-mail | RUN D15 notes Q13 covers units and requests; the team answers by e-mail | 1 check |
+| D22 | Sorts: suggested (2.2.6: accepts less first, then newest), least to the owner, lowest installment, newest | the board shows a sort menu without its list | 1 list |
+| D23 | Listing answers are cached 60 seconds on the web | a published unit shows within a minute; every visitor shares one answer per filter set | 1 constant |
+| D24 | One open request per buyer per unit; the 1% amount the buyer saw must equal today's, else the request is refused; the consent text is versioned like the declarations | a consent never attaches to a stale figure | 2 checks |
+| D25 | Contact and partnership messages go to the team mailbox in full until the phase 7 inbox exists; a unit request notice carries only the reference, unit code and readiness | the team has no other way to read them yet; buyer details stay out of mail | template |
+| D26 | A filled honeypot gets the same "thank you" and nothing is stored or sent | a bot learns nothing | 1 line |
+| D27 | Partnership phone: an Egyptian mobile, or a landline or number abroad (7 to 15 digits); contact phone optional (Egyptian mobile) | companies often give a landline | 1 function |
+| D28 | Home "لقطات الأسبوع": units with the لقطة tag; when none is tagged, the newest three under the existing "recent" text | the section is never empty while units exist | 1 query |
+| D29 | The area filter takes a governorate, an area or a district, each with the levels under it | the three-level list of 3.3 | 1 function |
+| D30 | A compound intro is not shown while flagged placeholder; compound pages are noindex at 0 published units (Q14) | no placeholder text in front of visitors on a page meant to rank | 1 condition |
+| D31 | The unit page's heart does not look up whether the unit is already saved (saving twice is harmless) | the page stays shared and cached | a session read |
+| D32 | The request form shows on published units only; a reserved unit shows "a deal is open" | a reserved unit is in a deal (Q16) | 1 condition |
+| D33 | `UnitCode` forms the code and slug (2.2.8, 5.2) for phase 7 to use at publish; SampleSeeder publishes 12 invented units, scratch and test only | the pages can be seen and tested before phase 7 | none needed |
+| D34 | Filter amounts are fixed steps (to owner 0.5 to 5 million; installment 25,000 to 250,000) | a select works without JavaScript | 2 lists |
+| D35 | The card shows district then area, and the title "type N rooms in place" (2.5) | the board's card | lang lines |
+| D36 | The structured data offer is the amount the owner asks (paid), as 2.5 says "amount to the owner" | 2.5 | 1 field |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -890,6 +923,7 @@ page works; **F** = a fact we must not invent (left visibly empty until supplied
 | 21 | Meta titles and descriptions per page | ✓ | ✓ | P → C |
 | 22 | Logo files (have: navy and transparent PNG), favicon, social image | | | have / need SVG |
 | 23 | Seller wizard texts: the web pages (`web/messages/*.json` `sell`, `account.units`), step checks, duplicate notice, upload refusals; e-mails "received", "withdrawn" and the team notices (`core/lang/{ar,en}/seller.php`, `uploads.php`, `mail.php` `unit_received`, `unit_team`, `unit_notice`). The exit report labels are site texts (group `exit_report`, rows 10 and 11) | ✓ | ✓ | P → C |
+| 24 | Listing and request texts: card and unit page labels, filters, the request form, the forms, My requests (`web/messages/*.json` `listing`, `forms`, `account.requests`; `core/lang/{ar,en}/listing.php`, `requests.php`, `mail.php` `request_received`, `team_facts`); the fee consent and request note are site texts (`buyer.*`, row 9) | ✓ | ✓ | P → C |
 
 ---
 
@@ -960,10 +994,13 @@ first payment and all client texts) is a contract matter for Michael.
       outcomes come with phase 7); editing after publish (tiers 2.2.7) and withdrawal (request during a deal)
 - [x] ID retention job (2.2.8): `ids:purge`, daily 04:00 Cairo, with --dry-run
 
-**Phase 5: Listings**
-- [ ] Opportunities page: filters, sort, pagination, server-rendered cards
-- [ ] Unit page: specs, money block, verified badge, request form
-- [ ] Compound pages and index; developers page with partnership form; contact form
+**Phase 5: Listings** (2026-11-22, decisions in 2.6)
+- [x] Opportunities page: filters, sort, numbered pages plus show more, server-rendered cards (board 06.2)
+- [x] Unit page: specs, payment plan with the computed schedule, money panel, verified badge, request form with the
+      fee consent, structured data, old slugs redirect (board 06.3)
+- [x] Compound pages and index; developers page with partnership form; contact form; My requests; home picks
+- [x] Privacy: card keys pinned; the sentinel scan runs over the API and, in the browser run, over the built pages
+      and their structured data (2.5)
 
 **Phase 6: Tools**
 - [ ] Calculator (both tabs) on settings and developer policies

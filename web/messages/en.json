@@ -100,7 +100,8 @@
       "budget": "My budget",
       "favorites": "Favorites",
       "logout": "Sign out",
-      "units": "My units"
+      "units": "My units",
+      "requests": "My requests"
     },
     "overview": {
       "title": "My account",
@@ -186,6 +187,14 @@
         "sold": "The unit is sold.",
         "withdrawn": "The unit is withdrawn from the site."
       }
+    },
+    "requests": {
+      "title": "My requests",
+      "intro": "The units you requested and the state of each request.",
+      "empty": "You have not requested a unit yet.",
+      "browse": "Browse opportunities",
+      "unitGone": "The unit is not listed right now",
+      "fee": "Fee"
     }
   },
   "sell": {
@@ -537,5 +546,176 @@
       "annual_extra_amount": "Annual extra payment",
       "delivery_payment": "Payment at delivery"
     }
+  },
+  "listing": {
+    "card": {
+      "verified": "Verified",
+      "deal": "Lokta deal",
+      "reserved": "Reserved",
+      "projectImage": "Project image",
+      "contractPrice": "Contract price",
+      "similarToday": "Similar unit today",
+      "payOwner": "You pay the owner",
+      "remaining": "Left to the developer",
+      "ownerFrom": "Owner accepts from",
+      "installments": "installments",
+      "open": "Open the sheet",
+      "delivery": "delivery",
+      "facade": "facing",
+      "sides": {
+        "north": "north",
+        "east": "east",
+        "south": "south",
+        "west": "west"
+      },
+      "egp": "EGP",
+      "noPhoto": "No photos yet"
+    },
+    "page": {
+      "count": "{count} units available.",
+      "titlePage": "{title} · page {page}",
+      "types": "Type",
+      "type": {
+        "all": "All",
+        "residential": "Residential",
+        "commercial": "Commercial",
+        "administrative": "Administrative",
+        "land": "Land"
+      },
+      "area": "Area",
+      "anyArea": "All areas",
+      "allOf": "All of {name}",
+      "ownerMax": "You pay the owner",
+      "installmentMax": "Installment",
+      "anyAmount": "Any amount",
+      "upTo": "up to {amount}",
+      "sort": "Sort",
+      "sorts": {
+        "default": "Suggested",
+        "owner_low": "Least to the owner",
+        "installment_low": "Lowest installment",
+        "newest": "Newest"
+      },
+      "verifiedOnly": "Verified only",
+      "apply": "Show",
+      "clear": "Clear filters",
+      "view": "View",
+      "views": {
+        "grid": "Grid",
+        "list": "List"
+      },
+      "empty": "No units match these filters right now. Try a wider search.",
+      "showMore": "Show more",
+      "loading": "Loading…",
+      "pages": "Pages"
+    },
+    "unit": {
+      "breadcrumb": "Breadcrumb",
+      "opportunities": "Opportunities",
+      "deal": "Lokta deal",
+      "reserved": "Reserved",
+      "verified": "Verified",
+      "code": "Sheet no.",
+      "photos": "Photos",
+      "photoN": "Photo {n}",
+      "projectImage": "Project image",
+      "specs": "Specifications",
+      "size": "Size",
+      "garden": "Garden",
+      "roof": "Roof",
+      "rooms": "Rooms",
+      "roomsValue": "{bedrooms} bedrooms · {bathrooms} bathrooms",
+      "floor": "Floor",
+      "floors": {
+        "basement": "Basement",
+        "ground": "Ground",
+        "mezzanine": "Mezzanine"
+      },
+      "facade": "Facing",
+      "sides": {
+        "north": "north",
+        "east": "east",
+        "south": "south",
+        "west": "west"
+      },
+      "finishing": "Finishing",
+      "delivery": "Delivery",
+      "contractDate": "Contract date",
+      "yearsLeft": "Years of installments left",
+      "years": "{count} years",
+      "plan": "Payment plan",
+      "paidPct": "Paid · {pct}%",
+      "remaining": "Remaining",
+      "remainingCount": "Remaining · {count} {frequency} installments",
+      "contractPrice": "Original contract price",
+      "due": "Due",
+      "amount": "Amount",
+      "moreInstallments": "+ {count} installments until {last} · show the full schedule",
+      "scheduleNote": "Dates computed from the installment amount, its frequency and the next due date.",
+      "annualExtra": "Annual extra payment",
+      "deliveryPayment": "Payment at delivery",
+      "maintenance": "Maintenance deposit due",
+      "overdue": "Overdue installments",
+      "overdueValue": "{count} installments · {amount} EGP",
+      "location": "Location",
+      "place": "Area",
+      "compound": "Compound",
+      "developer": "Developer",
+      "noMap": "No map: the location is given by name only, to protect the owner's privacy.",
+      "description": "Description",
+      "floorPlan": "Floor plan",
+      "similarToday": "Similar unit today",
+      "similarHint": "The owner's estimate, reviewed by Lokta",
+      "toOwner": "Asked by the owner",
+      "ownerFrom": "The owner accepts from {amount}",
+      "arrears": "of which {amount} goes to the developer to settle arrears",
+      "noOver": "At most what he paid; no over price",
+      "toDeveloper": "Left to the developer",
+      "fee": "Lokta fee for the buyer (1%)",
+      "feeWhen": "Due only on completion of the transfer",
+      "reservedNote": "A deal is open on this unit right now.",
+      "published": "Published"
+    },
+    "request": {
+      "open": "Request this unit",
+      "readiness": "When can you move?",
+      "readinessOptions": {
+        "now": "Ready now",
+        "within_3_months": "Within 1 to 3 months",
+        "looking": "Just looking"
+      },
+      "question": "A question for the team (optional)",
+      "questionHint": "Phone numbers, e-mails and links are hidden automatically.",
+      "send": "Send the request",
+      "sending": "Sending…",
+      "sent": "We received your request. Reference: {reference}. We will contact you by e-mail."
+    },
+    "compounds": {
+      "withUnits": "Compounds with units available",
+      "noUnits": "Other compounds",
+      "count": "{count} units available",
+      "pageTitle": "Units in {name}",
+      "breadcrumb": "Breadcrumb",
+      "index": "Compounds",
+      "empty": "No units are available in this compound right now.",
+      "all": "All opportunities"
+    }
+  },
+  "forms": {
+    "name": "Name",
+    "email": "E-mail",
+    "phone": "Phone number",
+    "phoneOptional": "Mobile (optional)",
+    "message": "Message",
+    "send": "Send",
+    "sending": "Sending…",
+    "thanks": "Thank you. We received your message and will reply by e-mail.",
+    "thanksPartner": "Thank you. We received your partnership request and will contact you.",
+    "company": "Company name",
+    "contactName": "Contact person",
+    "jobTitleOptional": "Job title (optional)",
+    "projectsOptional": "Number of projects (optional)",
+    "contactTitle": "Send us a message",
+    "partnershipTitle": "Partnership request"
   }
 }

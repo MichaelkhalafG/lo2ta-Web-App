@@ -124,4 +124,15 @@ return [
         'placeholder' => 'Placeholder',
         'client' => 'Client text',
     ],
+    'Readiness' => [
+        'now' => 'Ready now',
+        'within_3_months' => 'Within 1 to 3 months',
+        'looking' => 'Just looking',
+    ],
+    'RequestState' => [
+        'new' => 'New',
+        'contacted' => 'Contacted',
+        'matched' => 'Deal opened',
+        'closed' => 'Closed',
+    ],
 ];

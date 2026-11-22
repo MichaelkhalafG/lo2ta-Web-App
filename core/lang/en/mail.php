@@ -51,4 +51,22 @@ return [
             'body' => 'Your unit :reference is off the site, as you asked. You can list it again any time from your account.',
         ],
     ],
+    // Phase 5 (PLAN 2.3, 2.6). Placeholder wording for the client to confirm (PLAN 6 row 24).
+    'request_received' => [
+        'subject' => 'We received your request :reference',
+        'heading' => 'We received your request for the unit',
+        'reference' => 'Reference: :reference.',
+        'fee' => 'The Lokta fee for the buyer on completion of the transfer: :fee EGP (1% of the contract price).',
+        'next' => 'We will contact you by e-mail and arrange the next step with the owner. There is no booking or payment on the site.',
+    ],
+    'team_facts' => [
+        'unit_request' => ['subject' => 'New request on a unit :reference'],
+        'contact_message' => ['subject' => 'New message from the contact page'],
+        'partnership_request' => ['subject' => 'New partnership request from a developer'],
+        'fields' => [
+            'reference' => 'Reference', 'code' => 'Unit code', 'readiness' => 'Readiness',
+            'name' => 'Name', 'email' => 'E-mail', 'phone' => 'Phone', 'message' => 'Message',
+            'company' => 'Company', 'contact_name' => 'Contact person', 'job_title' => 'Job title', 'projects_count' => 'Projects',
+        ],
+    ],
 ];

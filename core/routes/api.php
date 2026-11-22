@@ -4,8 +4,11 @@ use App\Http\Controllers\Api\V1\Account\AuthController;
 use App\Http\Controllers\Api\V1\Account\BudgetController;
 use App\Http\Controllers\Api\V1\Account\FavoritesController;
 use App\Http\Controllers\Api\V1\Account\MeController;
+use App\Http\Controllers\Api\V1\Account\RequestsController;
 use App\Http\Controllers\Api\V1\ChoicesController;
+use App\Http\Controllers\Api\V1\CompoundsController;
 use App\Http\Controllers\Api\V1\ContentController;
+use App\Http\Controllers\Api\V1\FormsController;
 use App\Http\Controllers\Api\V1\ReferenceController;
 use App\Http\Controllers\Api\V1\Seller\DocumentsController as SellerDocumentsController;
 use App\Http\Controllers\Api\V1\Seller\PhotosController as SellerPhotosController;
@@ -38,6 +41,13 @@ Route::prefix('v1')->group(function (): void {
         Route::get('compounds', [ReferenceController::class, 'compounds']);
         Route::get('features', [ReferenceController::class, 'features']);
 
+        Route::get('compound-pages', [CompoundsController::class, 'index']);
+        Route::get('compound-pages/{slug}', [CompoundsController::class, 'show'])->where('slug', '[a-z0-9-]{1,96}');
+
+        // Public forms (PLAN 2.6): honeypot and hourly limits per IP; nothing is sent back to the sender.
+        Route::post('contact', [FormsController::class, 'contact']);
+        Route::post('partnerships', [FormsController::class, 'partnership']);
+
         Route::get('units', [UnitsController::class, 'index']);
         Route::get('units/{code}', [UnitsController::class, 'show'])->where('code', '[A-Za-z0-9-]{3,16}');
 
@@ -61,6 +71,8 @@ Route::prefix('v1')->group(function (): void {
             Route::delete('me/favorites/{code}', [FavoritesController::class, 'destroy'])->where('code', '[A-Za-z0-9-]{3,16}');
             Route::get('me/budget', [BudgetController::class, 'show']);
             Route::put('me/budget', [BudgetController::class, 'update']);
+            Route::get('me/requests', [RequestsController::class, 'index']);
+            Route::post('me/requests', [RequestsController::class, 'store']);
 
             // The seller wizard (PLAN 2.2, 2.2.15). {unit}, {document} and {photo} are public IDs, looked up together
             // with the owner (SellerUnits): another seller's ID answers 404.

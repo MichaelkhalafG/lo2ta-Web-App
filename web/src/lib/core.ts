@@ -32,6 +32,28 @@ async function coreGet<T>(path: string, locale: Locale, tags: string[]): Promise
   return (await response.json()) as T;
 }
 
+/**
+ * A read that may legitimately find nothing (a unit off the market, an unknown compound): null on 404, cached like
+ * coreGet; any other failure still throws.
+ */
+export async function coreFind<T>(path: string, locale: Locale, tags: string[], revalidate = REVALIDATE_SECONDS): Promise<T | null> {
+  const { base, key } = coreConfig();
+  const separator = path.includes("?") ? "&" : "?";
+  const response = await fetch(`${base}/api/v1/${path}${separator}locale=${locale}`, {
+    headers: { "X-Api-Key": key, Accept: "application/json" },
+    next: { revalidate, tags },
+  });
+  // 404: not there; 422: a value from a crafted URL (an unknown area slug) that core refused. Both mean "nothing".
+  if (response.status === 404 || response.status === 422) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`Core API ${path} answered ${response.status}.`);
+  }
+
+  return (await response.json()) as T;
+}
+
 /** Site texts of one group, keyed by text key. */
 export type Texts = Record<string, string | null>;
 

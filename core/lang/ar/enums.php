@@ -124,4 +124,15 @@ return [
         'placeholder' => 'نص مؤقت',
         'client' => 'نص العميل',
     ],
+    'Readiness' => [
+        'now' => 'جاهز دلوقتي',
+        'within_3_months' => 'خلال شهر لـ3 شهور',
+        'looking' => 'بتفرّج بس',
+    ],
+    'RequestState' => [
+        'new' => 'جديد',
+        'contacted' => 'تم التواصل',
+        'matched' => 'اتفتحت صفقة',
+        'closed' => 'مقفول',
+    ],
 ];

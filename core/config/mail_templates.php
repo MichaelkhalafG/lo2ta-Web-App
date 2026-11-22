@@ -1,9 +1,11 @@
 <?php
 
 use App\Mail\AccountActionMail;
+use App\Mail\BuyerRequestMail;
 use App\Mail\NewBudgetMail;
 use App\Mail\SellerUnitNoticeMail;
 use App\Mail\SystemTestMail;
+use App\Mail\TeamFactsMail;
 use App\Mail\UnitReceivedMail;
 use App\Mail\UnitTeamNoticeMail;
 
@@ -20,4 +22,8 @@ return [
     'seller.unit_received' => UnitReceivedMail::class,
     'admin.unit_submitted' => UnitTeamNoticeMail::class,
     'seller.unit_withdrawn' => SellerUnitNoticeMail::class,
+    'buyer.request_received' => BuyerRequestMail::class,
+    'admin.unit_request' => TeamFactsMail::class,
+    'admin.contact_message' => TeamFactsMail::class,
+    'admin.partnership_request' => TeamFactsMail::class,
 ];

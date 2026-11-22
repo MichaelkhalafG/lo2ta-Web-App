@@ -33,6 +33,7 @@ class Compound extends Model
     {
         return [
             'is_active' => 'boolean',
+            'intro_is_placeholder' => 'boolean',
         ];
     }
 

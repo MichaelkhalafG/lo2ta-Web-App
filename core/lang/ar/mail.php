@@ -51,4 +51,22 @@ return [
             'body' => 'وحدتك :reference اتشالت من الموقع زي ما طلبت. تقدر تعرضها تاني في أي وقت من حسابك.',
         ],
     ],
+    // Phase 5 (PLAN 2.3, 2.6). Placeholder wording for the client to confirm (PLAN 6 row 24).
+    'request_received' => [
+        'subject' => 'وصلنا طلبك :reference',
+        'heading' => 'استلمنا طلبك على الوحدة',
+        'reference' => 'رقم الطلب: :reference.',
+        'fee' => 'عمولة لقطة على المشتري عند إتمام التنازل: :fee ج.م (1% من سعر التعاقد).',
+        'next' => 'هنتواصل معاك بالإيميل ونرتّب الخطوة الجاية مع المالك. مفيش حجز ولا دفع على الموقع.',
+    ],
+    'team_facts' => [
+        'unit_request' => ['subject' => 'طلب جديد على وحدة :reference'],
+        'contact_message' => ['subject' => 'رسالة جديدة من صفحة التواصل'],
+        'partnership_request' => ['subject' => 'طلب شراكة جديد من مطوّر'],
+        'fields' => [
+            'reference' => 'رقم الطلب', 'code' => 'كود الوحدة', 'readiness' => 'الجاهزية',
+            'name' => 'الاسم', 'email' => 'البريد', 'phone' => 'التليفون', 'message' => 'الرسالة',
+            'company' => 'الشركة', 'contact_name' => 'المسؤول', 'job_title' => 'الوظيفة', 'projects_count' => 'عدد المشروعات',
+        ],
+    ],
 ];

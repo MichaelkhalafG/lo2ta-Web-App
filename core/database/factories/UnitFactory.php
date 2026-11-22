@@ -20,8 +20,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class UnitFactory extends Factory
 {
-    private static int $serial = 0;
-
     /**
      * @return array<string, mixed>
      */
@@ -62,7 +60,8 @@ class UnitFactory extends Factory
     public function published(): static
     {
         return $this->state(function (): array {
-            $serial = ++self::$serial + fake()->unique()->numberBetween(1000, 9000);
+            // Unique on its own: a counter plus a random number could add up to the same serial twice.
+            $serial = fake()->unique()->numberBetween(1000, 999_999);
 
             return [
                 'state' => UnitState::Published,

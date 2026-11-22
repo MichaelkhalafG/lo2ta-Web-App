@@ -64,8 +64,23 @@ PUT    /api/v1/me/units/{unit}/live
 POST   /api/v1/me/units/{unit}/withdraw
 ```
 
+Added in phase 5 (listings):
+
+```
+GET    /api/v1/compound-pages
+GET    /api/v1/compound-pages/{slug}
+POST   /api/v1/contact
+POST   /api/v1/partnerships
+GET    /api/v1/me/requests
+POST   /api/v1/me/requests
+```
+
 The dashboard routes `/dashboard/files/documents/{document}` and `/dashboard/files/photos/{photo}` stay on the
 dashboard host only.
+
+**`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
+are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
+2026-11-22). After a change: `php artisan config:cache`.
 
 ## 4. Exit report PDF (mPDF)
 

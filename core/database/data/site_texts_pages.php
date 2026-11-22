@@ -126,6 +126,14 @@ return [
     ['contact.intro', 'contact', 'ابعتلنا على الإيميل وبنرد عليك في أقرب وقت.', 'Write to us by e-mail and we will reply as soon as we can.', 'Contact page intro; the contact form comes in phase 5'],
     ['contact.body', 'contact', $p, $pe, 'Contact facts: phone, address, hours (PLAN 6 row 15)'],
 
+    ['developers.title', 'developers', 'للمطوّرين', 'For developers', 'Developers page title'],
+    ['developers.intro', 'developers', 'نص مؤقت: مقدمة صفحة المطوّرين ونقاط الشراكة يكتبها العميل.', 'Placeholder: the developers page intro and partnership points are written by the client.', 'Developers page intro (PLAN 6 row 12)'],
+    ['developers.body', 'developers', $p, $pe, 'Partnership points (PLAN 6 row 12)'],
+    ['compounds.title', 'compounds', 'الكمبوندات', 'Compounds', 'Compounds index title'],
+    ['compounds.intro', 'compounds', 'نص مؤقت: مقدمة صفحة الكمبوندات يكتبها العميل.', 'Placeholder: the compounds page intro is written by the client.', 'Compounds index intro (PLAN 6 row 17)'],
+    ['opportunities.title', 'opportunities', 'الفرص المتاحة', 'Opportunities', 'Opportunities page title'],
+    ['opportunities.intro', 'opportunities', 'الأرقام هنا هي اللي هتدفعها فعلًا: اللي دفعه المالك، والأقساط اللي باقية للمطوّر.', 'The figures here are what you actually pay: what the owner paid, and the installments left for the developer.', 'Opportunities intro (board 06.2)'],
+
     ['legal.privacy.title', 'legal', 'سياسة الخصوصية', 'Privacy policy', 'Privacy page title'],
     ['legal.privacy.body', 'legal', 'نص مؤقت: سياسة الخصوصية يكتبها العميل (البند السابع من الاتفاق).', 'Placeholder: the privacy policy is written by the client (agreement, clause 7).', 'Privacy policy text (PLAN 6 row 6)'],
     ['legal.terms.title', 'legal', 'الشروط والأحكام', 'Terms and conditions', 'Terms page title'],
