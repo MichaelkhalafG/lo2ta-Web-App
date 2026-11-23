@@ -119,7 +119,7 @@ export function WizardFrame({ step, title, intro, aside, children }: { step: num
               await flush();
               router.push("/account/units");
             }}
-            className="text-small text-text-2 underline-offset-4 hover:text-text-1 hover:underline"
+            className="inline-flex min-h-control-md items-center text-small text-text-2 underline-offset-4 hover:text-text-1 hover:underline"
           >
             {t("saveExit")}
           </Link>

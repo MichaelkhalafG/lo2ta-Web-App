@@ -141,14 +141,17 @@ final class StepRules
     /**
      * What a complete step still needs, field => message; [] when the step is complete.
      *
+     * $keptDueDate (Y-m-d): on a live edit, the next due date the unit already has. When the edit keeps it, a date
+     * that has passed since publishing is not a problem of this edit (audit M6); a new date must still lie ahead.
+     *
      * @return array<string, string>
      */
-    public function problems(int $step, Unit $unit): array
+    public function problems(int $step, Unit $unit, ?string $keptDueDate = null): array
     {
         return match ($step) {
             1 => self::step1Problems($unit),
             2 => self::step2Problems($unit),
-            3 => self::step3Problems($unit),
+            3 => self::step3Problems($unit, $keptDueDate),
             4 => $this->step4Problems($unit),
             5 => $this->step5Problems($unit),
             default => [],
@@ -347,7 +350,7 @@ final class StepRules
     /**
      * @return array<string, string>
      */
-    private static function step3Problems(Unit $unit): array
+    private static function step3Problems(Unit $unit, ?string $keptDueDate = null): array
     {
         $p = [];
         foreach (['total_price', 'paid_amount', 'market_price_estimate'] as $key) {
@@ -376,7 +379,8 @@ final class StepRules
             }
             if ($unit->next_due_date === null) {
                 $p['next_due_date'] = self::text('seller.rules.required');
-            } elseif (! $unit->has_overdue && $unit->next_due_date->startOfDay()->lte(CarbonImmutable::today())) {
+            } elseif (! $unit->has_overdue && $unit->next_due_date->format('Y-m-d') !== $keptDueDate
+                && $unit->next_due_date->startOfDay()->lte(CarbonImmutable::today())) {
                 $p['next_due_date'] = self::text('seller.rules.due_date_past');
             }
         }

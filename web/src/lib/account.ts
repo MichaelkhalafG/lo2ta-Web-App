@@ -1,11 +1,13 @@
 import { headers } from "next/headers";
 import type { Locale } from "@/i18n/routing";
+import { clientIpFrom } from "./clientIp";
+import { coreConfig } from "./coreConfig";
 import { sessionToken } from "./session";
 
 /*
  * Account calls to the core API (PLAN 2.1), server-side only: the server key and the user's token never reach the
- * browser. Nothing here is cached: every answer belongs to one person. The visitor's IP is forwarded in
- * X-Client-Ip for core's rate limits (core trusts it only on keyed requests).
+ * browser. Nothing here is cached: every answer belongs to one person. The visitor's IP (clientIp.ts) is forwarded
+ * in X-Client-Ip for core's rate limits (core trusts it only on keyed requests).
  */
 
 export type FieldErrors = Record<string, string>;
@@ -39,21 +41,8 @@ export type Budget = {
 
 export type Choice = { code: string; label: string };
 
-function config(): { base: string; key: string } {
-  const base = (process.env.CORE_API_URL ?? "").trim().replace(/\/+$/, "");
-  const key = (process.env.CORE_API_KEY ?? "").trim();
-  if (base === "" || key === "") {
-    throw new Error("CORE_API_URL and CORE_API_KEY must be set for the Next server.");
-  }
-
-  return { base, key };
-}
-
 async function clientIp(): Promise<string | null> {
-  const h = await headers();
-  const forwarded = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip")?.trim() ?? "";
-
-  return /^[0-9a-fA-F:.]{3,45}$/.test(forwarded) ? forwarded : null;
+  return clientIpFrom((await headers()).get("x-forwarded-for"));
 }
 
 /** One call to core. `auth` sends the session token; a 401 then means the session is gone. */
@@ -63,7 +52,7 @@ export async function core<T>(
   locale: Locale,
   options: { body?: unknown; auth?: boolean; token?: string } = {},
 ): Promise<CoreResult<T>> {
-  const { base, key } = config();
+  const { base, key } = coreConfig();
   const requestHeaders: Record<string, string> = { "X-Api-Key": key, Accept: "application/json" };
   const ip = await clientIp();
   if (ip) {

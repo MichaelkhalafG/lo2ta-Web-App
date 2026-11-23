@@ -7,9 +7,11 @@ use App\Http\Resources\AccountResource;
 use App\Models\User;
 use App\Support\Accounts\ClientIp;
 use App\Support\Accounts\Links;
+use App\Support\Accounts\LoginGuard;
 use App\Support\Accounts\Phone;
 use App\Support\Activity\ActivityLogger;
 use App\Support\Mail\Outbox;
+use App\Support\Text\PlainLine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -33,7 +35,7 @@ class AuthController extends Controller
         $this->limit("register:{$ip}", 5);
 
         $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'name' => ['required', 'string', 'min:2', 'max:120', PlainLine::RULE],
             'email' => ['required', 'string', 'email', 'max:190'],
             'phone' => ['required', 'string', 'max:30'],
             'password' => ['required', 'string', 'confirmed', PasswordRule::min(8)],
@@ -66,22 +68,30 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request, ActivityLogger $log): JsonResponse
+    /**
+     * Two limits: 5 tries a minute per e-mail and visitor address, and an account-wide ceiling across every address
+     * (LoginGuard, audit H2).
+     */
+    public function login(Request $request, LoginGuard $guard): JsonResponse
     {
         $request->validate([
             'email' => ['required', 'string', 'email', 'max:190'],
             'password' => ['required', 'string', 'max:255'],
+            'website' => ['prohibited'],
         ]);
         $email = Str::lower(trim($request->string('email')->toString()));
         $key = 'user-login:'.$email.'|'.ClientIp::of($request);
         $this->limit($key, 5);
+        $guard->ensureOpen($email);
 
         $user = User::query()->where('email', $email)->first();
         if (! $user instanceof User || ! Hash::check($request->string('password')->toString(), $user->password)) {
             RateLimiter::hit($key, 60);
+            $guard->failed($email, $user instanceof User ? $user : null);
             throw ValidationException::withMessages(['email' => self::text('accounts.login_failed')]);
         }
         RateLimiter::clear($key);
+        $guard->clear($email);
 
         return response()->json([
             'token' => $user->createToken('web')->plainTextToken,
@@ -102,7 +112,7 @@ class AuthController extends Controller
     /** Always the same answer, whether the e-mail exists or not (no account discovery). */
     public function forgotPassword(Request $request, Outbox $outbox): JsonResponse
     {
-        $request->validate(['email' => ['required', 'string', 'email', 'max:190']]);
+        $request->validate(['email' => ['required', 'string', 'email', 'max:190'], 'website' => ['prohibited']]);
         $email = Str::lower(trim($request->string('email')->toString()));
         $this->limit('forgot:'.ClientIp::of($request), 10);
         RateLimiter::hit('forgot:'.ClientIp::of($request), 3600);
@@ -121,7 +131,7 @@ class AuthController extends Controller
         return response()->json(['sent' => true]);
     }
 
-    public function resetPassword(Request $request, ActivityLogger $log): JsonResponse
+    public function resetPassword(Request $request, ActivityLogger $log, LoginGuard $guard): JsonResponse
     {
         $request->validate([
             'token' => ['required', 'string', 'max:255'],
@@ -137,10 +147,11 @@ class AuthController extends Controller
                 'password_confirmation' => $request->string('password_confirmation')->toString(),
                 'token' => $request->string('token')->toString(),
             ],
-            static function (User $user, string $password) use ($log): void {
+            static function (User $user, string $password) use ($log, $guard): void {
                 $user->forceFill(['password' => $password])->save();
-                // A new password signs the account out everywhere.
+                // A new password signs the account out everywhere and lifts a sign-in lock.
                 $user->tokens()->delete();
+                $guard->clear($user->email, lift: true);
                 $log->record('user.password_reset', $user);
             },
         );

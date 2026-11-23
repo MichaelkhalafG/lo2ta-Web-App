@@ -2,6 +2,8 @@
 
 namespace App\Support\Accounts;
 
+use App\Support\Text\Digits;
+
 /**
  * Egyptian mobile numbers (Q11: required, Egyptian format, not verified). Accepts 01XXXXXXXXX, +201XXXXXXXXX,
  * 00201XXXXXXXXX and 201XXXXXXXXX, with spaces, dashes or Arabic-Indic digits, and stores 01XXXXXXXXX.
@@ -11,10 +13,7 @@ final class Phone
 {
     public static function normalize(string $input): ?string
     {
-        $digits = strtr($input, [
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
-            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
-        ]);
+        $digits = Digits::latin($input);
         $digits = (string) preg_replace('/[\s\-().]/u', '', $digits);
         $digits = (string) preg_replace('/^(\+20|0020|20)(?=1)/', '0', $digits);
 

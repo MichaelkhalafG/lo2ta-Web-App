@@ -144,6 +144,17 @@
 @utility tabular { font-variant-numeric: tabular-nums; }
 @utility origin-start { transform-origin: right; [dir="ltr"] & { transform-origin: left; } }
 
+/* The loading hairline (app/[locale]/loading.tsx): a short rule travelling along the line. */
+@keyframes lk-rule { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+@keyframes lk-rule-rtl { from { transform: translateX(300%); } to { transform: translateX(-100%); } }
+.lk-rule { animation: lk-rule 1.4s ease-in-out infinite; }
+[dir="rtl"] .lk-rule { animation-name: lk-rule-rtl; }
+
+/* A page with the phone request bar (unit page) keeps its footer clear of the bar. */
+@media (width < 64rem) {
+  body:has([data-sticky-bar]) { padding-block-end: 5.5rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-draw, .animate-fade { animation: none; }
+  .animate-draw, .animate-fade, .lk-rule { animation: none; }
 }

@@ -43,7 +43,7 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
   const locale = localeOf(formData);
   const email = text(formData, "email");
   const result = await core<{ token: string }>("POST", "auth/login", locale, {
-    body: { email, password: formData.get("password") ?? "" },
+    body: { email, password: formData.get("password") ?? "", website: text(formData, "website") },
   });
   if (!result.ok) {
     return failed(result.message, result.errors, { email });
@@ -84,7 +84,7 @@ export async function logoutAction(formData: FormData): Promise<never> {
 export async function forgotAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const locale = localeOf(formData);
   const email = text(formData, "email");
-  const result = await core("POST", "auth/forgot-password", locale, { body: { email } });
+  const result = await core("POST", "auth/forgot-password", locale, { body: { email, website: text(formData, "website") } });
 
   return result.ok ? { ok: true, values: { email } } : failed(result.message, result.errors, { email });
 }

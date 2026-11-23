@@ -14,6 +14,7 @@ return [
     'in' => 'اختيار :attribute غير صحيح.',
     'integer' => ':attribute لازم يكون رقم صحيح.',
     'numeric' => ':attribute لازم يكون رقم.',
+    'not_regex' => ':attribute لازم يكون في سطر واحد من غير رموز مخفية.',
     'max' => [
         'numeric' => ':attribute لازم يكون :max أو أقل.',
         'string' => ':attribute لازم يكون :max حرف أو أقل.',

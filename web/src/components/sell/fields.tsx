@@ -150,7 +150,7 @@ export function MoneyInput({
           onChange={(e) => onChange(parseWhole(e.target.value))}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy(id, hint, error)}
-          className={`${control} pe-16 font-mono tabular`}
+          className={`${control} pe-16 tabular`}
         />
         <span className="pointer-events-none absolute inset-y-0 end-4 flex items-center text-small text-text-3">{unit}</span>
       </div>
@@ -191,7 +191,7 @@ export function NumberInput({
           onChange={(e) => onChange(decimal ? parseDecimal(e.target.value) : parseWhole(e.target.value))}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy(id, hint, error)}
-          className={`${control} font-mono tabular ${suffix ? "pe-16" : ""}`}
+          className={`${control} tabular ${suffix ? "pe-16" : ""}`}
         />
         {suffix ? <span className="pointer-events-none absolute inset-y-0 end-4 flex items-center text-small text-text-3">{suffix}</span> : null}
       </div>

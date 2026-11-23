@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { clientIpFrom } from "./clientIp";
+import { coreConfig } from "./coreConfig";
 import { sessionToken } from "./session";
 import { UNIT_ID } from "./sell";
 
@@ -10,16 +12,6 @@ import { UNIT_ID } from "./sell";
  */
 
 const MAX_BODY = 12 * 1024 * 1024;
-
-function coreBase(): { base: string; key: string } {
-  const base = (process.env.CORE_API_URL ?? "").trim().replace(/\/+$/, "");
-  const key = (process.env.CORE_API_KEY ?? "").trim();
-  if (base === "" || key === "") {
-    throw new Error("CORE_API_URL and CORE_API_KEY must be set for the Next server.");
-  }
-
-  return { base, key };
-}
 
 function json(status: number, body: unknown): NextResponse {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
@@ -36,12 +28,6 @@ function sameOrigin(request: NextRequest): boolean {
   return origin === null || origin === request.nextUrl.origin;
 }
 
-function clientIp(request: NextRequest): string | null {
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip")?.trim() ?? "";
-
-  return /^[0-9a-fA-F:.]{3,45}$/.test(forwarded) ? forwarded : null;
-}
-
 function localeOf(request: NextRequest): "ar" | "en" {
   return request.nextUrl.searchParams.get("locale") === "en" ? "en" : "ar";
 }
@@ -51,9 +37,9 @@ async function headersFor(request: NextRequest): Promise<Record<string, string> 
   if (!token) {
     return null;
   }
-  const { key } = coreBase();
+  const { key } = coreConfig();
   const headers: Record<string, string> = { "X-Api-Key": key, Accept: "application/json", Authorization: `Bearer ${token}` };
-  const ip = clientIp(request);
+  const ip = clientIpFrom(request.headers.get("x-forwarded-for"));
   if (ip) {
     headers["X-Client-Ip"] = ip;
   }
@@ -98,7 +84,7 @@ export async function forwardUpload(request: NextRequest, unit: string, target: 
   // The file name is only for display in core; it never becomes a path.
   outgoing.set("file", file, file.name.slice(0, 120) || "file");
 
-  const { base } = coreBase();
+  const { base } = coreConfig();
   const response = await fetch(`${base}/api/v1/me/units/${unit}/${target}?locale=${localeOf(request)}`, {
     method: "POST",
     headers,
@@ -122,7 +108,7 @@ export async function forwardFile(request: NextRequest, unit: string, target: "d
   if (!headers) {
     return new NextResponse(null, { status: 401 });
   }
-  const { base } = coreBase();
+  const { base } = coreConfig();
   const path = id === null ? `${target}?locale=${localeOf(request)}` : `${target}/${id}`;
   const response = await fetch(`${base}/api/v1/me/units/${unit}/${path}`, { headers, cache: "no-store" });
   if (!response.ok || response.body === null) {

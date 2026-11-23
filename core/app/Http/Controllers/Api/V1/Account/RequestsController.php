@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SiteText;
 use App\Models\Unit;
 use App\Models\UnitRequest;
+use App\Models\User;
 use App\Support\Accounts\ClientIp;
 use App\Support\Activity\ActivityLogger;
 use App\Support\Listing\UnitFacts;
@@ -19,6 +20,7 @@ use App\Support\Settings\Settings;
 use App\Support\Text\ContactDetails;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -73,13 +75,9 @@ class RequestsController extends Controller
         if (! $unit instanceof Unit) {
             throw ValidationException::withMessages(['code' => self::text('requests.unit_unavailable')]);
         }
-        $open = UnitRequest::query()->where('buyer_id', $user->id)->whereIn('state', RequestState::openValues());
-        if ((clone $open)->where('unit_id', $unit->id)->exists()) {
-            throw ValidationException::withMessages(['code' => self::text('requests.already_open')]);
-        }
-        $max = $settings->int('max_open_requests_per_buyer');
-        if ($open->count() >= $max) {
-            throw ValidationException::withMessages(['code' => self::text('requests.too_many', ['max' => $max])]);
+        // A seller cannot ask for their own unit (audit L2).
+        if ($unit->seller_id === $user->id) {
+            throw ValidationException::withMessages(['code' => self::text('requests.own_unit')]);
         }
         $fee = UnitFacts::buyerFee($unit, $settings);
         if ($request->integer('fee_amount') !== $fee['amount']) {
@@ -88,18 +86,32 @@ class RequestsController extends Controller
 
         $question = trim($request->string('question')->toString());
         $readiness = Readiness::from($request->string('readiness')->toString());
-        $row = UnitRequest::query()->create([
-            'unit_id' => $unit->id,
-            'buyer_id' => $user->id,
-            'question' => $question === '' ? null : ContactDetails::mask($question),
-            'readiness' => $readiness,
-            'fee_consent_amount' => $fee['amount'],
-            'fee_consent_bp' => $fee['bp'],
-            'fee_text_version' => self::feeTextVersion(),
-            'fee_consent_at' => now(),
-            'state' => RequestState::New,
-            'ip' => $ip,
-        ]);
+        $max = $settings->int('max_open_requests_per_buyer');
+        // The buyer's row is locked while the open requests are counted and the new one is written, so two requests
+        // sent at the same moment are taken one after the other and cannot both pass the checks (audit L9).
+        $row = DB::transaction(function () use ($user, $unit, $max, $question, $readiness, $fee, $ip): UnitRequest {
+            User::query()->whereKey($user->id)->lockForUpdate()->first(['id']);
+            $open = UnitRequest::query()->where('buyer_id', $user->id)->whereIn('state', RequestState::openValues());
+            if ((clone $open)->where('unit_id', $unit->id)->exists()) {
+                throw ValidationException::withMessages(['code' => self::text('requests.already_open')]);
+            }
+            if ($open->count() >= $max) {
+                throw ValidationException::withMessages(['code' => self::text('requests.too_many', ['max' => $max])]);
+            }
+
+            return UnitRequest::query()->create([
+                'unit_id' => $unit->id,
+                'buyer_id' => $user->id,
+                'question' => $question === '' ? null : ContactDetails::mask($question),
+                'readiness' => $readiness,
+                'fee_consent_amount' => $fee['amount'],
+                'fee_consent_bp' => $fee['bp'],
+                'fee_text_version' => self::feeTextVersion(),
+                'fee_consent_at' => now(),
+                'state' => RequestState::New,
+                'ip' => $ip,
+            ]);
+        });
         $reference = self::reference($row);
         $log->record('unit_request.created', $unit, null, ['request' => $row->public_id, 'readiness' => $row->readiness->value]);
         $outbox->send($user->email, $user->name, $user->preferredLocale(), 'buyer.request_received', [
@@ -111,10 +123,13 @@ class RequestsController extends Controller
         return response()->json(['data' => ['id' => $row->public_id, 'reference' => $reference]], 201);
     }
 
-    /** "R-0042 · LK-NC-0124": the request number with the unit code; nothing about the buyer. */
+    /**
+     * "R-8SMSXR · LK-NC-0124": six characters from the random end of the request's public id, with the unit code;
+     * nothing about the buyer, and no running number that shows how many requests the site gets (audit L3).
+     */
     public static function reference(UnitRequest $request): string
     {
-        return sprintf('R-%04d', $request->id).($request->unit?->code !== null ? ' · '.$request->unit->code : '');
+        return 'R-'.strtoupper(substr((string) $request->public_id, -6)).($request->unit?->code !== null ? ' · '.$request->unit->code : '');
     }
 
     /** The fee consent wording is a client text (PLAN 6 row 9); its version is stored with each consent. */

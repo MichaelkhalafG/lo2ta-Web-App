@@ -78,9 +78,10 @@ export function NavMenu({ label, items }: { label: string; items: MenuItem[] }) 
         className={`relative flex items-center gap-1.5 px-3.5 transition-colors duration-150 hover:text-text-1 ${open || active ? "text-text-1" : ""}`}
       >
         {label}
-        <span aria-hidden="true" className="text-[0.625rem] text-text-3">
-          ▾
-        </span>
+        {/* A drawn chevron, not a 10 px glyph: an icon, sized like the text it follows (audit D10). */}
+        <svg aria-hidden="true" viewBox="0 0 10 6" className="h-1.5 w-2.5 fill-none stroke-text-3" strokeWidth="1.5">
+          <path d="M1 1l4 4 4-4" />
+        </svg>
         {active ? <span aria-hidden="true" className="absolute start-3.5 end-3.5 bottom-0 h-0.5 bg-text-1" /> : null}
       </button>
       <div

@@ -6,7 +6,7 @@ import { useT } from '@/lib/i18n';
 interface Props {
     units: { state: string; label: string; count: number }[];
     placeholderTexts: number;
-    provisionalSettings: string[];
+    provisionalSettings: { key: string; label: string }[];
     mailProblems: number;
 }
 
@@ -53,11 +53,11 @@ export default function Overview({ units, placeholderTexts, provisionalSettings,
                         {provisionalSettings.length === 0 ? (
                             <p className="text-sm text-muted-foreground">{t('overview.none')}</p>
                         ) : (
-                            <ul className="flex flex-wrap gap-1.5" dir="ltr">
-                                {provisionalSettings.map((key) => (
-                                    <li key={key}>
-                                        <Badge variant="warning" className="font-mono">
-                                            {key}
+                            <ul className="flex flex-wrap gap-1.5">
+                                {provisionalSettings.map((s) => (
+                                    <li key={s.key}>
+                                        <Badge variant="warning" title={s.key}>
+                                            {s.label}
                                         </Badge>
                                     </li>
                                 ))}

@@ -239,7 +239,7 @@ function Slot({
               <span className="text-success" aria-hidden="true">
                 ✓
               </span>
-              <a href={`/api/seller/${unitId}/documents/${d.id}`} className="font-mono break-all text-text-1 underline-offset-4 hover:underline" dir="ltr">
+              <a href={`/api/seller/${unitId}/documents/${d.id}`} className="inline-flex min-h-control-md items-center font-mono break-all text-text-1 underline-offset-4 hover:underline" dir="ltr">
                 {d.name} · {size(d.bytes)}
               </a>
               {d.status === "needs_replacement" ? <span className="text-warning">{t("needsReplacement")}</span> : null}

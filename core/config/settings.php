@@ -54,6 +54,13 @@ return [
     'rl_submit_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 10, 'min' => 1, 'max' => 1000],
     'rl_draft_user' => ['type' => 'int', 'group' => 'limits', 'default' => 120, 'min' => 1, 'max' => 10000],
     'rl_dupcheck_user' => ['type' => 'int', 'group' => 'limits', 'default' => 20, 'min' => 1, 'max' => 1000],
+    // Account-wide sign-in ceiling (audit H2, Michael 2026-11-23): failures from any address within the window, then
+    // a lock and an e-mail to the owner (App\Support\Accounts\LoginGuard).
+    // Profile, favorites and budget writes per user and hour (audit L4).
+    'rl_account_write_user' => ['type' => 'int', 'group' => 'limits', 'default' => 120, 'min' => 10, 'max' => 10000],
+    'rl_login_account' => ['type' => 'int', 'group' => 'limits', 'default' => 20, 'min' => 3, 'max' => 1000],
+    'login_window_minutes' => ['type' => 'int', 'group' => 'limits', 'default' => 60, 'min' => 5, 'max' => 1440],
+    'login_lock_minutes' => ['type' => 'int', 'group' => 'limits', 'default' => 15, 'min' => 1, 'max' => 1440],
     'id_retention_days' => ['type' => 'int', 'group' => 'seller', 'default' => 90, 'min' => 1, 'max' => 3650],
     'draft_id_retention_days' => ['type' => 'int', 'group' => 'seller', 'default' => 180, 'min' => 1, 'max' => 3650],
 

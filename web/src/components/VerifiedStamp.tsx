@@ -12,7 +12,7 @@ export function VerifiedStamp({ label, className = "" }: { label: string; classN
       <span aria-hidden="true" className="absolute inset-1.5 rounded-full border border-verified" />
       <span aria-hidden="true" className="flex flex-col items-center gap-0.5">
         <span className="text-[1.1875rem] font-bold">{label}</span>
-        <span className="font-mono text-[0.625rem] font-medium tracking-[0.14em]" lang="en">
+        <span className="font-mono text-micro font-medium tracking-[0.14em]" lang="en">
           LOKTA
         </span>
       </span>

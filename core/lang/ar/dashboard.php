@@ -53,6 +53,20 @@ return [
         'staff' => 'فريق العمل',
         'activity' => 'سجل النشاط',
     ],
+    // Names of settings shown to staff (audit D12); a missing one falls back to its key.
+    'setting_labels' => [
+        'transfer_fee_mode' => 'طريقة حساب رسوم التنازل',
+        'transfer_fee_bp' => 'رسوم التنازل كنسبة',
+        'transfer_fee_fixed' => 'رسوم التنازل كمبلغ ثابت',
+        'penalty_basis' => 'أساس غرامة الانسحاب',
+        'penalty_min_bp' => 'أقل غرامة انسحاب',
+        'penalty_max_bp' => 'أعلى غرامة انسحاب',
+        'late_fee_bp' => 'غرامة التأخير',
+        'refund_rule' => 'طريقة رد المبلغ',
+        'refund_years_fixed' => 'سنين رد المبلغ',
+        'deep_loss_ratio_bp' => 'حد الخسارة الكبيرة',
+        'discount_rate_bp' => 'معدل الخصم',
+    ],
     'overview' => [
         'title' => 'نظرة عامة',
         'units' => 'الوحدات حسب الحالة',

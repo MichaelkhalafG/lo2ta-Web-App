@@ -53,8 +53,19 @@ final class LiveEdits
             throw ValidationException::withMessages(array_fill_keys($locked, self::text('seller.rules.locked')));
         }
 
-        // The edited unit, built and checked on a copy.
+        // The edited unit, built and checked on a copy that already carries the changes waiting for review: two edits
+        // that each pass alone must also pass together (audit M5).
+        $pending = $unit->pendingChanges()->where('state', 'pending')->latest('id')->first();
         $copy = clone $unit;
+        if ($pending instanceof UnitPendingChange) {
+            foreach ($pending->changes as $field => $pair) {
+                if (in_array($field, self::REVIEW, true) && is_array($pair) && array_key_exists(1, $pair)) {
+                    $copy->setAttribute($field, $pair[1]);
+                }
+            }
+        }
+        $base = clone $copy;
+        $keptDueDate = self::plain($base->next_due_date);
         $features = null;
         $step2 = array_intersect_key($input, array_flip(self::STEP2));
         $step3 = array_intersect_key($input, array_flip(array_diff(self::REVIEW, self::STEP2)));
@@ -67,7 +78,11 @@ final class LiveEdits
         if (array_key_exists('description', $input)) {
             $this->rules->apply(5, $copy, ['description' => $input['description']]);
         }
-        $problems = [...$this->rules->problems(2, $copy), ...$this->rules->problems(3, $copy), ...$this->rules->problems(5, $copy)];
+        $problems = [
+            ...$this->rules->problems(2, $copy),
+            ...$this->rules->problems(3, $copy, is_string($keptDueDate) ? $keptDueDate : null),
+            ...$this->rules->problems(5, $copy),
+        ];
         if ($features !== null && $copy->sub_type !== null) {
             $main = $copy->sub_type->mainType()->value;
             $outside = Feature::query()->whereIn('id', $features)->get()->reject(fn (Feature $f): bool => in_array($main, $f->applies_to, true));
@@ -79,28 +94,37 @@ final class LiveEdits
             throw ValidationException::withMessages($problems);
         }
 
+        // $live: free fields this edit changed. $review: every review field that differs from the live unit, so the
+        // whole set waiting for review (it replaces the pending change). $asked: what this edit itself changed, for the log.
         $live = [];
         $review = [];
+        $asked = [];
         foreach ([...self::FREE, ...self::REVIEW] as $field) {
             if ($field === 'features') {
                 continue;
             }
             $old = self::plain($unit->getAttribute($field));
             $new = self::plain($copy->getAttribute($field));
-            if ($old === $new) {
+            if (in_array($field, self::FREE, true)) {
+                if ($old !== $new) {
+                    $live[$field] = [$old, $new];
+                }
+
                 continue;
             }
-            if (in_array($field, self::FREE, true)) {
-                $live[$field] = [$old, $new];
-            } else {
+            if ($old !== $new) {
                 $review[$field] = [$old, $new];
+            }
+            $before = self::plain($base->getAttribute($field));
+            if ($before !== $new) {
+                $asked[$field] = [$before, $new];
             }
         }
         $currentFeatures = $unit->features()->get()->map(fn (Feature $f): int => $f->id)->sort()->values()->all();
         $sync = $features !== null && collect($features)->sort()->values()->all() !== $currentFeatures ? $features : null;
         $featuresChanged = $sync !== null;
 
-        $pending = DB::transaction(function () use ($unit, $copy, $live, $review, $sync): ?UnitPendingChange {
+        $pending = DB::transaction(function () use ($unit, $copy, $live, $review, $asked, $sync, $pending): ?UnitPendingChange {
             if ($live !== []) {
                 $unit->forceFill(array_map(fn (string $f) => $copy->getAttribute($f), array_combine(array_keys($live), array_keys($live))));
                 if (isset($live['description'])) {
@@ -111,19 +135,19 @@ final class LiveEdits
             if ($sync !== null) {
                 $unit->features()->sync($sync);
             }
-            if ($review === []) {
-                return null;
+            if ($asked === []) {
+                return $pending instanceof UnitPendingChange ? $pending : null;
             }
 
-            // One pending change per unit: a new edit merges into it, keeping each field's original value.
-            $pending = $unit->pendingChanges()->where('state', 'pending')->latest('id')->first();
+            // One pending change per unit, holding every review field that differs from the live unit (the unit keeps
+            // its old values until the admin approves). An edit that puts every field back withdraws it.
             if ($pending instanceof UnitPendingChange) {
-                $merged = $pending->changes;
-                foreach ($review as $field => [$old, $new]) {
-                    $before = $merged[$field] ?? null;
-                    $merged[$field] = [is_array($before) && array_key_exists(0, $before) ? $before[0] : $old, $new];
+                if ($review === []) {
+                    $pending->forceFill(['state' => 'withdrawn'])->save();
+
+                    return null;
                 }
-                $pending->forceFill(['changes' => $merged, 'submitted_at' => now()])->save();
+                $pending->forceFill(['changes' => $review, 'submitted_at' => now()])->save();
 
                 return $pending;
             }
@@ -134,8 +158,8 @@ final class LiveEdits
         if ($live !== [] || $featuresChanged) {
             $this->log->record('unit.live_edit', $unit, array_map(fn (array $p) => $p[0], $live), [...array_map(fn (array $p) => $p[1], $live), ...($featuresChanged ? ['features' => $features] : [])]);
         }
-        if ($review !== []) {
-            $this->log->record('unit.change_requested', $unit, array_map(fn (array $p) => $p[0], $review), array_map(fn (array $p) => $p[1], $review));
+        if ($asked !== []) {
+            $this->log->record('unit.change_requested', $unit, array_map(fn (array $p) => $p[0], $asked), array_map(fn (array $p) => $p[1], $asked));
         }
 
         return ['live' => array_keys($live), 'pending' => $pending];

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Middleware\AccountWriteLimit;
 use App\Http\Middleware\EnsureAdminActive;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequireServerKey;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetApiLocale;
 use App\Http\Middleware\SetDashboardLocale;
 use App\Support\Uploads\UploadRefused;
@@ -21,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Safety headers on every answer (audit M1).
+        $middleware->append(SecurityHeaders::class);
         // The language is set before Inertia shares the strings of that language.
         $middleware->web(append: [
             SetDashboardLocale::class,
@@ -32,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'server.key' => RequireServerKey::class,
             'admin.active' => EnsureAdminActive::class,
+            'account.write' => AccountWriteLimit::class,
         ]);
         // Guests of the dashboard go to its login; a signed-in admin on the login page goes home.
         // API guests get a JSON 401 (null = no redirect), never the dashboard login page.

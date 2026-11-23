@@ -57,10 +57,10 @@ export default async function AccountUnitPage({ params }: PageProps<"/[locale]/a
       {unit.has_exit_report ? (
         <div className="flex flex-wrap items-center gap-4 rounded-sm border border-line bg-surface-1 p-5">
           <span className="text-body">{t("exitReport")}</span>
-          <a href={`/api/seller/${unit.id}/exit-report?locale=ar`} className="text-small text-text-1 underline underline-offset-4">
+          <a href={`/api/seller/${unit.id}/exit-report?locale=ar`} className="inline-flex min-h-control-md items-center text-small text-text-1 underline underline-offset-4">
             العربية (PDF)
           </a>
-          <a href={`/api/seller/${unit.id}/exit-report?locale=en`} className="text-small text-text-1 underline underline-offset-4" lang="en">
+          <a href={`/api/seller/${unit.id}/exit-report?locale=en`} className="inline-flex min-h-control-md items-center text-small text-text-1 underline underline-offset-4" lang="en">
             English (PDF)
           </a>
         </div>

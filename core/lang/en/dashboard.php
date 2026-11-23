@@ -53,6 +53,20 @@ return [
         'staff' => 'Staff',
         'activity' => 'Activity log',
     ],
+    // Names of settings shown to staff (audit D12); a missing one falls back to its key.
+    'setting_labels' => [
+        'transfer_fee_mode' => 'Transfer fee method',
+        'transfer_fee_bp' => 'Transfer fee as a share',
+        'transfer_fee_fixed' => 'Transfer fee as a fixed amount',
+        'penalty_basis' => 'Withdrawal penalty basis',
+        'penalty_min_bp' => 'Lowest withdrawal penalty',
+        'penalty_max_bp' => 'Highest withdrawal penalty',
+        'late_fee_bp' => 'Late payment fee',
+        'refund_rule' => 'Refund method',
+        'refund_years_fixed' => 'Refund years',
+        'deep_loss_ratio_bp' => 'Deep loss line',
+        'discount_rate_bp' => 'Discount rate',
+    ],
     'overview' => [
         'title' => 'Overview',
         'units' => 'Units by state',

@@ -23,6 +23,12 @@ return [
         'button' => 'Choose a new password',
         'note' => 'The link works for 60 minutes. If you did not ask for it, ignore this message and your password stays the same.',
     ],
+    'login_locked' => [
+        'subject' => 'We paused sign-in to your account',
+        'body' => 'There were many sign-in attempts with a wrong password on your account, so we paused sign-in for a while to protect it. If it was you, wait a little and try again, or choose a new password to sign in straight away.',
+        'button' => 'Choose a new password',
+        'note' => 'If it was not you, change your password now. The pause stops every sign-in attempt until it ends.',
+    ],
     'new_budget' => [
         'subject' => 'A buyer registered a budget',
         'buyer' => 'Buyer',

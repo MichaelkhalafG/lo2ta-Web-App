@@ -65,12 +65,12 @@ Route::prefix('v1')->group(function (): void {
             Route::post('auth/resend-verification', [AuthController::class, 'resendVerification']);
 
             Route::get('me', [MeController::class, 'show']);
-            Route::put('me', [MeController::class, 'update']);
+            Route::put('me', [MeController::class, 'update'])->middleware('account.write');
             Route::get('me/favorites', [FavoritesController::class, 'index']);
-            Route::post('me/favorites', [FavoritesController::class, 'store']);
-            Route::delete('me/favorites/{code}', [FavoritesController::class, 'destroy'])->where('code', '[A-Za-z0-9-]{3,16}');
+            Route::post('me/favorites', [FavoritesController::class, 'store'])->middleware('account.write');
+            Route::delete('me/favorites/{code}', [FavoritesController::class, 'destroy'])->where('code', '[A-Za-z0-9-]{3,16}')->middleware('account.write');
             Route::get('me/budget', [BudgetController::class, 'show']);
-            Route::put('me/budget', [BudgetController::class, 'update']);
+            Route::put('me/budget', [BudgetController::class, 'update'])->middleware('account.write');
             Route::get('me/requests', [RequestsController::class, 'index']);
             Route::post('me/requests', [RequestsController::class, 'store']);
 

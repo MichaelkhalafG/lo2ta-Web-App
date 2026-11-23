@@ -5,6 +5,7 @@ use App\Enums\SubType;
 use App\Enums\UnitState;
 use App\Models\AdminUser;
 use App\Models\Compound;
+use App\Models\Developer;
 use App\Models\DuplicateAttempt;
 use App\Models\MailOutbox;
 use App\Models\Unit;
@@ -246,4 +247,38 @@ it('answers the wizard data under named step keys, never as a reindexed list', f
         ->and($data['steps']['step1'])->toHaveKeys(['developer', 'developer_other', 'contract_number'])
         ->and($data['steps']['step1']['developer_other'])->toBeNull()
         ->and($data['steps']['step3'])->toHaveKey('total_price');
+});
+
+it('the audit proof P4: typing the developer and compound instead of choosing them no longer gets round the block (M3)', function (string $developer, string $compound) {
+    $listed = Unit::factory()->create(['contract_number' => 'C-00123']);
+    $listed->developer->forceFill(['name_ar' => 'بالم هيلز', 'name_en' => 'Palm Hills'])->save();
+    $listed->compound->forceFill(['name_ar' => 'هيلز أوف ون', 'name_en' => 'Hills of One'])->save();
+    $listed->forceFill(['state' => UnitState::Published, 'serial' => 8])->save();
+    $keys = ContractKeys::of($listed->refresh());
+    $listed->forceFill(['active_contract_key' => $keys['contract'], 'active_unit_key' => $keys['unit']])->save();
+
+    $id = newDraft($this->seller);
+    step($id, 1, [
+        'developer_other' => $developer, 'compound_other' => $compound, 'area' => $listed->area->slug,
+        'main_type' => 'residential', 'sub_type' => 'apartment',
+        'contract_number' => 'c-00123', 'unit_number' => 'Z-9', 'contract_year' => 2023, 'contract_month' => 1,
+    ], $this->h, complete: true)->assertStatus(422)->assertJsonValidationErrors(['contract_number']);
+})->with([
+    'English, other case, company words' => ['palm hills developments', 'Hills Of One compound'],
+    'Arabic with company words and letter variants' => ['شركة بالم هيلز للتطوير العقاري', 'هيلز اوف ون'],
+]);
+
+it('keys a typed name that matches no entry, or two entries, as typed text', function () {
+    $a = Developer::factory()->create(['name_ar' => 'نيو هوم', 'name_en' => 'New Home']);
+    $b = Developer::factory()->create(['name_ar' => 'نيو هوم', 'name_en' => 'New Home Group']);
+    $typed = Unit::factory()->make(['developer_id' => null, 'developer_other' => 'New Home', 'contract_number' => 'X1']);
+    $chosenA = Unit::factory()->make(['developer_id' => $a->id, 'contract_number' => 'X1']);
+    $chosenB = Unit::factory()->make(['developer_id' => $b->id, 'contract_number' => 'X1']);
+
+    // Two developers share the name: the key never guesses between them.
+    expect(ContractKeys::of($typed)['contract'])->not->toBe(ContractKeys::of($chosenA)['contract'])
+        ->and(ContractKeys::of($typed)['contract'])->not->toBe(ContractKeys::of($chosenB)['contract'])
+        ->and(ContractKeys::nameKey('Palm Hills Developments'))->toBe(ContractKeys::nameKey('PALM HILLS'))
+        ->and(ContractKeys::nameKey('شركة إعمار مصر'))->toBe(ContractKeys::nameKey('اعمار'))
+        ->and(ContractKeys::nameKey('Group'))->toBe('GROUP');
 });

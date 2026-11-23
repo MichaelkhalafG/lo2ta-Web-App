@@ -34,7 +34,7 @@ export default async function AccountRequestsPage({ params }: PageProps<"/[local
       {rows.length === 0 ? (
         <div className="flex flex-col items-start gap-4 rounded-sm border border-line bg-surface-1 p-6">
           <p className="text-body text-text-2">{t("empty")}</p>
-          <Link href="/opportunities" className="text-small text-text-1 underline underline-offset-4">
+          <Link href="/opportunities" className="inline-flex min-h-control-md items-center text-small text-text-1 underline underline-offset-4">
             {t("browse")}
           </Link>
         </div>

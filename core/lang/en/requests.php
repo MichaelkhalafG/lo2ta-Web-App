@@ -5,6 +5,7 @@ return [
     'email_not_verified' => 'Confirm your e-mail address first to request a unit.',
     'unit_unavailable' => 'This unit cannot be requested right now.',
     'already_open' => 'You already have an open request on this unit.',
+    'own_unit' => 'This is your own unit, so you cannot request it.',
     'too_many' => 'You have :max open requests. Wait until we answer one of them.',
     'fee_changed' => 'The fee amount changed. Check the new amount and accept it again.',
 ];

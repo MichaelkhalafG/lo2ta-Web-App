@@ -135,3 +135,53 @@ it('purges ID copies 90 days after a unit closes and 180 days after an idle draf
         ->and(UnitDocument::query()->where('unit_id', $closed->id)->count())->toBe(4)
         ->and(ActivityLog::query()->where('action', 'document.purged')->count())->toBe(4);
 });
+
+it('the audit proof P2: two review edits that each pass cannot together break the accept-less rule (M5)', function () {
+    $unit = publishedUnit($this->seller, ['paid_amount' => 2_000_000, 'accepts_less' => true, 'lowest_accepted_amount' => 1_000_000]);
+    $live = "/api/v1/me/units/{$unit->public_id}/live";
+
+    // Alone, each edit passes against the live unit: lowest accepted 1,900,000 is under the live paid 2,000,000, and
+    // paid 1,500,000 is above the live lowest accepted 1,000,000. Together they break the rule (P2 stored exactly that).
+    $this->putJson($live, ['lowest_accepted_amount' => 1_900_000], $this->h)->assertOk();
+    $this->putJson($live, ['paid_amount' => 1_500_000], $this->h)->assertStatus(422)->assertJsonValidationErrors('lowest_accepted_amount');
+
+    expect($unit->pendingChanges()->where('state', 'pending')->sole()->changes)->toBe(['lowest_accepted_amount' => [1_000_000, 1_900_000]]);
+    // Both together in one edit that keeps the rule are fine.
+    $this->putJson($live, ['paid_amount' => 1_500_000, 'lowest_accepted_amount' => 1_400_000], $this->h)->assertOk();
+});
+
+it('checks a new edit against the values already waiting for review, and logs only what the edit changed', function () {
+    $unit = publishedUnit($this->seller);
+    $live = "/api/v1/me/units/{$unit->public_id}/live";
+
+    $this->putJson($live, ['paid_amount' => 1_600_000], $this->h)->assertOk();
+    $this->putJson($live, ['size_m2' => 150], $this->h)->assertOk();
+
+    expect($unit->pendingChanges()->where('state', 'pending')->sole()->changes)->toBe([
+        'paid_amount' => [1_500_000, 1_600_000], 'size_m2' => ['145.00', '150.00'],
+    ])->and(ActivityLog::query()->where('action', 'unit.change_requested')->latest('id')->first()->after)->toBe(['size_m2' => '150.00']);
+});
+
+it('withdraws the pending change when an edit puts every field back', function () {
+    $unit = publishedUnit($this->seller);
+    $live = "/api/v1/me/units/{$unit->public_id}/live";
+
+    $this->putJson($live, ['paid_amount' => 1_600_000], $this->h)->assertOk()->assertJsonPath('meta.pending', true);
+    $this->putJson($live, ['paid_amount' => 1_500_000], $this->h)->assertOk()->assertJsonPath('meta.pending', false);
+
+    expect($unit->pendingChanges()->where('state', 'pending')->count())->toBe(0)
+        ->and($unit->pendingChanges()->sole()->state)->toBe('withdrawn');
+});
+
+it('the audit proof P1: a due date that passed after publishing does not block other edits (M6)', function () {
+    $unit = publishedUnit($this->seller);
+    $unit->forceFill(['next_due_date' => now()->subDays(3)->toDateString()])->save();
+    $live = "/api/v1/me/units/{$unit->public_id}/live";
+
+    $this->putJson($live, ['description' => str_repeat('وصف جديد للوحدة بعد النشر ', 4)], $this->h)->assertOk();
+    $this->putJson($live, ['paid_amount' => 1_600_000], $this->h)->assertOk();
+
+    // A new date must still lie ahead; today's is refused, next month's accepted.
+    $this->putJson($live, ['next_due_date' => now()->toDateString()], $this->h)->assertStatus(422)->assertJsonValidationErrors('next_due_date');
+    $this->putJson($live, ['next_due_date' => now()->addMonth()->toDateString()], $this->h)->assertOk();
+});

@@ -7,6 +7,7 @@ use App\Http\Resources\AccountResource;
 use App\Models\User;
 use App\Support\Accounts\Phone;
 use App\Support\Activity\ActivityLogger;
+use App\Support\Text\PlainLine;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -25,7 +26,7 @@ class MeController extends Controller
     {
         $user = self::user($request);
         $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'name' => ['required', 'string', 'min:2', 'max:120', PlainLine::RULE],
             'phone' => ['required', 'string', 'max:30'],
             'locale' => ['required', 'in:ar,en'],
         ]);

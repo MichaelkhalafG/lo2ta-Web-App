@@ -149,6 +149,11 @@ export type DeveloperItem = { slug: string; name: string };
 /** A unit ID as core issues it (ULID); anything else never reaches core. */
 export const UNIT_ID = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
+/** A draft never sent (no reference yet) can be deleted by its seller; core refuses anything else (audit L8). */
+export function draftDeletable(unit: Pick<SellerUnitSummary, "state" | "reference">): boolean {
+  return unit.state.code === "draft" && unit.reference === null;
+}
+
 /** Problems of one step from the readiness map ([] in JSON when there are none). */
 export function problemsOf(unit: SellerUnit, step: 1 | 2 | 3 | 4 | 5): ProblemMap {
   const value = unit.readiness[`step${step}`];

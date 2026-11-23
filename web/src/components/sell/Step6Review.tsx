@@ -65,7 +65,7 @@ export function Step6Review() {
               <span className="text-body font-semibold">{steps(String(row.step))}</span>
               <span className="text-small text-text-2">{row.text}</span>
               {open ? <span className="text-small text-warning">{t("incomplete")}</span> : <span className="text-small text-success">✓</span>}
-              <a href={`./${row.step}`} className="ms-auto text-small text-text-1 underline underline-offset-4">
+              <a href={`./${row.step}`} className="inline-flex min-h-control-md items-center ms-auto text-small text-text-1 underline underline-offset-4">
                 {t("edit")}
               </a>
             </li>

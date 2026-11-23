@@ -40,22 +40,22 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const common = await getTranslations("common");
   const tx = (key: string) => text(texts, `home.${key}`);
   // "لقطات الأسبوع": the units the team tagged; the newest three when none is tagged (PLAN D28).
-  const [tagged, words] = await Promise.all([unitList({ deal: true }, locale, 3), cardWords(locale)]);
+  const [tagged, words, all, unit] = await Promise.all([unitList({ deal: true }, locale, 3), cardWords(locale), unitList({}, locale, 1), getTranslations("listing.unit")]);
   const picks = tagged.data.length > 0 ? { cards: tagged.data, recent: false } : { cards: (await unitList({ sort: "newest" }, locale, 3)).data, recent: true };
 
   return (
     <>
-      <Hero tx={tx} currency={common("currency")} />
+      <Hero tx={tx} currency={common("currency")} sheet={unit("code")} />
       <Review tx={tx} />
       <SellerBand tx={tx} />
-      <Picks tx={tx} cards={picks.cards} recent={picks.recent} words={words} />
+      <Picks tx={tx} cards={picks.cards} recent={picks.recent} words={words} total={all.meta.total} />
     </>
   );
 }
 
 type Tx = (key: string) => string;
 
-function Hero({ tx, currency }: { tx: Tx; currency: string }) {
+function Hero({ tx, currency, sheet }: { tx: Tx; currency: string; sheet: string }) {
   return (
     <section className="grid lg:min-h-[46rem] lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
       <div className="flex flex-col justify-between gap-12 px-gutter-mobile pt-12 pb-14 lg:ps-12 lg:pe-14 lg:pt-20">
@@ -95,7 +95,7 @@ function Hero({ tx, currency }: { tx: Tx; currency: string }) {
         <span className="absolute start-6 end-6 top-6 text-annotation text-text-3">{tx("hero.photo_caption")}</span>
         <div className="absolute start-0 end-0 bottom-0 grid grid-cols-[auto_1fr_auto] border-t-[1.5px] border-text-3 bg-bg-0">
           <div className="flex flex-col gap-0.5 px-4.5 py-3.5">
-            <span className="text-micro text-text-3">LK</span>
+            <span className="text-micro text-text-3">{sheet}</span>
             <span className="font-mono text-[0.875rem] font-medium text-text-1" dir="ltr">
               LK-NC-0124
             </span>
@@ -206,7 +206,7 @@ function SellerBand({ tx }: { tx: Tx }) {
   );
 }
 
-function Picks({ tx, cards, recent, words }: { tx: Tx; cards: UnitCardData[]; recent: boolean; words: CardWords }) {
+function Picks({ tx, cards, recent, words, total }: { tx: Tx; cards: UnitCardData[]; recent: boolean; words: CardWords; total: number }) {
   return (
     <section className="flex flex-col gap-9 px-gutter-mobile pt-16 pb-20 lg:px-gutter lg:pt-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
@@ -218,7 +218,11 @@ function Picks({ tx, cards, recent, words }: { tx: Tx; cards: UnitCardData[]; re
           href={paths.opportunities}
           className="inline-flex items-center gap-2 border-b border-gold pb-1 text-body font-medium whitespace-nowrap"
         >
-          {tx("picks.all")} <Arrow />
+          {tx("picks.all")}
+          <span className="font-mono text-annotation text-text-2 tabular" dir="ltr">
+            {total}
+          </span>
+          <Arrow />
         </Link>
       </div>
       {cards.length === 0 ? (

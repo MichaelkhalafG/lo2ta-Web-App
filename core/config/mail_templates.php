@@ -18,6 +18,7 @@ return [
     'system.test' => SystemTestMail::class,
     'account.verify_email' => AccountActionMail::class,
     'account.reset_password' => AccountActionMail::class,
+    'account.login_locked' => AccountActionMail::class,
     'admin.new_budget' => NewBudgetMail::class,
     'seller.unit_received' => UnitReceivedMail::class,
     'admin.unit_submitted' => UnitTeamNoticeMail::class,

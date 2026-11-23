@@ -14,6 +14,7 @@ return [
     'in' => 'The selected :attribute is not valid.',
     'integer' => 'The :attribute must be a whole number.',
     'numeric' => 'The :attribute must be a number.',
+    'not_regex' => 'The :attribute must be one line without hidden characters.',
     'max' => [
         'numeric' => 'The :attribute must be :max or less.',
         'string' => 'The :attribute must be :max characters or fewer.',

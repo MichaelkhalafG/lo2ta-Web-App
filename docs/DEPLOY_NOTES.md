@@ -96,3 +96,30 @@ are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every car
 
 - `ids:purge` daily at 04:00 Cairo (PLAN 2.2.8): deletes national ID copies past their retention period. Before the
   first live run, check what it would do: `php artisan ids:purge --dry-run`.
+
+## 6. Production settings and the visitor's address (audit 2026-11-22, M1 M4 H1)
+
+Core `.env` on the server (each line is checked by hand in the deploy log):
+
+```
+APP_ENV=production
+APP_DEBUG=false
+SESSION_SECURE_COOKIE=true     # the default in production since the audit; keep it explicit
+```
+
+hPanel PHP settings for core: `expose_php` **Off** (core also removes `X-Powered-By` itself).
+
+The Next server reads the visitor's address from the right of `X-Forwarded-For`: the entry the host's proxy
+appended (`web/src/lib/clientIp.ts`). `TRUSTED_PROXY_HOPS` in the Next environment is the number of proxies in front
+of Next: `1` (the default) for Hostinger's web server alone; `2` if a CDN is put in front of it. A wrong value is
+not silent: too low lets a visitor choose their own address again, too high counts every visitor as one.
+
+Live probe after the first deploy and after any change of proxy or CDN:
+
+1. `curl -sI https://loktaeg.com/` and `curl -sI https://<core host>/dashboard/login`: both show
+   `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy` and
+   `Strict-Transport-Security: max-age=31536000`; neither shows `X-Powered-By`. The core answer's session cookie
+   carries `secure`.
+2. Address check: send the contact form six times within an hour with `X-Forwarded-For: 198.51.100.1` and so on (a
+   different made-up address each time). The sixth must be refused ("محاولات كتير"). If all six pass, the proxy
+   layout is not what `TRUSTED_PROXY_HOPS` says: STOP and fix it before launch. Delete the six test messages after.

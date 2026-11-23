@@ -133,7 +133,7 @@ export default async function OpportunitiesPage({ params, searchParams }: PagePr
           </label>
           <div className="flex flex-wrap items-center gap-3 md:flex-col md:items-stretch">
             <label className="flex min-h-11 items-center gap-2 text-body text-text-1">
-              <input type="checkbox" name="verified" value="1" defaultChecked={filters.verified === true} className="size-4 accent-[var(--color-verified)]" />
+              <input type="checkbox" name="verified" value="1" defaultChecked={filters.verified === true} className="size-5 accent-[var(--color-verified)]" />
               {t("verifiedOnly")}
             </label>
             <button type="submit" className="h-control-lg rounded-sm bg-gold px-6 font-semibold text-on-gold hover:bg-gold-bright">
@@ -144,7 +144,7 @@ export default async function OpportunitiesPage({ params, searchParams }: PagePr
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           {isFiltered(filters) ? (
-            <Link href={PATH} className="text-small text-text-2 underline underline-offset-4 hover:text-text-1">
+            <Link href={PATH} className="inline-flex min-h-control-md items-center text-small text-text-2 underline underline-offset-4 hover:text-text-1">
               {t("clear")}
             </Link>
           ) : (

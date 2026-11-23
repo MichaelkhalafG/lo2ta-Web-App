@@ -113,3 +113,12 @@ it('gives settings, texts, staff and commissions to the admin role only', functi
             ->and(Gate::forUser($reviewer)->allows($ability))->toBeFalse();
     }
 });
+
+it('names the provisional settings on the overview instead of showing their keys (audit D12)', function () {
+    $admin = AdminUser::factory()->create();
+
+    $this->actingAs($admin, 'admin')->get('/dashboard')
+        ->assertInertia(fn (Assert $page) => $page->component('Overview')
+            ->where('provisionalSettings.0', ['key' => 'transfer_fee_mode', 'label' => 'طريقة حساب رسوم التنازل'])
+            ->where('provisionalSettings', fn ($rows) => collect($rows)->every(fn (array $r): bool => $r['label'] !== $r['key'])));
+});

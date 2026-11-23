@@ -27,7 +27,7 @@ export function ExitPanel({ compact = false }: { compact?: boolean }) {
 
   const { cancel, transfer } = report;
   const provisional = report.provisional.length > 0;
-  const money = (n: number) => <span className="font-mono tabular" dir="ltr">{formatMoney(n)}</span>;
+  const money = (n: number) => <span className="font-medium tabular" dir="ltr">{formatMoney(n)}</span>;
 
   return (
     <div className="flex flex-col gap-5 rounded-sm border border-line bg-surface-1 p-5">

@@ -612,6 +612,26 @@ checks photos in review for building numbers, signs or documents and can hide a 
 | D35 | The card shows district then area, and the title "type N rooms in place" (2.5) | the board's card | lang lines |
 | D36 | The structured data offer is the amount the owner asks (paid), as 2.5 says "amount to the owner" | 2.5 | 1 field |
 
+**Choices made while fixing the audit of 2026-11-22 (Michael's decisions 1 to 8 of 2026-11-23; for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D37 | The visitor's address is the entry the host's proxy appends to X-Forwarded-For (right-most; `TRUSTED_PROXY_HOPS`, default 1); a short or malformed list counts as the Next server's own address | the first entry is whatever the visitor sends (H1); failing to the shared address is stricter, never looser | 1 helper |
+| D38 | Sign-in lock (decision 1A): 20 failures within 60 minutes from any address lock the e-mail for 15 minutes, even for the right password; unknown e-mails lock the same way without a mail; a password reset lifts the lock; all three values are settings | the lock must not reveal which accounts exist, and the owner always has a way back in | 3 settings |
+| D39 | PDFs (decision 2A): an open action may only show a page (destination, go-to or named page); remote go-to, form submission, data import, media, sound and additional actions are refused anywhere; a link must be http, https or mailto; an open action we cannot follow is refused as unsupported | contracts never need these; "we cannot read it with certainty" was already the rule | 1 list |
+| D40 | Typed developer and compound names are matched to the lists after dropping company words (Developments, Group, شركة, للتطوير العقاري ...); two entries with the same name are never guessed between | decision 3A; a wrong match would block an honest seller | 1 word list |
+| D41 | A pending change that an edit puts back to the live values is marked `withdrawn` (a fourth state next to pending, approved, rejected) | the team should not review a change that no longer exists; the history stays | 1 state |
+| D42 | A next due date that passed after publishing does not block a live edit; a newly entered date must still lie ahead | M6; time passing is not the seller's mistake | 1 parameter |
+| D43 | Contact details: text is NFKC-normalised, invisible characters dropped, a letter O inside a digit run read as 0, a mobile without its 0 caught unless written as a grouped amount; social handles caught; numbers spelled in words stay with the review | M7 without refusing prices such as 1,000,000,000 | 1 class |
+| D44 | Request references are "R-" plus six random characters of the public id | L3: a running number shows the site's volume | 1 line |
+| D45 | Account writes (profile, favorites, budget): 120 per user per hour (`rl_account_write_user`) | L4: far above a person, low for a script | 1 setting |
+| D46 | Core answers no cross-origin request at all | L7: only the Next server calls core | config/cors.php |
+| D47 | Security headers on both apps: frame protection (X-Frame-Options and CSP frame-ancestors), nosniff, strict-origin-when-cross-origin, a Permissions-Policy turning off camera, microphone, location, payment and USB, COOP same-origin, HSTS one year in production without subdomains | decision 7A; subdomains stay out of HSTS because the host's mail and panel subdomains are not ours | 2 lists |
+| D48 | Money is set in Alexandria with tabular figures; IBM Plex Mono stays for codes, dates in tables and dimension-line annotations; the contract price on the unit page is 42 px gold (32 px under 640 px) | tokens: mono for annotations only; decision 5/6 "price typography" | classes |
+| D49 | Stamp "LOKTA" text at 11 px (token minimum) instead of the board's 10 px; the menu arrow is a drawn chevron, not a 10 px glyph | decision 5: what reads best at real size | 2 classes |
+| D50 | The loading line is only on /opportunities: a loading boundary higher up made unknown pages answer 200 instead of 404 | a real 404 status matters for search engines and for monitoring | 1 file |
+| D51 | The phone request bar shows "you pay the owner now", the amount, "accepts from" when set, and opens the request form in place | board 06.4; the amount the buyer acts on is the paid amount, not the contract price | 1 block |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -991,13 +1011,16 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] Exit report PDF (AR + EN): calculator engine (4.2) in core, mPDF with Alexandria, generated at submit,
       attached to the seller's e-mail, owner download; "verified" version on publish comes with phase 7
 - [x] Unit status in "My account" (/account/units and the unit page); seller e-mails (received, withdrawn; the review
-      outcomes come with phase 7); editing after publish (tiers 2.2.7) and withdrawal (request during a deal)
+      outcomes come with phase 7); editing after publish (tiers 2.2.7) and withdrawal (request during a deal);
+      audit 2026-11-22 M5 and M6 fixed 2026-11-23 (pending values checked together, a passed due date no longer blocks)
 - [x] ID retention job (2.2.8): `ids:purge`, daily 04:00 Cairo, with --dry-run
 
 **Phase 5: Listings** (2026-11-22, decisions in 2.6)
-- [x] Opportunities page: filters, sort, numbered pages plus show more, server-rendered cards (board 06.2)
+- [x] Opportunities page: filters, sort, numbered pages plus show more, server-rendered cards (board 06.2 in part:
+      the filter bar, featured card and phone filter layout wait for Michael's OK on the proposal of 2026-11-23)
 - [x] Unit page: specs, payment plan with the computed schedule, money panel, verified badge, request form with the
-      fee consent, structured data, old slugs redirect (board 06.3)
+      fee consent, structured data, old slugs redirect (board 06.3: marks, price type and phone bar added 2026-11-23;
+      the gallery waits for Michael's OK on the proposal)
 - [x] Compound pages and index; developers page with partnership form; contact form; My requests; home picks
 - [x] Privacy: card keys pinned; the sentinel scan runs over the API and, in the browser run, over the built pages
       and their structured data (2.5)

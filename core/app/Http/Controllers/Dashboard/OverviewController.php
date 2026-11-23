@@ -35,7 +35,12 @@ class OverviewController extends Controller
             ];
         }
 
-        $provisional = array_keys(array_filter($settings->all(), static fn (array $s): bool => $s['provisional']));
+        // Staff read names, not keys (audit D12); the key stays as a hint for whoever edits the setting.
+        $provisional = [];
+        foreach (array_keys(array_filter($settings->all(), static fn (array $s): bool => $s['provisional'])) as $key) {
+            $label = __("dashboard.setting_labels.{$key}");
+            $provisional[] = ['key' => $key, 'label' => is_string($label) && $label !== "dashboard.setting_labels.{$key}" ? $label : $key];
+        }
 
         return Inertia::render('Overview', [
             'units' => $units,

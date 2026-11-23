@@ -166,6 +166,10 @@
       "sell": "Start selling your unit",
       "untitled": "Unit",
       "another": "List another unit",
+      "delete": "Delete draft",
+      "deleteConfirm": "The draft, its photos and its documents are deleted for good.",
+      "deleteYes": "Yes, delete it",
+      "deleteNo": "No, keep it",
       "exitReport": "Exit report",
       "next": {
         "draft": "Continue",
@@ -674,7 +678,16 @@
       "fee": "Lokta fee for the buyer (1%)",
       "feeWhen": "Due only on completion of the transfer",
       "reservedNote": "A deal is open on this unit right now.",
-      "published": "Published"
+      "published": "Published",
+      "currency": "EGP",
+      "status": "Status",
+      "statusNext": "Next",
+      "statusLater": "Scheduled",
+      "payNow": "You pay the owner now",
+      "ownerFromShort": "Accepts from {amount}",
+      "facadeLabel": "Facing {sides}",
+      "noFacade": "Façade not given",
+      "schedulePer": "{count} × {amount} · {frequency}"
     },
     "request": {
       "open": "Request this unit",
@@ -717,5 +730,22 @@
     "projectsOptional": "Number of projects (optional)",
     "contactTitle": "Send us a message",
     "partnershipTitle": "Partnership request"
+  },
+  "states": {
+    "notFound": {
+      "label": "LK-404",
+      "title": "This sheet does not exist",
+      "body": "The link may have changed, or the unit left the market after it was sold or withdrawn.",
+      "opportunities": "See the opportunities",
+      "home": "Home"
+    },
+    "error": {
+      "label": "LK-500",
+      "title": "Something went wrong on our side",
+      "body": "The page did not load. Try again in a moment; if it keeps happening, contact us.",
+      "retry": "Try again",
+      "home": "Home"
+    },
+    "loading": "Loading the page…"
   }
 }

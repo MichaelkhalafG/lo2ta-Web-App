@@ -78,16 +78,17 @@ export function UnitCard({ unit, words, list = false }: { unit: Card; words: Car
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col">
+        {/* Wraps instead of clipping: a price up to 1,000,000,000 fits a 390 px card (audit D7). */}
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          <div className="flex min-w-0 flex-col">
             <span className="text-micro text-text-3">{words.contractPrice}</span>
-            <span className="font-mono text-price-card tabular text-gold" dir="ltr">
+            <span className="text-price-card text-gold tabular" dir="ltr">
               {money(unit.total_price)}
             </span>
           </div>
-          <div className="flex flex-col">
+          <div className="flex min-w-0 flex-col">
             <span className="text-micro text-text-3">{words.similarToday}</span>
-            <span className="font-mono text-body tabular text-text-2" dir="ltr">
+            <span className="text-body font-medium text-text-2 tabular" dir="ltr">
               {money(unit.market_price_estimate)}
             </span>
           </div>
@@ -99,9 +100,13 @@ export function UnitCard({ unit, words, list = false }: { unit: Card; words: Car
             <span>{money(unit.remaining_amount)}</span>
             <span className="text-text-1">{money(unit.paid_amount)}</span>
           </div>
-          <div className="relative h-2" aria-hidden="true">
+          <div className="relative h-3" aria-hidden="true">
             <div className="absolute inset-x-0 top-1/2 h-px bg-line-strong" />
             <div className="absolute end-0 top-1/2 h-0.5 -translate-y-1/4 bg-text-1" style={{ width: `${Math.min(100, Math.max(0, paid))}%` }} />
+            {/* Ticks at both ends and at the split, as on a dimension line (board 06.2). */}
+            <div className="absolute start-0 top-0 h-3 w-px bg-line-strong" />
+            <div className="absolute top-0 h-3 w-px bg-text-1" style={{ insetInlineEnd: `${Math.min(100, Math.max(0, paid))}%` }} />
+            <div className="absolute end-0 top-0 h-3 w-px bg-text-1" />
           </div>
           <div className="flex justify-between text-micro text-text-3">
             <span>
@@ -111,7 +116,7 @@ export function UnitCard({ unit, words, list = false }: { unit: Card; words: Car
           </div>
           {unit.accepts_less && unit.owner_from !== null ? (
             <span className="text-small text-success">
-              {words.ownerFrom} <span className="font-mono tabular" dir="ltr">{money(unit.owner_from)}</span>
+              {words.ownerFrom} <span className="tabular" dir="ltr">{money(unit.owner_from)}</span>
             </span>
           ) : null}
         </div>
@@ -122,12 +127,12 @@ export function UnitCard({ unit, words, list = false }: { unit: Card; words: Car
               ? `${unit.installments.count} ${words.installments} ${unit.installments.frequency?.label ?? ""} × `
               : ""}
             {unit.installments.amount ? (
-              <span className="font-mono tabular" dir="ltr">
+              <span className="tabular" dir="ltr">
                 {money(unit.installments.amount)}
               </span>
             ) : null}
           </span>
-          <Link href={href} className="inline-flex items-center gap-1 text-text-1 hover:text-gold-bright">
+          <Link href={href} className="inline-flex min-h-control-md items-center gap-1 text-text-1 hover:text-gold-bright">
             {words.open}{" "}
             <span aria-hidden="true" className="rtl:rotate-180">
               →

@@ -169,7 +169,9 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // Secure by default in production (audit M4): the dashboard cookie never travels over plain HTTP there, even when
+    // SESSION_SECURE_COOKIE is forgotten. Set it to false only for a local production-mode run over HTTP.
+    'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
 
     /*
     |--------------------------------------------------------------------------

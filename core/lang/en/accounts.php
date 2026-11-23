@@ -6,6 +6,7 @@
 
 return [
     'login_failed' => 'Wrong e-mail or password.',
+    'locked' => 'Too many wrong sign-ins on this account. Try again in :minutes minutes, or choose a new password with "Forgot your password?".',
     'throttled' => 'Too many attempts. Try again in :seconds seconds.',
     'reset_invalid' => 'This reset link is not valid or has expired. Ask for a new one.',
     'verify_invalid' => 'This confirmation link is not valid or has expired. Ask for a new one from your account.',

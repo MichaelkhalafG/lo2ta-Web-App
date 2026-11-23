@@ -10,6 +10,8 @@ use App\Support\Accounts\Phone;
 use App\Support\Mail\TeamNotice;
 use App\Support\Seller\Throttle;
 use App\Support\Settings\Settings;
+use App\Support\Text\Digits;
+use App\Support\Text\PlainLine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -26,7 +28,7 @@ class FormsController extends Controller
     {
         $throttle->hit('contact', ['rl_contact_ip' => 'ip:'.ClientIp::of($request)]);
         $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'name' => ['required', 'string', 'min:2', 'max:120', PlainLine::RULE],
             'email' => ['required', 'string', 'email:rfc', 'max:190'],
             'phone' => ['nullable', 'string', 'max:30'],
             'message' => ['required', 'string', 'min:10', 'max:'.$settings->int('form_message_max')],
@@ -53,9 +55,9 @@ class FormsController extends Controller
     {
         $throttle->hit('partnership', ['rl_partnership_ip' => 'ip:'.ClientIp::of($request)]);
         $request->validate([
-            'company' => ['required', 'string', 'min:2', 'max:160'],
-            'contact_name' => ['required', 'string', 'min:2', 'max:120'],
-            'job_title' => ['nullable', 'string', 'max:120'],
+            'company' => ['required', 'string', 'min:2', 'max:160', PlainLine::RULE],
+            'contact_name' => ['required', 'string', 'min:2', 'max:120', PlainLine::RULE],
+            'job_title' => ['nullable', 'string', 'max:120', PlainLine::RULE],
             'email' => ['required', 'string', 'email:rfc', 'max:190'],
             'phone' => ['required', 'string', 'max:30'],
             'projects_count' => ['nullable', 'integer', 'between:0,1000'],
@@ -109,7 +111,7 @@ class FormsController extends Controller
         if ($mobile !== null) {
             return $mobile;
         }
-        $latin = strtr($value, ['٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4', '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9']);
+        $latin = Digits::latin($value);
         $plus = str_starts_with(ltrim($latin), '+') ? '+' : '';
         $digits = (string) preg_replace('/[^0-9]/', '', $latin);
 

@@ -59,7 +59,9 @@ it('refuses a PHP file renamed to .jpg, whatever the client says it is', functio
 });
 
 it('refuses PHP code behind a JPEG signature', function () {
-    photoUpload($this->unit, $this->h, upload('x.jpg', "\xFF\xD8\xFF\xE0".'<?php system($_GET["c"]); ?>', 'image/jpeg'))->assertStatus(422);
+    // Audit C4: the reason is pinned, so a refusal for another cause cannot pass this test.
+    photoUpload($this->unit, $this->h, upload('x.jpg', "\xFF\xD8\xFF\xE0".'<?php system($_GET["c"]); ?>', 'image/jpeg'))
+        ->assertStatus(422)->assertJsonPath('reason', 'photo_type');
 
     nothingStored();
 });
@@ -69,10 +71,10 @@ it('refuses SVG with a script, HTML and GIF, as photo and as document', function
     $html = '<html><body><script>alert(1)</script></body></html>';
 
     foreach ([upload('a.svg', $svg, 'image/svg+xml'), upload('a.png', $svg, 'image/png'), upload('a.webp', $html, 'image/webp'), upload('a.gif', testImage('gif', 900, 900), 'image/gif')] as $file) {
-        photoUpload($this->unit, $this->h, $file)->assertStatus(422);
+        photoUpload($this->unit, $this->h, $file)->assertStatus(422)->assertJsonPath('reason', 'photo_type');
     }
     foreach ([upload('a.svg', $svg, 'image/svg+xml'), upload('a.pdf', $html, 'application/pdf')] as $file) {
-        documentUpload($this->unit, $this->h, $file)->assertStatus(422);
+        documentUpload($this->unit, $this->h, $file)->assertStatus(422)->assertJsonPath('reason', 'document_type');
     }
 
     nothingStored();

@@ -166,6 +166,10 @@
       "sell": "ابدأ بيع وحدتك",
       "untitled": "وحدة",
       "another": "اعرض وحدة تانية",
+      "delete": "امسح المسودة",
+      "deleteConfirm": "المسودة وصورها ومستنداتها هتتمسح خالص ومش هترجع.",
+      "deleteYes": "أيوه، امسحها",
+      "deleteNo": "لا، سيبها",
       "exitReport": "تقرير الخروج",
       "next": {
         "draft": "كمّل",
@@ -644,7 +648,7 @@
       "yearsLeft": "سنوات الأقساط الباقية",
       "years": "{count} سنين",
       "plan": "خطة السداد",
-      "paidPct": "مدفوع · {pct}%",
+      "paidPct": "مدفوع · {pct}٪",
       "remaining": "متبقٍ",
       "remainingCount": "متبقٍ · {count} قسط {frequency}",
       "contractPrice": "سعر التعاقد الأصلي",
@@ -674,7 +678,16 @@
       "fee": "عمولة لقطة على المشتري (1%)",
       "feeWhen": "عند إتمام التنازل فقط",
       "reservedNote": "فيه صفقة مفتوحة على الوحدة دي دلوقتي.",
-      "published": "منشورة"
+      "published": "منشورة",
+      "currency": "ج.م",
+      "status": "الحالة",
+      "statusNext": "القسط الجاي",
+      "statusLater": "مجدول",
+      "payNow": "تدفع للمالك الآن",
+      "ownerFromShort": "يقبل من {amount}",
+      "facadeLabel": "واجهة {sides}",
+      "noFacade": "الواجهة مش محددة",
+      "schedulePer": "{count} × {amount} · {frequency}"
     },
     "request": {
       "open": "اطلب الوحدة",
@@ -717,5 +730,22 @@
     "projectsOptional": "عدد المشروعات (اختياري)",
     "contactTitle": "ابعتلنا رسالة",
     "partnershipTitle": "طلب شراكة"
+  },
+  "states": {
+    "notFound": {
+      "label": "LK-404",
+      "title": "اللوحة دي مش موجودة",
+      "body": "يمكن الرابط اتغيّر، أو الوحدة اتشالت من السوق بعد ما اتباعت أو اتسحبت.",
+      "opportunities": "شوف الفرص المتاحة",
+      "home": "الرئيسية"
+    },
+    "error": {
+      "label": "LK-500",
+      "title": "حصلت مشكلة عندنا",
+      "body": "الصفحة ما اتحمّلتش. جرّب تاني بعد شوية، ولو المشكلة فضلت كلّمنا.",
+      "retry": "جرّب تاني",
+      "home": "الرئيسية"
+    },
+    "loading": "بنحمّل الصفحة…"
   }
 }

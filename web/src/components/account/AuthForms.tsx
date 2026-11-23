@@ -26,8 +26,9 @@ export function LoginForm({ next, intent, resetDone }: { next: string; intent: s
   const [state, action] = useActionState(loginAction, initial);
 
   return (
-    <form action={action} className="flex flex-col gap-5" noValidate>
+    <form action={action} className="relative flex flex-col gap-5" noValidate>
       <Hidden next={next} intent={intent} />
+      <Honeypot label={t("fields.website")} />
       {resetDone ? <Notice tone="success">{t("login.resetDone")}</Notice> : null}
       {intent ? <Notice tone="info">{t("login.why")}</Notice> : null}
       {state.message && !state.errors?.email ? <Notice tone="error">{state.message}</Notice> : null}
@@ -42,7 +43,7 @@ export function LoginForm({ next, intent, resetDone }: { next: string; intent: s
         error={state.errors?.email}
       />
       <Field label={t("fields.password")} name="password" type="password" dir="ltr" autoComplete="current-password" required error={state.errors?.password} />
-      <Link href="/forgot-password" className="self-start text-small text-text-2 underline underline-offset-4 hover:text-text-1">
+      <Link href="/forgot-password" className="inline-flex min-h-control-md items-center self-start text-small text-text-2 underline underline-offset-4 hover:text-text-1">
         {t("login.forgot")}
       </Link>
       <Submit pendingLabel={t("pending")}>{t("login.submit")}</Submit>
@@ -104,8 +105,8 @@ export function RegisterForm({ next, intent }: { next: string; intent: string | 
       />
       <Field label={t("fields.passwordConfirm")} name="password_confirmation" type="password" dir="ltr" autoComplete="new-password" required />
       <div className="flex flex-col gap-2">
-        <label className="flex items-start gap-3 text-small text-text-2">
-          <input type="checkbox" name="terms" required className="mt-1 size-4 accent-[var(--color-text-1)]" aria-invalid={e.terms ? true : undefined} />
+        <label className="flex min-h-control-md items-start gap-3 py-1 text-small text-text-2">
+          <input type="checkbox" name="terms" required className="mt-0.5 size-5 shrink-0 accent-[var(--color-text-1)]" aria-invalid={e.terms ? true : undefined} />
           <span>
             {t.rich("register.terms", {
               terms: (chunks) => (
@@ -149,12 +150,13 @@ export function ForgotForm() {
   }
 
   return (
-    <form action={action} className="flex flex-col gap-5" noValidate>
+    <form action={action} className="relative flex flex-col gap-5" noValidate>
       <input type="hidden" name="locale" value={locale} />
+      <Honeypot label={t("fields.website")} />
       {state.message && !state.errors?.email ? <Notice tone="error">{state.message}</Notice> : null}
       <Field label={t("fields.email")} name="email" type="email" dir="ltr" autoComplete="email" required defaultValue={state.values?.email ?? ""} error={state.errors?.email} />
       <Submit pendingLabel={t("pending")}>{t("forgot.submit")}</Submit>
-      <Link href="/login" className="text-small text-text-2 underline underline-offset-4 hover:text-text-1">
+      <Link href="/login" className="inline-flex min-h-control-md items-center self-start text-small text-text-2 underline underline-offset-4 hover:text-text-1">
         {t("forgot.back")}
       </Link>
     </form>

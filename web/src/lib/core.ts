@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/routing";
+import { coreConfig } from "./coreConfig";
 
 /*
  * Server-side reads from the core API (handover 2.2): the server key travels in X-Api-Key and never reaches the
@@ -7,16 +8,6 @@ import type { Locale } from "@/i18n/routing";
  */
 
 const REVALIDATE_SECONDS = 300;
-
-function coreConfig(): { base: string; key: string } {
-  const base = (process.env.CORE_API_URL ?? "").trim().replace(/\/+$/, "");
-  const key = (process.env.CORE_API_KEY ?? "").trim();
-  if (base === "" || key === "") {
-    throw new Error("CORE_API_URL and CORE_API_KEY must be set for the Next server.");
-  }
-
-  return { base, key };
-}
 
 async function coreGet<T>(path: string, locale: Locale, tags: string[]): Promise<T> {
   const { base, key } = coreConfig();

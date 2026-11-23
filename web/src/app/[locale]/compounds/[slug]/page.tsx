@@ -62,7 +62,7 @@ export default async function CompoundPage({ params }: PageProps<"/[locale]/comp
             ))}
           </div>
         )}
-        <Link href={`/opportunities`} className="self-start text-small text-text-1 underline underline-offset-4">
+        <Link href={`/opportunities`} className="inline-flex min-h-control-md items-center self-start text-small text-text-1 underline underline-offset-4">
           {t("all")}
         </Link>
       </div>
