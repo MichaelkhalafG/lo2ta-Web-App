@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
+use App\Support\Accounts\LoginGuard;
 use App\Support\Activity\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Dashboard sign-in for staff (guard "admin"). Five tries a minute per e-mail and IP; every sign-in, failure and
+ * Dashboard sign-in for staff (guard "admin"). Five tries a minute per e-mail and IP, and the account-wide ceiling
+ * of the public sign-in (LoginGuard, staff counters, second security pass N1); every sign-in, failure, lock and
  * sign-out is in the activity log.
  */
 class AuthController extends Controller
@@ -27,7 +29,7 @@ class AuthController extends Controller
         return Inertia::render('Auth/Login');
     }
 
-    public function store(Request $request, ActivityLogger $log): RedirectResponse
+    public function store(Request $request, ActivityLogger $log, LoginGuard $guard): RedirectResponse
     {
         $request->validate([
             'email' => ['required', 'string', 'email', 'max:255'],
@@ -44,6 +46,8 @@ class AuthController extends Controller
             ]);
         }
 
+        $guard->ensureOpen($email, LoginGuard::STAFF);
+
         $ok = Auth::guard('admin')->attempt(
             ['email' => $email, 'password' => $password, 'is_active' => true],
         );
@@ -51,12 +55,14 @@ class AuthController extends Controller
         if (! $ok) {
             RateLimiter::hit($throttleKey, 60);
             $log->record('admin.login_failed', null, null, ['email' => $email]);
+            $guard->staffFailed($email, AdminUser::query()->where('email', $email)->first());
             throw ValidationException::withMessages([
                 'email' => __('dashboard.login.failed'),
             ]);
         }
 
         RateLimiter::clear($throttleKey);
+        $guard->clear($email, scope: LoginGuard::STAFF);
         $request->session()->regenerate();
 
         $admin = Auth::guard('admin')->user();

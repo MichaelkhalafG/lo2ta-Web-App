@@ -2,6 +2,7 @@
 
 namespace App\Support\Accounts;
 
+use App\Models\AdminUser;
 use App\Models\User;
 use App\Support\Activity\ActivityLogger;
 use App\Support\Mail\Outbox;
@@ -17,9 +18,17 @@ use Illuminate\Validation\ValidationException;
  * login_window_minutes the e-mail is locked for login_lock_minutes, even for the right password, and the owner gets
  * an e-mail. Unknown e-mails are counted and locked the same way (only the e-mail is skipped), so the lock tells a
  * visitor nothing about which accounts exist. A password reset lifts the lock at once.
+ *
+ * Staff sign-in (second security pass N1, Michael 2026-11-24 decision A) uses the same three settings with its own
+ * counters, so a public account and a staff account with one e-mail never lock each other. Staff have no password
+ * reset: their lock ends when login_lock_minutes have passed.
  */
 final class LoginGuard
 {
+    public const PUBLIC = 'login';
+
+    public const STAFF = 'staff-login';
+
     public function __construct(
         private readonly Settings $settings,
         private readonly Outbox $outbox,
@@ -27,31 +36,23 @@ final class LoginGuard
     ) {}
 
     /** 429 while the e-mail is locked. */
-    public function ensureOpen(string $email): void
+    public function ensureOpen(string $email, string $scope = self::PUBLIC): void
     {
-        $until = Cache::get(self::lockKey($email));
+        $until = Cache::get(self::lockKey($email, $scope));
         $now = Carbon::now()->getTimestamp();
         if (is_int($until) && $until > $now) {
-            $text = __('accounts.locked', ['minutes' => (int) ceil(($until - $now) / 60)]);
+            $key = $scope === self::STAFF ? 'dashboard.login.locked' : 'accounts.locked';
+            $text = __($key, ['minutes' => (int) ceil(($until - $now) / 60)]);
 
-            throw ValidationException::withMessages(['email' => is_string($text) ? $text : 'accounts.locked'])->status(429);
+            throw ValidationException::withMessages(['email' => is_string($text) ? $text : $key])->status(429);
         }
     }
 
     /** Count one failure; lock the e-mail and tell its owner when the ceiling is reached. */
     public function failed(string $email, ?User $user): void
     {
-        $counter = self::counterKey($email);
-        RateLimiter::hit($counter, $this->settings->int('login_window_minutes') * 60);
-        if (RateLimiter::attempts($counter) < $this->settings->int('rl_login_account')) {
-            return;
-        }
-
-        $minutes = $this->settings->int('login_lock_minutes');
-        $until = Carbon::now()->addMinutes($minutes);
-        Cache::put(self::lockKey($email), $until->getTimestamp(), $until);
-        RateLimiter::clear($counter);
-        if (! $user instanceof User) {
+        $minutes = $this->count($email, self::PUBLIC);
+        if ($minutes === null || ! $user instanceof User) {
             return;
         }
 
@@ -63,22 +64,55 @@ final class LoginGuard
         ]);
     }
 
-    /** A successful sign-in clears the count; a password reset also lifts a lock. */
-    public function clear(string $email, bool $lift = false): void
+    /** A failed staff sign-in: the same ceiling; an active staff member is told of the lock by e-mail. */
+    public function staffFailed(string $email, ?AdminUser $admin): void
     {
-        RateLimiter::clear(self::counterKey($email));
+        $minutes = $this->count($email, self::STAFF);
+        if ($minutes === null || ! $admin instanceof AdminUser || ! $admin->is_active) {
+            return;
+        }
+
+        $this->log->record('admin.login_locked', $admin, null, ['minutes' => $minutes]);
+        $this->outbox->send($admin->email, $admin->name, $admin->locale === 'en' ? 'en' : 'ar', 'admin.login_locked', [
+            'kind' => 'staff_login_locked',
+            'name' => $admin->name,
+            'url' => route('dashboard.login'),
+        ]);
+    }
+
+    /** A successful sign-in clears the count; a password reset also lifts a lock. */
+    public function clear(string $email, bool $lift = false, string $scope = self::PUBLIC): void
+    {
+        RateLimiter::clear(self::counterKey($email, $scope));
         if ($lift) {
-            Cache::forget(self::lockKey($email));
+            Cache::forget(self::lockKey($email, $scope));
         }
     }
 
-    private static function counterKey(string $email): string
+    /** Count one failure: the lock length in minutes when this failure reached the ceiling, otherwise null. */
+    private function count(string $email, string $scope): ?int
     {
-        return 'login-account:'.hash('sha256', $email);
+        $counter = self::counterKey($email, $scope);
+        RateLimiter::hit($counter, $this->settings->int('login_window_minutes') * 60);
+        if (RateLimiter::attempts($counter) < $this->settings->int('rl_login_account')) {
+            return null;
+        }
+
+        $minutes = $this->settings->int('login_lock_minutes');
+        $until = Carbon::now()->addMinutes($minutes);
+        Cache::put(self::lockKey($email, $scope), $until->getTimestamp(), $until);
+        RateLimiter::clear($counter);
+
+        return $minutes;
     }
 
-    private static function lockKey(string $email): string
+    private static function counterKey(string $email, string $scope): string
     {
-        return 'login-lock:'.hash('sha256', $email);
+        return $scope.'-account:'.hash('sha256', $email);
+    }
+
+    private static function lockKey(string $email, string $scope): string
+    {
+        return $scope.'-lock:'.hash('sha256', $email);
     }
 }

@@ -11,3 +11,14 @@ export function coreConfig(env: Record<string, string | undefined> = process.env
 
   return { base, key };
 }
+
+/**
+ * A core API address with the language (second security pass N2). Server actions receive the language as an
+ * argument from the browser, so it is never trusted: anything but "en" is Arabic, and nothing can be added to
+ * core's query string through it.
+ */
+export function coreUrl(base: string, path: string, locale: unknown): string {
+  const separator = path.includes("?") ? "&" : "?";
+
+  return `${base}/api/v1/${path}${separator}locale=${locale === "en" ? "en" : "ar"}`;
+}

@@ -1,5 +1,5 @@
 import type { Locale } from "@/i18n/routing";
-import { coreConfig } from "./coreConfig";
+import { coreConfig, coreUrl } from "./coreConfig";
 
 /*
  * Server-side reads from the core API (handover 2.2): the server key travels in X-Api-Key and never reaches the
@@ -11,8 +11,7 @@ const REVALIDATE_SECONDS = 300;
 
 async function coreGet<T>(path: string, locale: Locale, tags: string[]): Promise<T> {
   const { base, key } = coreConfig();
-  const separator = path.includes("?") ? "&" : "?";
-  const response = await fetch(`${base}/api/v1/${path}${separator}locale=${locale}`, {
+  const response = await fetch(coreUrl(base, path, locale), {
     headers: { "X-Api-Key": key, Accept: "application/json" },
     next: { revalidate: REVALIDATE_SECONDS, tags },
   });
@@ -29,8 +28,7 @@ async function coreGet<T>(path: string, locale: Locale, tags: string[]): Promise
  */
 export async function coreFind<T>(path: string, locale: Locale, tags: string[], revalidate = REVALIDATE_SECONDS): Promise<T | null> {
   const { base, key } = coreConfig();
-  const separator = path.includes("?") ? "&" : "?";
-  const response = await fetch(`${base}/api/v1/${path}${separator}locale=${locale}`, {
+  const response = await fetch(coreUrl(base, path, locale), {
     headers: { "X-Api-Key": key, Accept: "application/json" },
     next: { revalidate, tags },
   });

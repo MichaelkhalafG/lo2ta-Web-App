@@ -643,6 +643,13 @@ checks photos in review for building numbers, signs or documents and can hide a 
 | D56 | The filter address carries only what is set (no empty fields, no default sort); fields are re-enabled when the page comes back from the history | clean, shareable addresses | 1 rule |
 | D57 | Gallery viewer: a native modal dialog (Escape closes, focus returns to the picture), arrows follow the reading direction, the floor plan last; without JavaScript each picture links to its file | the platform does focus and Escape right; nothing extra to maintain | 1 component |
 
+**Second security pass fixes (Michael 2026-11-24, decision A; for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D58 | Staff sign-in gets the public account-wide lock with the same three settings but its own counters; an active staff member is e-mailed (template admin.login_locked, link to the dashboard sign-in page); unknown and switched-off accounts lock without a mail; the lock ends only when its time runs out (staff have no password reset) | staff can open national ID copies; one e-mail on both sides must not let a public lock block a staff member or the reverse | 1 guard scope |
+| D59 | Every call to core builds its address in one helper (`coreUrl`) that turns any language value other than "en" into Arabic | server actions take the language from the browser; nothing can be added to core's query through it | 1 helper |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)

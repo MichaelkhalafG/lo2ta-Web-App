@@ -29,6 +29,13 @@ return [
         'button' => 'Choose a new password',
         'note' => 'If it was not you, change your password now. The pause stops every sign-in attempt until it ends.',
     ],
+    // Staff (second security pass N1): the dashboard has no password reset, so the lock simply runs out.
+    'staff_login_locked' => [
+        'subject' => 'Sign-in to your dashboard account is paused',
+        'body' => 'There were many sign-in attempts with a wrong password on your Lokta dashboard account, so we paused sign-in for a while to protect it. If it was you, wait until the pause ends and try again.',
+        'button' => 'Sign-in page',
+        'note' => 'If it was not you, tell the platform administrator straight away so the password can be changed. The pause stops every sign-in attempt until it ends.',
+    ],
     'new_budget' => [
         'subject' => 'A buyer registered a budget',
         'buyer' => 'Buyer',

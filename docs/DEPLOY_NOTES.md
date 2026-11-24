@@ -123,3 +123,22 @@ Live probe after the first deploy and after any change of proxy or CDN:
 2. Address check: send the contact form six times within an hour with `X-Forwarded-For: 198.51.100.1` and so on (a
    different made-up address each time). The sixth must be refused ("محاولات كتير"). If all six pass, the proxy
    layout is not what `TRUSTED_PROXY_HOPS` says: STOP and fix it before launch. Delete the six test messages after.
+
+### Before the first deploy: confirm the proxy header for both apps (second security pass, Michael 2026-11-24)
+
+Checklist, filled in the deploy log before anything goes live:
+
+- [ ] **Public site (Next).** From hPanel or Hostinger support, write down: is there a proxy or CDN (Hostinger CDN,
+  Cloudflare) in front of the Node app, how many, and which header carries the visitor's address
+  (`X-Forwarded-For` appended, or another one such as `X-Real-IP`). Set `TRUSTED_PROXY_HOPS` to that count. If the
+  address does not arrive in `X-Forwarded-For`, STOP: `clientIp.ts` reads only that header.
+- [ ] **Core (API and dashboard).** The same questions for the core site. Core reads the address from the connection
+  (`$request->ip()`, used by the staff sign-in limit of five tries a minute per e-mail and address) and has no
+  trusted proxy set. With no proxy in front of core this is the visitor; with one, every visitor would share the
+  proxy's address. If there is a proxy in front of core, STOP and ask Michael: core then needs its trusted proxy set
+  (a small code change), and HTTPS detection for the secure cookie depends on the same setting.
+- [ ] **Probe for core** (after deploy, with a test staff account, then delete it): five wrong dashboard sign-ins from
+  one network (a phone hotspot), then the right password for the same account from another network (office Wi-Fi).
+  It must sign in. If it is refused as "too many attempts", core sees the proxy, not the visitor: STOP as above.
+  The account-wide lock (20 failures an hour, settings) counts by e-mail and is not affected by the address.
+- [ ] Record the answers (proxy yes or no, header, hop count) in this file under this heading.

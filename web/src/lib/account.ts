@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import type { Locale } from "@/i18n/routing";
 import { clientIpFrom } from "./clientIp";
-import { coreConfig } from "./coreConfig";
+import { coreConfig, coreUrl } from "./coreConfig";
 import { sessionToken } from "./session";
 
 /*
@@ -69,8 +69,7 @@ export async function core<T>(
     requestHeaders["Content-Type"] = "application/json";
   }
 
-  const separator = path.includes("?") ? "&" : "?";
-  const response = await fetch(`${base}/api/v1/${path}${separator}locale=${locale}`, {
+  const response = await fetch(coreUrl(base, path, locale), {
     method,
     headers: requestHeaders,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),

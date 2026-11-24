@@ -15,6 +15,7 @@ return [
         'submit' => 'Sign in',
         'failed' => 'Wrong e-mail or password, or the account is switched off.',
         'throttled' => 'Too many attempts. Try again in :seconds seconds.',
+        'locked' => 'Sign-in to this account is paused after many wrong attempts. Try again in :minutes minutes.',
     ],
     'nav' => [
         'home' => 'Home',
