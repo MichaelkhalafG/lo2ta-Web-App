@@ -209,7 +209,11 @@
       "saveFailed": "ما اتحفظش، جرّب تاني",
       "draft": "مسودة",
       "saveExit": "حفظ والخروج",
-      "ownerOnlyTitle": "للمالك فقط."
+      "ownerOnlyTitle": "للمالك فقط.",
+      "home": "لقطة · الرئيسية",
+      "current": "الحالية",
+      "commission": "عمولة لقطة على البائع",
+      "noOver": "مفيش أوفر أبدًا: أقصى مبلغ تطلبه هو اللي دفعته."
     },
     "steps": {
       "1": "بيانات العقد",
@@ -367,7 +371,9 @@
       "loktaFee": "عمولة لقطة",
       "net": "صافي تقديري ليك",
       "arrearsSelf": "التنازل بيتم بعد ما تسدد المتأخرات ({amount} ج.م).",
-      "provisional": "النسب تقديرية لحد ما نكمل بحث السوق."
+      "provisional": "النسب تقديرية لحد ما نكمل بحث السوق.",
+      "summary": "تقرير الخروج · الفرق لصالحك",
+      "summaryWaiting": "تقرير الخروج: اكتب السعر والمدفوع"
     },
     "step4": {
       "title": "المستندات",
@@ -611,7 +617,13 @@
       "empty": "مفيش وحدات بالفلاتر دي دلوقتي. جرّب توسّع البحث.",
       "showMore": "اعرض كمان",
       "loading": "بنحمّل…",
-      "pages": "الصفحات"
+      "pages": "الصفحات",
+      "filters": "تصفية",
+      "showResults": "اعرض النتائج",
+      "pageOf": "صفحة {page} من {last}",
+      "weekDeal": "لقطة الأسبوع",
+      "units": "{count} وحدة",
+      "inPlace": "في {place}"
     },
     "unit": {
       "breadcrumb": "مسار الصفحة",
@@ -687,7 +699,18 @@
       "ownerFromShort": "يقبل من {amount}",
       "facadeLabel": "واجهة {sides}",
       "noFacade": "الواجهة مش محددة",
-      "schedulePer": "{count} × {amount} · {frequency}"
+      "schedulePer": "{count} × {amount} · {frequency}",
+      "gallery": {
+        "ownerPhoto": "صورة من المالك",
+        "floorPlanBy": "مخطط الوحدة · رفعه المالك",
+        "enlarge": "تكبير",
+        "more": "+{count} صور",
+        "openPlan": "افتح المخطط",
+        "close": "اقفل العارض",
+        "next": "الصورة الجاية",
+        "previous": "الصورة اللي قبلها",
+        "viewer": "عارض الصور"
+      }
     },
     "request": {
       "open": "اطلب الوحدة",

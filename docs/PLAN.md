@@ -632,6 +632,17 @@ checks photos in review for building numbers, signs or documents and can hide a 
 | D50 | The loading line is only on /opportunities: a loading boundary higher up made unknown pages answer 200 instead of 404 | a real 404 status matters for search engines and for monitoring | 1 file |
 | D51 | The phone request bar shows "you pay the owner now", the amount, "accepts from" when set, and opens the request form in place | board 06.4; the amount the buyer acts on is the paid amount, not the contract price | 1 block |
 
+**Choices made while building the three approved layouts (Michael 2026-11-24; for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D52 | The seller form hides the site header and footer with CSS (`body:has([data-wizard])`) instead of a second route layout; the wizard bar carries its own skip link | no page moves between folders; the site chrome still renders for every other page | 1 CSS rule |
+| D53 | Filters apply on change on wide screens; on phones the fields behind "تصفية" wait for "اعرض النتائج" (type and sort apply at once); without JavaScript a button submits | a phone picker should not reload the page at each tap | 1 handler |
+| D54 | The phone filter panel opens with a CSS-only toggle (a checkbox without a name), so it works without JavaScript and never flashes | no layout jump on load | 1 input |
+| D55 | The week's لقطة is the first deal-tagged unit, shown wide on page 1 of the plain list and left out of the grid below it | the same unit twice on one screen reads as a mistake | 1 filter |
+| D56 | The filter address carries only what is set (no empty fields, no default sort); fields are re-enabled when the page comes back from the history | clean, shareable addresses | 1 rule |
+| D57 | Gallery viewer: a native modal dialog (Escape closes, focus returns to the picture), arrows follow the reading direction, the floor plan last; without JavaScript each picture links to its file | the platform does focus and Escape right; nothing extra to maintain | 1 component |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1006,6 +1017,7 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] 6-step wizard, server side (core API): drafts, autosave, cross-field checks, declarations, submit (2026-11-18)
 - [x] 6-step wizard, web pages: /sell with the no-over modal, /sell/{id}/1..6 with autosave, the live exit report and
       the browser-side shrink and HEIC conversion (heic-to 1.6.6, LGPL-3.0, Michael 2026-11-18), /sell/{id}/done
+      (board 07.1 frame built 2026-11-24 after Michael's OK: own header, step rail with the 0% box, phone dock)
 - [x] Uploads (documents, photos) with limits and private storage for documents; security as 2.2.15 (2026-11-18)
 - [x] Duplicate contract block (step 1 and submit, logged, rate limited) (2026-11-18)
 - [x] Exit report PDF (AR + EN): calculator engine (4.2) in core, mPDF with Alexandria, generated at submit,
@@ -1016,11 +1028,11 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] ID retention job (2.2.8): `ids:purge`, daily 04:00 Cairo, with --dry-run
 
 **Phase 5: Listings** (2026-11-22, decisions in 2.6)
-- [x] Opportunities page: filters, sort, numbered pages plus show more, server-rendered cards (board 06.2 in part:
-      the filter bar, featured card and phone filter layout wait for Michael's OK on the proposal of 2026-11-23)
+- [x] Opportunities page: filters, sort, numbered pages plus show more, server-rendered cards (board 06.2; the
+      filter bar, featured card and phone filter built 2026-11-24 after Michael's OK)
 - [x] Unit page: specs, payment plan with the computed schedule, money panel, verified badge, request form with the
       fee consent, structured data, old slugs redirect (board 06.3: marks, price type and phone bar added 2026-11-23;
-      the gallery waits for Michael's OK on the proposal)
+      the gallery with its viewer built 2026-11-24 after Michael's OK)
 - [x] Compound pages and index; developers page with partnership form; contact form; My requests; home picks
 - [x] Privacy: card keys pinned; the sentinel scan runs over the API and, in the browser run, over the built pages
       and their structured data (2.5)

@@ -137,7 +137,7 @@ export function Step1Contract() {
 function OtherToggle({ on, label, onToggle }: { on: boolean; label: string; onToggle: () => void }) {
   return (
     <div className="flex items-end pb-3">
-      <button type="button" onClick={onToggle} aria-pressed={on} className="text-small text-text-2 underline underline-offset-4 hover:text-text-1">
+      <button type="button" onClick={onToggle} aria-pressed={on} className="inline-flex min-h-control-md items-center text-small text-text-2 underline underline-offset-4 hover:text-text-1">
         {label}
       </button>
     </div>

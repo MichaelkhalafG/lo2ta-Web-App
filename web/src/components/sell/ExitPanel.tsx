@@ -90,3 +90,36 @@ export function ExitPanel({ compact = false }: { compact?: boolean }) {
     </div>
   );
 }
+
+/**
+ * The exit report folded into one line for the phone dock (approved proposal 2026-11-24): the difference in the
+ * seller's favour; opening it shows the short report.
+ */
+export function ExitDock() {
+  const t = useTranslations("sell.exit");
+  const { unit } = useWizard();
+  const report = unit.exit_report;
+
+  if (!report) {
+    return <p className="text-small text-text-3">{t("summaryWaiting")}</p>;
+  }
+
+  return (
+    <details className="group">
+      <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 text-small">
+        <span>{t("summary")}</span>
+        <span className="flex items-center gap-2">
+          <span className="font-semibold text-success tabular" dir="ltr">
+            +{formatMoney(report.advantage_min)}
+          </span>
+          <svg aria-hidden="true" viewBox="0 0 10 6" className="h-1.5 w-2.5 fill-none stroke-text-3 transition-transform group-open:rotate-180" strokeWidth="1.5">
+            <path d="M1 5l4-4 4 4" />
+          </svg>
+        </span>
+      </summary>
+      <div className="max-h-[50dvh] overflow-y-auto pt-2">
+        <ExitPanel compact />
+      </div>
+    </details>
+  );
+}

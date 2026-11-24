@@ -209,7 +209,11 @@
       "saveFailed": "Not saved, try again",
       "draft": "Draft",
       "saveExit": "Save and exit",
-      "ownerOnlyTitle": "Owners only."
+      "ownerOnlyTitle": "Owners only.",
+      "home": "Lokta · home",
+      "current": "Current",
+      "commission": "Lokta's commission for the seller",
+      "noOver": "No markup, ever: the most you can ask is what you paid."
     },
     "steps": {
       "1": "Contract",
@@ -367,7 +371,9 @@
       "loktaFee": "Lokta commission",
       "net": "Your estimated net",
       "arrearsSelf": "The transfer happens after you settle the arrears ({amount} EGP).",
-      "provisional": "Rates are estimates until our market research is done."
+      "provisional": "Rates are estimates until our market research is done.",
+      "summary": "Exit report · in your favour",
+      "summaryWaiting": "Exit report: type the price and the amount paid"
     },
     "step4": {
       "title": "Documents",
@@ -611,7 +617,13 @@
       "empty": "No units match these filters right now. Try a wider search.",
       "showMore": "Show more",
       "loading": "Loading…",
-      "pages": "Pages"
+      "pages": "Pages",
+      "filters": "Filters",
+      "showResults": "Show results",
+      "pageOf": "Page {page} of {last}",
+      "weekDeal": "Deal of the week",
+      "units": "{count, plural, one {# unit} other {# units}}",
+      "inPlace": "in {place}"
     },
     "unit": {
       "breadcrumb": "Breadcrumb",
@@ -687,7 +699,18 @@
       "ownerFromShort": "Accepts from {amount}",
       "facadeLabel": "Facing {sides}",
       "noFacade": "Façade not given",
-      "schedulePer": "{count} × {amount} · {frequency}"
+      "schedulePer": "{count} × {amount} · {frequency}",
+      "gallery": {
+        "ownerPhoto": "Photo from the owner",
+        "floorPlanBy": "Floor plan · from the owner",
+        "enlarge": "Enlarge",
+        "more": "+{count} photos",
+        "openPlan": "Open the floor plan",
+        "close": "Close the viewer",
+        "next": "Next picture",
+        "previous": "Previous picture",
+        "viewer": "Photo viewer"
+      }
     },
     "request": {
       "open": "Request this unit",

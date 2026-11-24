@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { FavoriteButton } from "@/components/account/FavoriteButton";
 import { RequestPanel } from "@/components/listing/RequestPanel";
+import { UnitGallery } from "@/components/listing/UnitGallery";
 import { MoneyRow, NorthArrow, PlanLine, SectionHead } from "@/components/listing/UnitMarks";
 import { VerifiedStamp } from "@/components/VerifiedStamp";
 import { Link } from "@/i18n/navigation";
@@ -94,7 +95,10 @@ export default async function UnitPage({ params, searchParams }: PageProps<"/[lo
               {unit.deal_tag ? <span className="rounded-none bg-gold px-2.5 py-1 text-small font-bold text-on-gold">{t("deal")}</span> : null}
               {unit.state === "reserved" ? <span className="rounded-[2px] border border-line px-2.5 py-1 text-small text-text-2">{t("reserved")}</span> : null}
               <p className="text-body text-text-2">{place}</p>
-              <FavoriteButton code={unit.code} saved={false} />
+              {/* On phones with pictures, Save sits on the photo strip instead (board 06.4). */}
+              <div className={photos.length > 0 || plan ? "hidden md:block" : undefined}>
+                <FavoriteButton code={unit.code} saved={false} />
+              </div>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-5">
@@ -114,23 +118,31 @@ export default async function UnitPage({ params, searchParams }: PageProps<"/[lo
 
         {/* Phones read photos, then the money, then the sheet; wide screens keep the money beside the sheet. */}
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_24rem]">
-          {photos.length > 0 ? (
-            <section aria-label={t("photos")} className="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-1">
-              {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size WebP from core */}
-              <img src={photos[0]!.src} alt={unit.title} width={photos[0]!.width} height={photos[0]!.height} className="aspect-[4/3] w-full rounded-sm object-cover" fetchPriority="high" />
-              {photos.length > 1 ? (
-                <div className="grid grid-cols-3 gap-3 md:grid-cols-4">
-                  {photos.slice(1).map((p, i) => (
-                    <figure key={p.src} className="relative">
-                      {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size WebP from core */}
-                      <img src={p.src} alt={t("photoN", { n: i + 2 })} width={p.width} height={p.height} loading="lazy" className="aspect-[4/3] w-full rounded-sm object-cover" />
-                      {p.is_project_image ? <figcaption className="absolute end-2 bottom-2 rounded-[2px] bg-bg-0/85 px-2 py-0.5 text-micro text-text-2">{t("projectImage")}</figcaption> : null}
-                    </figure>
-                  ))}
-                </div>
-              ) : null}
-              {photos[0]!.is_project_image ? <p className="text-micro text-text-3">{t("projectImage")}</p> : null}
-            </section>
+          {photos.length > 0 || plan ? (
+            <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+              <UnitGallery
+                photos={photos}
+                plan={plan ?? null}
+                title={unit.title}
+                dir={locale === "ar" ? "rtl" : "ltr"}
+                save={<FavoriteButton code={unit.code} saved={false} />}
+                words={{
+                  photos: t("photos"),
+                  photoN: t.raw("photoN") as string,
+                  ownerPhoto: t("gallery.ownerPhoto"),
+                  projectImage: t("projectImage"),
+                  floorPlan: t("floorPlan"),
+                  floorPlanBy: t("gallery.floorPlanBy"),
+                  enlarge: t("gallery.enlarge"),
+                  more: t.raw("gallery.more") as string,
+                  openPlan: t("gallery.openPlan"),
+                  close: t("gallery.close"),
+                  next: t("gallery.next"),
+                  previous: t("gallery.previous"),
+                  viewer: t("gallery.viewer"),
+                }}
+              />
+            </div>
           ) : null}
 
           <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
@@ -286,13 +298,6 @@ export default async function UnitPage({ params, searchParams }: PageProps<"/[lo
               </section>
             ) : null}
 
-            {plan ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-h3">{t("floorPlan")}</h2>
-                {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size WebP from core */}
-                <img src={plan.src} alt={t("floorPlan")} width={plan.width} height={plan.height} loading="lazy" className="w-full rounded-sm bg-bg-1 object-contain" />
-              </section>
-            ) : null}
           </div>
         </div>
       </div>

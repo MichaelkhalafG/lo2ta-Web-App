@@ -179,3 +179,37 @@ export function money(value: number | null | undefined): string {
 export function monthYear(month: number | null, year: number | null): string | null {
   return year ? `${month ? String(month).padStart(2, "0") + "." : ""}${year}` : null;
 }
+
+/**
+ * Filters kept behind the phone "تصفية" button (approved proposal 2026-11-24): area, both amounts and verified. The
+ * count beside the button tells how many are set; type and sort stay outside the panel.
+ */
+export function panelFilterCount(filters: Filters): number {
+  return [filters.area, filters.owner_max, filters.installment_max, filters.verified].filter((v) => v !== undefined && v !== false).length;
+}
+
+/** The week's لقطة stands wide at the top of page 1 of the plain list only, never on a search or a later page. */
+export function showsFeatured(filters: Filters): boolean {
+  return !isFiltered(filters) && (filters.page ?? 1) === 1;
+}
+
+/** Where a place slug sits in the area tree, for the result line ("38 units in New Cairo"). */
+export function placeName(tree: { slug: string; name: string; areas: { slug: string; name: string; districts: { slug: string; name: string }[] }[] }[], slug: string | undefined): string | null {
+  if (!slug) return null;
+  for (const gov of tree) {
+    if (gov.slug === slug) return gov.name;
+    for (const area of gov.areas) {
+      if (area.slug === slug) return area.name;
+      const district = area.districts.find((d) => d.slug === slug);
+      if (district) return district.name;
+    }
+  }
+
+  return null;
+}
+
+/** A filter field left out of the address: empty, the default sort, or an unchecked radio or box. */
+export function omitted(el: { name: string; value: string; type?: string; checked?: boolean }): boolean {
+  if (el.type === "radio" || el.type === "checkbox") return !el.checked || el.value === "";
+  return el.value === "" || (el.name === "sort" && el.value === "default");
+}

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Step3 } from "@/lib/sell";
-import { ExitPanel } from "./ExitPanel";
+import { ExitDock, ExitPanel } from "./ExitPanel";
 import { MoneyInput, NumberInput, Pills, Section, SelectInput, TextInput, YesNo } from "./fields";
 import { StepNav, WizardFrame } from "./WizardFrame";
 import { useStep, useWizard } from "./WizardContext";
@@ -23,8 +23,9 @@ export function Step3Money() {
   const feePercent = values.transfer_fee_bp === null ? "" : String(values.transfer_fee_bp / 100);
 
   return (
-    <WizardFrame step={3} title={t("title")} intro={t("intro")} aside={<ExitPanel />}>
-      <div className="rounded-sm border border-line bg-surface-1 px-4 py-3 text-small text-text-2">{t("noOver")}</div>
+    <WizardFrame step={3} title={t("title")} intro={t("intro")} aside={<ExitPanel />} dock={<ExitDock />}>
+      {/* Wide screens show this rule in the rail's 0% box. */}
+      <div className="rounded-sm border border-line bg-surface-1 px-4 py-3 text-small text-text-2 lg:hidden">{t("noOver")}</div>
 
       <Section number="3.1" title={t("contract")}>
         <div className="grid gap-5 md:grid-cols-2">

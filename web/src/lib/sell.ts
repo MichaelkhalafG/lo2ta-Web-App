@@ -160,3 +160,26 @@ export function problemsOf(unit: SellerUnit, step: 1 | 2 | 3 | 4 | 5): ProblemMa
 
   return Array.isArray(value) ? {} : value;
 }
+
+/** The six steps of the seller form. */
+export const STEPS = 6;
+
+export type StepState = "done" | "current" | "open" | "locked";
+
+/**
+ * A step's place in the rail (approved proposal 2026-11-24): done (ticked, reachable), current, open (reached but
+ * not finished: reachable) or locked (not reached yet). "Reached" is core's step_reached.
+ */
+export function stepState(n: number, current: number, reached: number): StepState {
+  const top = Math.min(Math.max(reached, 1), STEPS);
+  if (n === current) return "current";
+  if (n < top) return "done";
+  if (n === top) return "open";
+  return "locked";
+}
+
+/** How far the progress line is drawn, in percent: the current step, or further when later steps were reached. */
+export function stepProgress(current: number, reached: number): number {
+  const at = Math.min(Math.max(current, reached, 1), STEPS);
+  return Math.round(((at - 1) / (STEPS - 1)) * 100);
+}

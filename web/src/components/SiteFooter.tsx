@@ -15,7 +15,7 @@ export async function SiteFooter() {
   const email = text(texts, "footer.email");
 
   return (
-    <footer className="border-t-[1.5px] border-text-3">
+    <footer data-site-chrome className="border-t-[1.5px] border-text-3">
       <div className="grid grid-cols-2 gap-10 px-gutter-mobile py-12 md:grid-cols-[minmax(0,4fr)_repeat(4,minmax(0,2fr))] md:px-gutter md:pt-14">
         <div className="col-span-2 flex flex-col items-start gap-4.5 md:col-span-1">
           <Wordmark />

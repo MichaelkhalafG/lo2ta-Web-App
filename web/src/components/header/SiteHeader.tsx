@@ -9,7 +9,8 @@ import { NavMenu } from "./NavMenu";
 
 /**
  * The site header (board 04 and 06.1): 80px, the wordmark and the grouped menu on the inline start, the audience
- * links, the language link and sign-in on the inline end. Below the lg breakpoint it becomes the phone menu.
+ * links, the language link and sign-in on the inline end. Below the xl breakpoint (1280 px) it becomes the phone menu:
+ * the English labels need that width (the closing run of 2026-11-24 found the language link cut off at 1024 px).
  */
 export async function SiteHeader() {
   const t = await getTranslations("nav");
@@ -32,19 +33,19 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="relative z-30 border-b border-line bg-bg-0">
+    <header data-site-chrome className="relative z-30 border-b border-line bg-bg-0">
       <a
         href="#main"
         className="absolute start-4 top-2 z-50 -translate-y-20 bg-gold px-4 py-2 text-on-gold focus:translate-y-0"
       >
         {t("skip")}
       </a>
-      <div className="flex h-header items-stretch justify-between ps-gutter-mobile pe-gutter-mobile lg:ps-12 lg:pe-10">
+      <div className="flex h-header items-stretch justify-between ps-gutter-mobile pe-gutter-mobile xl:ps-12 xl:pe-10">
         <div className="flex items-center gap-7">
           <Link href="/" aria-label={t("main")} className="flex items-center">
             <Wordmark />
           </Link>
-          <nav aria-label={t("main")} className="hidden self-stretch text-body whitespace-nowrap text-text-2 lg:flex">
+          <nav aria-label={t("main")} className="hidden self-stretch text-body whitespace-nowrap text-text-2 xl:flex">
             {directLinks.map((key) => (
               <NavLink key={key} href={paths[key]}>
                 {t(key)}
@@ -56,7 +57,7 @@ export async function SiteHeader() {
           </nav>
         </div>
 
-        <div className="hidden items-center gap-4.5 text-[0.875rem] whitespace-nowrap lg:flex">
+        <div className="hidden items-center gap-4.5 text-[0.875rem] whitespace-nowrap xl:flex">
           <Link href={paths.buyers} className="text-text-2 transition-colors duration-150 hover:text-text-1">
             {t("buyers")}
           </Link>
@@ -77,7 +78,7 @@ export async function SiteHeader() {
           </Link>
         </div>
 
-        <div className="flex items-center lg:hidden">
+        <div className="flex items-center xl:hidden">
           <MobileMenu
             groups={mobileGroups}
             labels={{

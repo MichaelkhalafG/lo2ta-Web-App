@@ -150,9 +150,13 @@
 .lk-rule { animation: lk-rule 1.4s ease-in-out infinite; }
 [dir="rtl"] .lk-rule { animation-name: lk-rule-rtl; }
 
+/* The seller form has its own quiet header (WizardFrame): the site header and footer step aside. */
+body:has([data-wizard]) [data-site-chrome] { display: none; }
+
 /* A page with the phone request bar (unit page) keeps its footer clear of the bar. */
 @media (width < 64rem) {
   body:has([data-sticky-bar]) { padding-block-end: 5.5rem; }
+  body:has([data-wizard]) { padding-block-end: 9rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
