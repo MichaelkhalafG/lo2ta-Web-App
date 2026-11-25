@@ -3,6 +3,7 @@
 namespace App\Support\Calculator;
 
 use App\Models\ExitReport;
+use App\Models\MarketValue;
 use App\Models\SiteText;
 use App\Models\Unit;
 use App\Support\Uploads\UploadService;
@@ -41,12 +42,15 @@ final class ExitReportPdf
 
             return is_string($value) && $value !== '' ? $value : $key;
         };
-        $draft = $results['provisional'] !== [] || $texts->contains(fn (SiteText $t): bool => $t->is_placeholder) || $texts->isEmpty();
+        $band = self::band($results['provisional'] !== [], $texts->contains(fn (SiteText $t): bool => $t->is_placeholder) || $texts->isEmpty());
+        $draft = $band !== null;
 
         $html = view('pdf.exit-report', [
             'unit' => $unit,
             'r' => $results,
-            'settings' => $this->calculator->snapshot(),
+            'settings' => $results['settings'],
+            // The month each market value was last checked (J10: the date, never the sources).
+            'checked' => MarketValue::query()->get()->mapWithKeys(fn (MarketValue $v): array => [$v->key => $v->checked_on->format('Y-m')])->all(),
             'kind' => $kind,
             'locale' => $locale,
             'label' => $label,
@@ -56,17 +60,26 @@ final class ExitReportPdf
         ])->render();
 
         $path = UploadService::randomName('exit-reports', 'pdf');
-        Storage::disk(UploadService::PRIVATE_DISK)->put($path, self::render($html, $locale, $draft ? $label('draft_band') : null));
+        Storage::disk(UploadService::PRIVATE_DISK)->put($path, self::render($html, $locale, $band !== null ? $label($band) : null));
 
         return $unit->exitReports()->create([
             'kind' => $kind,
             'locale' => $locale,
             'inputs' => $results['inputs'],
-            'settings_snapshot' => $this->calculator->snapshot(),
+            'settings_snapshot' => $results['settings'],
             'results' => $results,
             'pdf_path' => $path,
             'generated_at' => now(),
         ]);
+    }
+
+    /**
+     * The band names what is not final (Michael 2026-11-25): "texts and rates" while any value the figures used is
+     * provisional, "texts" while only a placeholder text remains, none when both are final.
+     */
+    public static function band(bool $ratesProvisional, bool $textsPlaceholder): ?string
+    {
+        return $ratesProvisional ? 'draft_band' : ($textsPlaceholder ? 'draft_band_texts' : null);
     }
 
     private static function render(string $html, string $locale, ?string $band): string

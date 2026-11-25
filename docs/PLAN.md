@@ -650,6 +650,19 @@ checks photos in review for building numbers, signs or documents and can hide a 
 | D58 | Staff sign-in gets the public account-wide lock with the same three settings but its own counters; an active staff member is e-mailed (template admin.login_locked, link to the dashboard sign-in page); unknown and switched-off accounts lock without a mail; the lock ends only when its time runs out (staff have no password reset) | staff can open national ID copies; one e-mail on both sides must not let a public lock block a staff member or the reverse | 1 guard scope |
 | D59 | Every call to core builds its address in one helper (`coreUrl`) that turns any language value other than "en" into Arabic | server actions take the language from the browser; nothing can be added to core's query through it | 1 helper |
 
+**Phase 6, tools (plan approved 2026-11-24 with J1-J12; values answered by the client 2026-11-25; for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D60 | The numbers stay in `settings`; `market_values` holds per value the date checked, an internal note and the client's confirmation; `market_value_sources` the sources (internal, J10); `config/market_values.php` groups the settings of each value. Confirming a value clears the provisional flag of its settings; switching it off sets it again | one place for each number (typed, validated, logged); sources never travel with a setting the public API reads | 1 migration |
+| D61 | Client 2026-11-25 (relayed by Michael), loaded as confirmed: cancellation 15% of the total price, one value (min = max); refund in one payment (new rule `lump`); transfer fee a fixed EGP 50,000 (`transfer_fee_mode` = fixed); late-payment penalty 1% of each late installment, charged once, line on; maintenance deposit moves to the buyer (a yes/no setting shown as a note). The 5% transfer fee loaded earlier the same day is replaced; the 1-5% and 8-10% research ranges were dropped from settings and stay in the register | the client's answers replace the research starting points | settings |
+| D62 | The late-payment penalty applies on both exits (Michael 2026-11-25): it lowers the refund on a cancellation, and on a transfer it is settled with the arrears (deducted from the proceeds, or included in what the seller settles first). 1% of each late installment equals 1% of the overdue amount, so the formula keeps one share of `overdue_amount` | the penalty is owed to the developer either way | 2 lines in ExitCalculator |
+| D63 | A seller's own transfer fee in step 3 is a share or an amount, never both (new private column `units.transfer_fee_fixed`; "not sure" keeps the default); edits after publishing wait for review like the share (Michael 2026-11-25) | most developers charge a fixed amount | 1 migration, step 3 |
+| D64 | The 50% deep-loss line (a display threshold, J6) and the discount rate while the present-value line is off never mark figures provisional; the exit report band reads "texts and rates not final" only while a rate the figures use is provisional, "texts not final" while only placeholder texts remain (Michael 2026-11-25) | every value the client answered is confirmed; placeholder texts keep the band | 1 list, 1 site text |
+| D65 | A developer policy applies only when the client approved it and the developer is active (J3); only then does the public calculator list that developer. A policy's own share or amount carries its method, whatever the market default | J3; a policy giving 2% must not be ignored because the market default is a fixed amount | scope |
+| D66 | Public calculator: two tabs as links (`?tab=buyer`), forms post to server actions, so both work without JavaScript; core computes, stores nothing (J12) and limits 60 calculations per address and hour (`rl_calculator_ip`, Michael 2026-11-25). Overdue installments on the seller tab are paid from the proceeds (the public calculator has no settlement choice). The years-paid field shows only while the refund rule follows the payment period | J12; the wizard keeps the choice | 1 route |
+| D67 | Public values list (calculator and reports): each value in words with "checked <month year>", "provisional" or "under review" (12 months, J8); never a source, link, note or unapproved developer name (J10, J3). The reports page shows the client's indicators only once one is published (J9); their source stays internal | J8-J10 | 1 component |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -870,6 +883,33 @@ Method: public sources only (developer contract terms published online, law firm
 summaries), at least two independent sources per value, each recorded with URL and date; values marked "market
 average" on the page. The client reviews the numbers before launch.
 
+**Phase 6 plan approved (Michael 2026-11-24), with these answers:**
+
+- J1: a value is a range supported by at least two independent sources, never a single average. A developer's own
+  published terms count alone for that developer only.
+- J2: the client decides whether the cancellation deduction is taken from the total price or from the amount paid;
+  the findings table asks it, with what each developer does.
+- J3: no developer is named publicly unless the policy comes from its own published terms and the client approves
+  it; until then the market range only.
+- J4: the default refund period is a dashboard setting the client changes; it starts from what most sources say.
+- J5: late fees are an optional line in the calculator.
+- J6: the 50% deep-loss line stays a labelled display threshold, editable in the dashboard.
+- J7: if the present-value line is ever switched on, the Central Bank of Egypt's overnight deposit rate, dated.
+- J8: values are re-checked every 6 months; after 12 months a value is marked "under review".
+- J9: the reports page shows only the client's indicators at launch; our own listing statistics come later, and
+  only for groups of at least 30 cases.
+- J10: sources (names, links, dates) are NOT shown on the public site. They stay internal: in the dashboard next to
+  each value and in the findings table for the client. On the public site each value shows only its range and
+  "checked <month year>"; the reports page shows the values without source links.
+- J11: the buyer types the developer's price today; no researched prices per area at launch.
+- J12: the calculator stores nothing and needs no sign-in.
+- Order: research first; the findings table goes to Michael before anything is loaded into settings.
+- Client's answers (2026-11-25, relayed by Michael): cancellation 15% of the total unit price, one value (J2: total
+  price); refund in one payment (J4); default transfer fee a fixed EGP 50,000 (a seller's own figure in step 3
+  replaces it); late-payment penalty 1% of each late installment, charged once, whatever the installment period (J5:
+  the line is on); the maintenance deposit moves to the buyer with the transfer (an information note). Loaded as
+  confirmed, dated 2026-11-25 (D61-D64). Not answered: the transfer-conditions note (V5, left out) and the legal notes.
+
 ### 4.4 Exit report PDF content (proposal)
 
 Unit summary · the seller's figures (marked "as declared" until verified) · cancellation scenario (range, refund
@@ -1045,9 +1085,14 @@ first payment and all client texts) is a contract matter for Michael.
       and their structured data (2.5)
 
 **Phase 6: Tools**
-- [ ] Calculator (both tabs) on settings and developer policies
-- [ ] Market values researched, sourced and loaded as settings
-- [ ] Reports and indicators page + dashboard editor
+- [x] Calculator (both tabs) on settings and developer policies (2026-11-25; D60-D67)
+- [x] Market values researched, sourced and loaded as settings (research 2026-11-24, register
+      `docs/research/market-values-2026-11.md`; client's answers loaded as confirmed 2026-11-25, D61)
+- [x] Reports and indicators page + dashboard editor (2026-11-25; indicators wait for the client, PLAN 6 row 14)
+- [ ] Open for the client: the transfer-conditions note (V5) stays out; the legal notes (75% rule, full refund on a
+      court-ordered cancellation) are unconfirmed and no text relies on them; the 50% line and the discount rate are
+      not confirmed; calculator and reports texts are placeholders (PLAN 6 rows 10, 13); no developer publishes its
+      own terms yet (J3)
 
 **Phase 7: Dashboard operations**
 - [ ] Units review and document review; outcomes: request changes, reject, publish, publish as verified
@@ -1055,6 +1100,8 @@ first payment and all client texts) is a contract matter for Michael.
 - [ ] Matching screen, deals and stages, commissions
 - [ ] Inboxes: unit requests, partnership requests, contact messages
 - [ ] E-mails to both parties per stage
+- [ ] Staff management, including changing a staff password (open item: today `admin:create` only creates accounts,
+      so a staff password cannot be changed; Michael 2026-11-24 decision B: wait for this phase)
 
 **Phase 8: English, SEO, quality**
 - [ ] Every page and e-mail complete in English

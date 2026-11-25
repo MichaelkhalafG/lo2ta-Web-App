@@ -346,9 +346,15 @@
       "acceptsLessQ": "Ready to accept less to sell faster?",
       "lowest": "Lowest amount you accept",
       "lowestHint": "Must be less than what you paid",
-      "transferFee": "Developer's transfer fee (optional, % of the contract price)",
-      "transferFeeHint": "Paid by you directly to the developer, not to Lokta. Not sure? Leave it and we estimate it.",
-      "next": "Next: documents"
+      "transferFee": "Percentage of the contract price",
+      "transferFeeHint": "Paid by you directly to the developer, not to Lokta.",
+      "next": "Next: documents",
+      "transferFeeHow": "How does your developer charge the transfer fee? (optional)",
+      "transferFeeNone": "Not sure",
+      "transferFeeFixed": "A fixed amount",
+      "transferFeePct": "A percentage",
+      "transferFeeAmount": "The developer's transfer fee",
+      "transferFeeNoneHint": "We use the usual fee; the exit report shows it."
     },
     "exit": {
       "label": "EXIT REPORT",
@@ -371,9 +377,11 @@
       "loktaFee": "Lokta commission",
       "net": "Your estimated net",
       "arrearsSelf": "The transfer happens after you settle the arrears ({amount} EGP).",
-      "provisional": "Rates are estimates until our market research is done.",
+      "provisional": "Rates are market estimates, not final yet.",
       "summary": "Exit report · in your favour",
-      "summaryWaiting": "Exit report: type the price and the amount paid"
+      "summaryWaiting": "Exit report: type the price and the amount paid",
+      "cancelNoteLump": "After the developer's deduction, paid back in one payment",
+      "lateFees": "Late-payment penalty"
     },
     "step4": {
       "title": "Documents",
@@ -770,5 +778,122 @@
       "home": "Home"
     },
     "loading": "Loading the page…"
+  },
+  "tools": {
+    "currency": "EGP",
+    "submit": "Calculate",
+    "pending": "Calculating…",
+    "tabs": {
+      "label": "Calculator",
+      "seller": "I own a unit",
+      "buyer": "I'm buying"
+    },
+    "seller": {
+      "total": "Total contract price",
+      "totalHint": "The full price in your contract, in EGP.",
+      "paid": "Paid so far",
+      "paidHint": "Down payment and installments you have paid.",
+      "years": "Years you have been paying",
+      "yearsHint": "The refund is paid back over the same period.",
+      "yearsOption": "{count, plural, one {# year} other {# years}}",
+      "overdue": "Overdue installments (optional)",
+      "overdueHint": "The amount you are behind on, if any.",
+      "developer": "Developer (optional)",
+      "developerMarket": "Market values",
+      "developerHint": "Only developers whose own published terms we have checked are listed.",
+      "waiting": "Type the contract price and what you paid, and your two exits appear here."
+    },
+    "result": {
+      "title": "Your two exits",
+      "zone": {
+        "wipeout": "If you cancel, you could lose everything you paid.",
+        "deep_loss": "Cancelling means a heavy loss: more than {line} of what you paid.",
+        "moderate_loss": "Cancelling still costs you part of what you paid."
+      },
+      "paid": "What you paid",
+      "cancelTitle": "Cancel with the developer",
+      "sellTitle": "Sell through Lokta",
+      "deduction": "The developer keeps",
+      "basisTotal": "Calculated on the total contract price",
+      "basisPaid": "Calculated on the amount paid",
+      "lateFees": "Late-payment penalty",
+      "refund": "Paid back to you",
+      "refundYears": "{years, plural, one {Over about # year} other {Over about # years}}",
+      "refundToday": "Worth today",
+      "refundTodayNote": "The lowest refund at today's value",
+      "receive": "From the buyer",
+      "transferFee": "Developer's transfer fee",
+      "transferFeeNote": "Paid by you to the developer, not to Lokta",
+      "arrears": "Overdue installments, paid from the proceeds",
+      "loktaFee": "Lokta commission for the seller",
+      "net": "You keep",
+      "difference": "In your favour when you sell",
+      "developerTerms": "Using {developer}'s own published terms, checked {month}.",
+      "provisional": "Estimate: the market values are not final yet.",
+      "cta": "Get your free exit report",
+      "ctaHint": "List your unit and the report is prepared from your figures.",
+      "refundLump": "In one payment",
+      "lateFeesNote": "1% of the overdue installments, settled with them"
+    },
+    "buyer": {
+      "contract": "Contract price (the old one)",
+      "contractHint": "The price in the seller's contract, in EGP.",
+      "today": "Developer's price today for a similar unit",
+      "todayHint": "Approximate: what the developer asks today for the same type of unit.",
+      "waiting": "Type both prices and your day-one difference appears here.",
+      "result": {
+        "title": "Your day-one difference",
+        "today": "Developer's price today",
+        "contract": "Contract price",
+        "fee": "Lokta fee ({rate})",
+        "feeNote": "Paid only when the transfer completes",
+        "gain": "Your difference",
+        "loss": "You would pay more than today's price by",
+        "gainShare": "{share} below today's price",
+        "noTransferFee": "The developer's transfer fee is paid by the seller, so it is not in your figures.",
+        "cta": "See the opportunities"
+      }
+    },
+    "values": {
+      "title": "The values we use",
+      "intro": "The values the calculator uses, each with the month it was last checked.",
+      "checked": "Checked {month}",
+      "provisional": "Provisional",
+      "underReview": "Under review",
+      "deepLine": "A heavy loss means losing more than {line} of what you paid. This is a display line, not a market value.",
+      "labels": {
+        "cancellation": "Cancellation deduction",
+        "refund": "Refund after cancelling",
+        "late_fee": "Late-payment penalty",
+        "transfer_fee": "Developer's transfer fee",
+        "maintenance_deposit": "Maintenance deposit",
+        "discount_rate": "Discount rate"
+      },
+      "text": {
+        "cancellationTotal": "{min} to {max} of the total contract price",
+        "cancellationPaid": "{min} to {max} of the amount paid",
+        "cancellationOneTotal": "{rate} of the total contract price",
+        "cancellationOnePaid": "{rate} of the amount paid",
+        "refundMirror": "Paid back over the same period as the payments",
+        "refundFixed": "{years, plural, one {Paid back over # year} other {Paid back over # years}}",
+        "lateFee": "{rate} of each late installment, charged once",
+        "transferFee": "{rate} of the contract price",
+        "transferFeeFixed": "A fixed EGP {amount}",
+        "discountRate": "{rate} a year, the Central Bank of Egypt's overnight deposit rate",
+        "refundLump": "Paid back in one payment",
+        "maintenanceMoves": "Moves to the buyer with the transfer. For information; not in the figures.",
+        "maintenanceStays": "Stays with the seller after the transfer. For information; not in the figures."
+      }
+    },
+    "indicators": {
+      "title": "Indicators",
+      "asOf": "As of {month}",
+      "units": {
+        "egp": "EGP",
+        "months": "months",
+        "years": "years"
+      }
+    },
+    "methodTitle": "How we check the values"
   }
 }

@@ -8,13 +8,15 @@ use App\Enums\TextSource;
 use App\Models\AdminRole;
 use App\Models\Area;
 use App\Models\Feature;
+use App\Models\MarketValue;
 use App\Models\SiteText;
 use App\Support\Settings\Settings;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Reference data every environment needs: roles, settings defaults, areas, features and placeholder texts.
+ * Reference data every environment needs: roles, settings defaults, areas, features, placeholder texts and the
+ * researched market values with their sources (PLAN 4.3).
  * Add-only: a row that exists (matched by its code, key or slug) is never changed, because the dashboard owns
  * these rows after the first seed (handover 2.3). Safe to run again.
  */
@@ -29,6 +31,7 @@ class ReferenceSeeder extends Seeder
             $this->areas();
             $this->features();
             $this->siteTexts();
+            $this->marketValues();
         });
     }
 
@@ -133,5 +136,25 @@ class ReferenceSeeder extends Seeder
             }
         }
         $this->command?->line("  site texts: {$added} added");
+    }
+
+    /** A missing value is added with its sources, provisional (not confirmed); an existing one is never touched. */
+    private function marketValues(): void
+    {
+        /** @var array<string, array{checked_on: string, note: string, confirmed_at?: string, sources: list<array<string, mixed>>}> $rows */
+        $rows = require database_path('data/market_values.php');
+        $added = 0;
+        foreach ($rows as $key => $row) {
+            $value = MarketValue::query()->firstOrNew(['key' => $key]);
+            if ($value->exists) {
+                continue;
+            }
+            $value->fill(['checked_on' => $row['checked_on'], 'note' => $row['note'], 'confirmed_at' => $row['confirmed_at'] ?? null])->save();
+            foreach ($row['sources'] as $sort => $source) {
+                $value->sources()->create([...$source, 'counted' => $source['counted'] ?? true, 'sort' => $sort]);
+            }
+            $added++;
+        }
+        $this->command?->line("  market values: {$added} added");
     }
 }

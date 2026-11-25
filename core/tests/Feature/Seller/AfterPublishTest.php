@@ -185,3 +185,13 @@ it('the audit proof P1: a due date that passed after publishing does not block o
     $this->putJson($live, ['next_due_date' => now()->toDateString()], $this->h)->assertStatus(422)->assertJsonValidationErrors('next_due_date');
     $this->putJson($live, ['next_due_date' => now()->addMonth()->toDateString()], $this->h)->assertOk();
 });
+
+it('holds a changed transfer fee amount for review, like the percentage', function () {
+    $unit = publishedUnit($this->seller);
+
+    $this->putJson("/api/v1/me/units/{$unit->public_id}/live", ['transfer_fee_fixed' => 40_000], $this->h)->assertOk()->assertJsonPath('meta.pending', true);
+
+    expect($unit->refresh()->transfer_fee_fixed)->toBeNull()
+        ->and($unit->pendingChanges()->where('state', 'pending')->sole()->changes['transfer_fee_fixed'])->toBe([null, 40_000])
+        ->and($this->getJson('/api/v1/units/'.$unit->code, apiHeaders())->getContent())->not->toContain('transfer_fee');
+});

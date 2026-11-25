@@ -41,10 +41,11 @@ export function ExitPanel({ compact = false }: { compact?: boolean }) {
       <div className="flex flex-col gap-1">
         <span className="text-small text-text-3">{t("cancelTitle")}</span>
         <span className="text-h3">
-          {money(cancel.refund_min)} – {money(cancel.refund_max)}
+          {money(cancel.refund_min)}
+          {cancel.refund_max !== cancel.refund_min ? <> – {money(cancel.refund_max)}</> : null}
         </span>
         <span className="text-small text-text-3">
-          {t("cancelNote", { years: cancel.refund_years })}
+          {cancel.refund_rule === "lump" ? t("cancelNoteLump") : t("cancelNote", { years: cancel.refund_years })}
           {cancel.zone === "wipeout" ? ` · ${t("zone.wipeout")}` : cancel.zone === "deep_loss" ? ` · ${t("zone.deep_loss")}` : ""}
         </span>
       </div>
@@ -66,12 +67,18 @@ export function ExitPanel({ compact = false }: { compact?: boolean }) {
               {t("transferFee")}
               <span className="block text-micro text-text-3">{t("transferFeeNote")}</span>
             </dt>
-            <dd>− {money(transfer.transfer_fee)}</dd>
+            <dd className="whitespace-nowrap">− {money(transfer.transfer_fee)}</dd>
           </div>
           {transfer.arrears_to_developer > 0 ? (
             <div className="flex justify-between gap-3">
               <dt className="text-text-2">{t("arrears")}</dt>
-              <dd>− {money(transfer.arrears_to_developer)}</dd>
+              <dd className="whitespace-nowrap">− {money(transfer.arrears_to_developer)}</dd>
+            </div>
+          ) : null}
+          {(transfer.late_fees ?? 0) > 0 ? (
+            <div className="flex justify-between gap-3">
+              <dt className="text-text-2">{t("lateFees")}</dt>
+              <dd className="whitespace-nowrap">− {money(transfer.late_fees ?? 0)}</dd>
             </div>
           ) : null}
           <div className="flex justify-between gap-3">

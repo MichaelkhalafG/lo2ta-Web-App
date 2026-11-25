@@ -72,7 +72,7 @@ class SellerUnitResource extends JsonResource
                     'accepts_less' => $unit->accepts_less, 'lowest_accepted_amount' => $unit->lowest_accepted_amount,
                     'has_overdue' => $unit->has_overdue, 'overdue_count' => $unit->overdue_count,
                     'overdue_amount' => $unit->overdue_amount, 'overdue_settlement' => self::code($unit->overdue_settlement),
-                    'maintenance_due' => $unit->maintenance_due, 'transfer_fee_bp' => $unit->transfer_fee_bp,
+                    'maintenance_due' => $unit->maintenance_due, 'transfer_fee_bp' => $unit->transfer_fee_bp, 'transfer_fee_fixed' => $unit->transfer_fee_fixed,
                 ],
                 'step5' => ['description' => $unit->description],
             ],

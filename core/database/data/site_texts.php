@@ -101,6 +101,11 @@ return [
     ['exit_report.assume.refund_mirror', 'exit_report', 'نفس مدة السداد', 'Same as the years paid', 'Assumption detail'],
     ['exit_report.assume.transfer_fee', 'exit_report', 'رسوم التنازل للمطوّر', "The developer's transfer fee", 'Assumption label'],
     ['exit_report.assume.late_fee', 'exit_report', 'غرامة التأخير على المتأخرات', 'Late fee on arrears', 'Assumption label'],
+    ['exit_report.assume.refund_lump', 'exit_report', 'دفعة واحدة', 'In one payment', 'Assumption detail: the refund in one payment (client 2026-11-25)'],
+    ['exit_report.late_fees', 'exit_report', 'غرامة التأخير للمطوّر', 'Late-payment penalty to the developer', 'Label: 1% of each late installment (client 2026-11-25)'],
+    ['exit_report.draft_band_texts', 'exit_report', 'مسودة: النصوص ليست نهائية', 'Draft: texts not final', 'Band on every page while a text is still a placeholder and every rate is confirmed'],
+    ['exit_report.assume.checked', 'exit_report', 'روجعت', 'checked', 'Before the month a market value was last checked, e.g. "checked 2026-11" (Phase 6, J10)'],
+    ['exit_report.assume.developer_terms', 'exit_report', 'من شروط المطور المنشورة', "from the developer's published terms", 'Beside a value taken from an approved developer policy (J3)'],
     ['exit_report.disclaimer', 'exit_report', 'إخلاء المسؤولية', 'Disclaimer', 'Heading; the client writes the text (PLAN 6 row 10)'],
     ['exit_report.disclaimer_text', 'exit_report', '[نص إخلاء المسؤولية من العميل]', "[The client's disclaimer text]", 'Client legal text (PLAN 6 row 10)'],
     // Request a unit (PLAN 2.3): the fee consent is legal text from the client (PLAN 6 row 9); versioned per consent.

@@ -5,6 +5,7 @@
     $t = $r['transfer'];
     $dir = $locale === 'en' ? 'ltr' : 'rtl';
     $egp = $locale === 'en' ? 'EGP' : 'ج.م';
+    $span = fn (int $a, int $b): string => $a === $b ? $n($a) : $n($a).' – '.$n($b);
 @endphp
 <html dir="{{ $dir }}">
 <head>
@@ -45,9 +46,12 @@
 
     <h2>{{ $label('cancel') }}</h2>
     <table>
-        <tr><td>{{ $label('penalty') }}</td><td class="v">{{ $egp }} {{ $n($c['penalty_min']) }} – {{ $n($c['penalty_max']) }}</td></tr>
-        <tr><td>{{ $label('refund') }}</td><td class="v">{{ $egp }} {{ $n($c['refund_min']) }} – {{ $n($c['refund_max']) }}</td></tr>
-        <tr><td>{{ $label('refund_years') }}</td><td class="v">{{ $c['refund_years'] }}</td></tr>
+        <tr><td>{{ $label('penalty') }}</td><td class="v">{{ $egp }} {{ $span($c['penalty_min'], $c['penalty_max']) }}</td></tr>
+        @if ($c['late_fees'] > 0)
+            <tr><td>{{ $label('late_fees') }}</td><td class="v">{{ $egp }} −{{ $n($c['late_fees']) }}</td></tr>
+        @endif
+        <tr><td>{{ $label('refund') }}</td><td class="v">{{ $egp }} {{ $span($c['refund_min'], $c['refund_max']) }}</td></tr>
+        <tr><td>{{ $label('refund_years') }}</td><td class="v">{{ ($c['refund_rule'] ?? null) === 'lump' ? $label('assume.refund_lump') : $c['refund_years'] }}</td></tr>
         @if ($c['refund_pv_min'] !== null)
             <tr><td>{{ $label('refund_pv') }}</td><td class="v">{{ $egp }} {{ $n($c['refund_pv_min']) }}</td></tr>
         @endif
@@ -59,6 +63,9 @@
         <tr><td>{{ $label('transfer_fee') }}</td><td class="v">{{ $egp }} −{{ $n($t['transfer_fee']) }}</td></tr>
         @if ($t['arrears_to_developer'] > 0)
             <tr><td>{{ $label('arrears') }}</td><td class="v">{{ $egp }} −{{ $n($t['arrears_to_developer']) }}</td></tr>
+        @endif
+        @if (($t['late_fees'] ?? 0) > 0)
+            <tr><td>{{ $label('late_fees') }}</td><td class="v">{{ $egp }} −{{ $n($t['late_fees']) }}</td></tr>
         @endif
         @if ($t['arrears_self'] > 0)
             <tr><td>{{ $label('arrears_self') }}</td><td class="v">{{ $egp }} {{ $n($t['arrears_self']) }}</td></tr>
@@ -75,19 +82,21 @@
     @php
         $pct = fn (int $bp) => rtrim(rtrim(number_format($bp / 100, 2), '0'), '.').'%';
         $p = $r['provisional'];
+        $own = $r['policy']['overrides'] ?? [];
+        // [label, value, provisional, market value it comes from, settings it reads]
         $assumptions = [
-            ['assume.penalty', $pct($settings['penalty_min_bp']).' – '.$pct($settings['penalty_max_bp']).' · '.$label('assume.basis_'.$settings['penalty_basis']), array_intersect(['penalty_min_bp', 'penalty_max_bp', 'penalty_basis'], $p) !== []],
-            ['assume.refund', $settings['refund_rule'] === 'fixed' ? (string) $settings['refund_years_fixed'] : $label('assume.refund_mirror'), array_intersect(['refund_rule', 'refund_years_fixed'], $p) !== []],
-            ['assume.transfer_fee', $t['transfer_fee_bp'] !== null ? $pct($t['transfer_fee_bp']) : $n($t['transfer_fee']).' '.$egp, $t['transfer_fee_source'] === 'setting' && array_intersect(['transfer_fee_mode', 'transfer_fee_bp', 'transfer_fee_fixed'], $p) !== []],
-            ['assume.late_fee', $pct($settings['late_fee_bp']), in_array('late_fee_bp', $p, true)],
+            ['assume.penalty', ($settings['penalty_min_bp'] === $settings['penalty_max_bp'] ? $pct($settings['penalty_min_bp']) : $pct($settings['penalty_min_bp']).' – '.$pct($settings['penalty_max_bp'])).' · '.$label('assume.basis_'.$settings['penalty_basis']), array_intersect(['penalty_min_bp', 'penalty_max_bp', 'penalty_basis'], $p) !== [], 'cancellation', ['penalty_min_bp', 'penalty_max_bp', 'penalty_basis']],
+            ['assume.refund', match ($settings['refund_rule']) { 'fixed' => (string) $settings['refund_years_fixed'], 'lump' => $label('assume.refund_lump'), default => $label('assume.refund_mirror') }, array_intersect(['refund_rule', 'refund_years_fixed'], $p) !== [], 'refund', ['refund_rule', 'refund_years_fixed']],
+            ['assume.transfer_fee', $t['transfer_fee_bp'] !== null ? $pct($t['transfer_fee_bp']) : $n($t['transfer_fee']).' '.$egp, $t['transfer_fee_source'] === 'setting' && array_intersect(['transfer_fee_mode', 'transfer_fee_bp', 'transfer_fee_fixed'], $p) !== [], $t['transfer_fee_source'] === 'setting' ? 'transfer_fee' : null, ['transfer_fee_mode', 'transfer_fee_bp', 'transfer_fee_fixed']],
+            ['assume.late_fee', $pct($settings['late_fee_bp']), in_array('late_fee_bp', $p, true), 'late_fee', ['late_fee_bp']],
         ];
     @endphp
     <h2>{{ $label('assumptions') }}</h2>
     <table class="small">
-        @foreach ($assumptions as [$key, $value, $provisional])
+        @foreach ($assumptions as [$key, $value, $provisional, $market, $reads])
             <tr>
                 <td>{{ $label($key) }}@if ($provisional) <span class="gold"> · {{ $label('assumption_provisional') }}</span>@endif</td>
-                <td class="v">{{ $value }}</td>
+                <td class="v">{{ $value }}@if (array_intersect($reads, $own) !== []) · {{ $label('assume.developer_terms') }}@elseif ($market !== null && isset($checked[$market])) · {{ $label('assume.checked') }} {{ $checked[$market] }}@endif</td>
             </tr>
         @endforeach
     </table>

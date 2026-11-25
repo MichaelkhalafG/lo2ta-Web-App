@@ -259,6 +259,7 @@ final class StepRules
             'overdue_settlement' => ['nullable', Rule::enum(OverdueSettlement::class)],
             'maintenance_due' => ['nullable', 'integer', 'between:0,'.self::MONEY_MAX],
             'transfer_fee_bp' => ['nullable', 'integer', 'between:0,2000'],
+            'transfer_fee_fixed' => ['nullable', 'integer', 'between:0,10000000'],
         ];
     }
 
@@ -386,6 +387,10 @@ final class StepRules
         }
         if ($unit->delivery_payment !== null && $unit->delivery_payment > $remaining) {
             $p['delivery_payment'] = self::text('seller.rules.over_remaining');
+        }
+        // The developer's fee is a share or an amount, never both (Michael 2026-11-25).
+        if ($unit->transfer_fee_bp !== null && $unit->transfer_fee_fixed !== null) {
+            $p['transfer_fee_fixed'] = self::text('seller.rules.transfer_fee_one');
         }
         if ($unit->accepts_less) {
             if ($unit->lowest_accepted_amount === null) {

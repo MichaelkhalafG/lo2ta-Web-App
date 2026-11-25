@@ -21,6 +21,18 @@ export function Step3Money() {
   const fullyPaid = values.total_price !== null && values.paid_amount !== null && values.paid_amount === values.total_price;
   const egp = common("egp");
   const feePercent = values.transfer_fee_bp === null ? "" : String(values.transfer_fee_bp / 100);
+  // The seller's own fee: a share or an amount, never both; none = the default (Michael 2026-11-25).
+  const [feeMode, setFeeMode] = useState<"none" | "pct" | "fixed">(values.transfer_fee_bp !== null ? "pct" : values.transfer_fee_fixed !== null ? "fixed" : "none");
+  const chooseFeeMode = (mode: string) => {
+    const picked = mode === "pct" || mode === "fixed" ? mode : "none";
+    setFeeMode(picked);
+    if (picked !== "pct" && values.transfer_fee_bp !== null) {
+      set("transfer_fee_bp", null);
+    }
+    if (picked !== "fixed" && values.transfer_fee_fixed !== null) {
+      set("transfer_fee_fixed", null);
+    }
+  };
 
   return (
     <WizardFrame step={3} title={t("title")} intro={t("intro")} aside={<ExitPanel />} dock={<ExitDock />}>
@@ -83,18 +95,34 @@ export function Step3Money() {
       <Section number="3.3" title={t("sale")}>
         <YesNo label={t("acceptsLessQ")} value={values.accepts_less} yes={common("yes")} no={common("no")} onChange={(v) => set("accepts_less", v)} />
         {values.accepts_less ? <MoneyInput label={t("lowest")} required unit={egp} value={values.lowest_accepted_amount} onChange={(v) => set("lowest_accepted_amount", v)} hint={t("lowestHint")} error={errors.lowest_accepted_amount} /> : null}
-        <TextInput
-          label={t("transferFee")}
-          dir="ltr"
-          maxLength={5}
-          value={feePercent}
-          onChange={(v) => {
-            const n = Number(v.replace(",", "."));
-            set("transfer_fee_bp", v.trim() === "" || !Number.isFinite(n) ? null : Math.round(n * 100));
-          }}
-          hint={t("transferFeeHint")}
-          error={errors.transfer_fee_bp}
+        <Pills
+          label={t("transferFeeHow")}
+          value={feeMode}
+          onChange={chooseFeeMode}
+          options={[
+            { value: "none", label: t("transferFeeNone") },
+            { value: "fixed", label: t("transferFeeFixed") },
+            { value: "pct", label: t("transferFeePct") },
+          ]}
         />
+        {feeMode === "pct" ? (
+          <TextInput
+            label={t("transferFee")}
+            dir="ltr"
+            maxLength={5}
+            value={feePercent}
+            onChange={(v) => {
+              const n = Number(v.replace(",", "."));
+              set("transfer_fee_bp", v.trim() === "" || !Number.isFinite(n) ? null : Math.round(n * 100));
+            }}
+            hint={t("transferFeeHint")}
+            error={errors.transfer_fee_bp}
+          />
+        ) : null}
+        {feeMode === "fixed" ? (
+          <MoneyInput label={t("transferFeeAmount")} unit={egp} value={values.transfer_fee_fixed} onChange={(v) => set("transfer_fee_fixed", v)} hint={t("transferFeeHint")} error={errors.transfer_fee_fixed} />
+        ) : null}
+        {feeMode === "none" ? <p className="text-small text-text-3">{t("transferFeeNoneHint")}</p> : null}
       </Section>
 
       <StepNav backHref="2" backLabel={common("back2")} nextLabel={t("next")} onNext={() => void next(`/sell/${unit.id}/4`)} />

@@ -18,11 +18,14 @@ it('answers the decided fee values', function () {
         ->and($s->int('draft_id_retention_days'))->toBe(180);
 });
 
-it('marks unresearched calculator values as provisional and decided ones as not', function () {
+it('marks unconfirmed calculator values as provisional and decided ones as not', function () {
     $all = app(Settings::class)->all();
 
-    expect($all['penalty_min_bp']['provisional'])->toBeTrue()
-        ->and($all['transfer_fee_bp']['provisional'])->toBeTrue()
+    // Confirmed by the client on 2026-11-25: not provisional. The 50% line and the discount rate are not.
+    expect($all['penalty_min_bp']['provisional'])->toBeFalse()
+        ->and($all['transfer_fee_fixed']['provisional'])->toBeFalse()
+        ->and($all['deep_loss_ratio_bp']['provisional'])->toBeTrue()
+        ->and($all['discount_rate_bp']['provisional'])->toBeTrue()
         ->and($all['buyer_fee_bp']['provisional'])->toBeFalse()
         ->and($all['transfer_fee_payer']['provisional'])->toBeFalse();
 });
@@ -38,16 +41,16 @@ it('validates a write against the definition', function () {
 
 it('stores, clears the provisional flag, refreshes the cache and logs the change', function () {
     $s = app(Settings::class);
-    expect($s->int('penalty_min_bp'))->toBe(1000);
+    expect($s->int('deep_loss_ratio_bp'))->toBe(5000);
 
-    $s->set('penalty_min_bp', '1200');
+    $s->set('deep_loss_ratio_bp', '6000');
 
-    expect($s->int('penalty_min_bp'))->toBe(1200)
-        ->and($s->all()['penalty_min_bp']['provisional'])->toBeFalse();
+    expect($s->int('deep_loss_ratio_bp'))->toBe(6000)
+        ->and($s->all()['deep_loss_ratio_bp']['provisional'])->toBeFalse();
 
     $line = ActivityLog::query()->where('action', 'settings.updated')->latest('id')->firstOrFail();
-    expect($line->before)->toMatchArray(['value' => '1000'])
-        ->and($line->after)->toMatchArray(['value' => '1200']);
+    expect($line->before)->toMatchArray(['value' => '5000'])
+        ->and($line->after)->toMatchArray(['value' => '6000']);
 });
 
 it('never overwrites a stored value when the defaults are seeded again', function () {

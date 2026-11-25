@@ -52,5 +52,12 @@ return [
         'min_bedrooms' => 'minimum bedrooms',
         'delivery_pref' => 'delivery',
         'code' => 'unit code',
+        'total_price' => 'total contract price',
+        'paid_amount' => 'amount paid',
+        'years_paid' => 'years paid',
+        'overdue_amount' => 'overdue amount',
+        'developer' => 'developer',
+        'contract_price' => 'contract price',
+        'price_today' => "developer's price today",
     ],
 ];

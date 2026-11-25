@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
     Building2,
+    Calculator,
     ChevronsLeft,
     ChevronsRight,
     Circle,
@@ -43,6 +44,7 @@ const ICONS: Record<string, ComponentType<{ className?: string | undefined }>> =
     Inbox,
     Mail,
     Building2,
+    Calculator,
     MapPin,
     Sparkles,
     FileText,

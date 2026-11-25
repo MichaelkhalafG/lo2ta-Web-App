@@ -13,6 +13,7 @@ export type ExitReport = {
     late_fees: number;
     refund_min: number;
     refund_max: number;
+    refund_rule?: "lump" | "mirror" | "fixed";
     refund_years: number;
     refund_pv_min: number | null;
     zone: "wipeout" | "deep_loss" | "moderate_loss";
@@ -25,6 +26,7 @@ export type ExitReport = {
     transfer_fee_source: "unit" | "setting";
     transfer_fee_payer: "seller" | "buyer";
     arrears_to_developer: number;
+    late_fees?: number;
     arrears_settlement: string | null;
     arrears_self: number;
     lokta_fee: number;
@@ -84,6 +86,7 @@ export type Step3 = {
   overdue_settlement: string | null;
   maintenance_due: number | null;
   transfer_fee_bp: number | null;
+  transfer_fee_fixed: number | null;
 };
 
 export type SellerUnit = {

@@ -104,3 +104,13 @@ export function paragraphs(texts: Texts, key: string): string[] {
     .map((p) => p.trim())
     .filter((p) => p !== "");
 }
+
+/** The market values the calculator and the reports page show, and the developers the client approved (J3). */
+export async function marketValues(locale: Locale): Promise<import("./tools").MarketValues> {
+  return (await coreGet<{ data: import("./tools").MarketValues }>("market-values", locale, ["tools"])).data;
+}
+
+/** The client's published indicators for the reports page (J9); empty until the first one is published. */
+export async function indicators(locale: Locale): Promise<import("./tools").Indicator[]> {
+  return (await coreGet<{ data: import("./tools").Indicator[] }>("indicators", locale, ["tools"])).data;
+}

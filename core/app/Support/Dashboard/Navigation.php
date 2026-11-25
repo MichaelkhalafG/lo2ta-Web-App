@@ -51,7 +51,8 @@ final class Navigation
             ['features', 'Sparkles', null, null],
         ],
         'content' => [
-            ['reports', 'FileText', null, null],
+            ['reports', 'FileText', 'dashboard.indicators', 'manage-settings'],
+            ['calculator', 'Calculator', 'dashboard.calculator', 'manage-settings'],
             ['site_texts', 'FileText', null, 'manage-site-texts'],
             ['settings', 'Settings2', null, 'manage-settings'],
         ],

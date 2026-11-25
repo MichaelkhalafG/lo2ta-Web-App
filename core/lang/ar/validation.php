@@ -52,5 +52,12 @@ return [
         'min_bedrooms' => 'أقل عدد غرف',
         'delivery_pref' => 'الاستلام',
         'code' => 'كود الوحدة',
+        'total_price' => 'إجمالي سعر التعاقد',
+        'paid_amount' => 'المبلغ المدفوع',
+        'years_paid' => 'سنوات السداد',
+        'overdue_amount' => 'المبلغ المتأخر',
+        'developer' => 'المطور',
+        'contract_price' => 'سعر التعاقد',
+        'price_today' => 'سعر المطور اليوم',
     ],
 ];

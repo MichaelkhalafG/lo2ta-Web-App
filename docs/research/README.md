@@ -45,3 +45,10 @@ needed for it. It lists the labels of flows behind login (`/app`), which robots.
   (`SELLER_JOURNEY_STEPS = 2 + CASE_WIZARD_STEP_TITLES.length`). The portal steps' exact fields are inferred from
   the unit page's fields and the catalogue.
 - Figures on their site (11,358 units, EGP 162.2 bn) are their claims, unverified.
+
+## Market values for the calculator (2026-11-24)
+
+`market-values-2026-11.md`: the sources (publisher, date, link, the figures in their own words) and the findings for
+each calculator value (PLAN 4.3, Phase 6 step 1). Internal only (J10): the public site shows ranges and the month
+checked, never the sources. Read with the same pace and robots rules as above; pages that refuse automated reading
+were not read and are not counted.

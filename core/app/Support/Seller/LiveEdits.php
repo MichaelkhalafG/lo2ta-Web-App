@@ -28,7 +28,7 @@ final class LiveEdits
     public const REVIEW = [
         'paid_amount', 'market_price_estimate', 'installment_amount', 'installment_frequency', 'next_due_date',
         'years_left', 'annual_extra_amount', 'delivery_payment', 'accepts_less', 'lowest_accepted_amount', 'has_overdue',
-        'overdue_count', 'overdue_amount', 'overdue_settlement', 'maintenance_due', 'transfer_fee_bp',
+        'overdue_count', 'overdue_amount', 'overdue_settlement', 'maintenance_due', 'transfer_fee_bp', 'transfer_fee_fixed',
         'size_m2', 'garden_m2', 'roof_m2', 'floor', 'bedrooms', 'bathrooms', 'finishing', 'delivery_status',
         'delivery_year', 'delivery_month',
     ];

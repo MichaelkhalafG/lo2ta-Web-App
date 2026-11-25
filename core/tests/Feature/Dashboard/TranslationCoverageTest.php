@@ -27,6 +27,16 @@ function dashboardKeysUsed(): array
     foreach (['admin', 'user', 'system'] as $type) {
         $keys[] = "activity.actor_types.{$type}";
     }
+    // Calculator settings (Phase 6): per value and per choice, built from config/market_values.php and settings.
+    foreach (array_keys((array) config('market_values.values')) as $value) {
+        $keys[] = "calculator.explain.{$value}";
+        $keys[] = "calculator.values.{$value}";
+    }
+    foreach (['penalty_basis' => ['total', 'paid'], 'refund_rule' => ['lump', 'mirror', 'fixed'], 'transfer_fee_mode' => ['pct', 'fixed']] as $setting => $options) {
+        foreach ($options as $option) {
+            $keys[] = "calculator.options.{$setting}.{$option}";
+        }
+    }
 
     return array_values(array_unique($keys));
 }

@@ -119,6 +119,6 @@ it('names the provisional settings on the overview instead of showing their keys
 
     $this->actingAs($admin, 'admin')->get('/dashboard')
         ->assertInertia(fn (Assert $page) => $page->component('Overview')
-            ->where('provisionalSettings.0', ['key' => 'transfer_fee_mode', 'label' => 'طريقة حساب رسوم التنازل'])
+            ->where('provisionalSettings.0', ['key' => 'deep_loss_ratio_bp', 'label' => 'حد الخسارة الكبيرة'])
             ->where('provisionalSettings', fn ($rows) => collect($rows)->every(fn (array $r): bool => $r['label'] !== $r['key'])));
 });

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\ReferenceController;
 use App\Http\Controllers\Api\V1\Seller\DocumentsController as SellerDocumentsController;
 use App\Http\Controllers\Api\V1\Seller\PhotosController as SellerPhotosController;
 use App\Http\Controllers\Api\V1\Seller\UnitsController as SellerUnitsController;
+use App\Http\Controllers\Api\V1\ToolsController;
 use App\Http\Controllers\Api\V1\UnitsController;
 use App\Support\Seller\SellerUnits;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,12 @@ Route::prefix('v1')->group(function (): void {
         // Public forms (PLAN 2.6): honeypot and hourly limits per IP; nothing is sent back to the sender.
         Route::post('contact', [FormsController::class, 'contact']);
         Route::post('partnerships', [FormsController::class, 'partnership']);
+
+        // Tools (PLAN 4, Phase 6): the calculator stores nothing (J12) and is limited per address and hour.
+        Route::get('market-values', [ToolsController::class, 'marketValues']);
+        Route::get('indicators', [ToolsController::class, 'indicators']);
+        Route::post('calculator/seller', [ToolsController::class, 'seller']);
+        Route::post('calculator/buyer', [ToolsController::class, 'buyer']);
 
         Route::get('units', [UnitsController::class, 'index']);
         Route::get('units/{code}', [UnitsController::class, 'show'])->where('code', '[A-Za-z0-9-]{3,16}');

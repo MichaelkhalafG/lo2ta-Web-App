@@ -75,6 +75,21 @@ GET    /api/v1/me/requests
 POST   /api/v1/me/requests
 ```
 
+Added in phase 6 (tools; behind the server key, no sign-in; the two calculator routes are limited per address):
+
+```
+GET    /api/v1/market-values
+GET    /api/v1/indicators
+POST   /api/v1/calculator/seller
+POST   /api/v1/calculator/buyer
+```
+
+Phase 6 also adds two migrations (`2026_11_25_100000_create_tool_tables`, `2026_11_25_100100_add_unit_transfer_fee_fixed`)
+and seeds the market values with the client's answers of 2026-11-25 (`db:seed --class=ReferenceSeeder`, add-only).
+On a database seeded before then, the calculator settings rows already exist and are not overwritten: set them in
+the dashboard (Calculator settings) or remove those rows before seeding. Nothing is deployed yet, so a first deploy
+needs nothing extra.
+
 The dashboard routes `/dashboard/files/documents/{document}` and `/dashboard/files/photos/{photo}` stay on the
 dashboard host only.
 

@@ -3,6 +3,7 @@
 namespace App\Support\Calculator;
 
 use App\Enums\OverdueSettlement;
+use App\Models\DeveloperPolicy;
 use App\Models\Unit;
 use App\Support\Settings\Settings;
 use Carbon\CarbonImmutable;
@@ -11,8 +12,8 @@ use Carbon\CarbonImmutable;
  * The seller's exit calculation (PLAN 4.2, decided 2026-11-17): cancelling with the developer against transferring
  * through Lokta. Every constant is a setting; most are provisional until the market research (PLAN 4.3), and the
  * answer says which, so the wizard, the exit report and the PDF can mark the figures as provisional.
- * Developer policies (PLAN 3.7) plug in here in phase 6; until then the unit's own transfer fee, then the settings.
- * Money is whole EGP.
+ * A developer's own terms (developer_policies, approved by the client: J3) replace the market values for that
+ * developer, value by value; the unit's own transfer fee replaces both. Money is whole EGP.
  */
 final class ExitCalculator
 {
@@ -35,6 +36,9 @@ final class ExitCalculator
         if ($unit->total_price === null || $unit->paid_amount === null || $unit->paid_amount > $unit->total_price) {
             return null;
         }
+        $policy = $unit->developer_id !== null
+            ? DeveloperPolicy::query()->approved()->with('developer')->where('developer_id', $unit->developer_id)->first()
+            : null;
 
         return $this->compute([
             'total_price' => $unit->total_price,
@@ -46,54 +50,78 @@ final class ExitCalculator
             'accepts_less' => $unit->accepts_less,
             'lowest_accepted_amount' => $unit->lowest_accepted_amount,
             'unit_transfer_fee_bp' => $unit->transfer_fee_bp,
-        ]);
+            'unit_transfer_fee_fixed' => $unit->transfer_fee_fixed,
+        ], $policy);
     }
 
     /**
-     * @param  array{total_price: int, paid_amount: int, years_paid: int, has_overdue: bool, overdue_amount: int, overdue_settlement: string|null, accepts_less: bool, lowest_accepted_amount: int|null, unit_transfer_fee_bp: int|null}  $in
+     * The late-payment penalty (client 2026-11-25) is 1% of each late installment, charged once: the same as one
+     * share of the overdue amount. It is owed to the developer on both exits (Michael 2026-11-25): it lowers the
+     * refund on a cancellation, and on a transfer it is settled with the arrears. The 50% deep-loss line is a display
+     * threshold and the discount rate is unused while the present-value line is off, so neither marks the figures
+     * provisional (Michael 2026-11-25).
+     *
+     * @param  array{total_price: int, paid_amount: int, years_paid: int, has_overdue: bool, overdue_amount: int, overdue_settlement: string|null, accepts_less: bool, lowest_accepted_amount: int|null, unit_transfer_fee_bp: int|null, unit_transfer_fee_fixed?: int|null}  $in
      * @return array<string, mixed>
      */
-    public function compute(array $in): array
+    public function compute(array $in, ?DeveloperPolicy $policy = null): array
     {
-        $s = $this->settings;
+        $v = $this->values($policy);
+        $int = static fn (string $key): int => is_int($v[$key]) ? $v[$key] : 0;
         $total = $in['total_price'];
         $paid = $in['paid_amount'];
 
         // Cancellation with the developer.
-        $basis = $s->string('penalty_basis') === 'paid' ? $paid : $total;
-        $penaltyMin = self::part($basis, $s->int('penalty_min_bp'));
-        $penaltyMax = self::part($basis, $s->int('penalty_max_bp'));
-        $lateFees = $in['has_overdue'] ? self::part($in['overdue_amount'], $s->int('late_fee_bp')) : 0;
+        $basis = $v['penalty_basis'] === 'paid' ? $paid : $total;
+        $penaltyMin = self::part($basis, $int('penalty_min_bp'));
+        $penaltyMax = self::part($basis, max($int('penalty_min_bp'), $int('penalty_max_bp')));
+        $lateFees = $in['has_overdue'] ? self::part($in['overdue_amount'], $int('late_fee_bp')) : 0;
         $refundMin = max(0, $paid - $penaltyMax - $lateFees);
         $refundMax = max(0, $paid - $penaltyMin - $lateFees);
-        $refundYears = $s->string('refund_rule') === 'fixed' ? $s->int('refund_years_fixed') : $in['years_paid'];
+        // One payment ('lump', client 2026-11-25) is 0 years; 'mirror' follows the years paid; 'fixed' a set number.
+        $refundYears = match ($v['refund_rule']) {
+            'lump' => 0,
+            'fixed' => $int('refund_years_fixed'),
+            default => $in['years_paid'],
+        };
         $lossWorst = $paid > 0 ? ($paid - $refundMin) / $paid : 0.0;
-        $zone = $refundMin <= 0 ? 'wipeout' : ($lossWorst > $s->int('deep_loss_ratio_bp') / 10_000 ? 'deep_loss' : 'moderate_loss');
-        $pv = $s->bool('show_present_value') ? self::presentValue($refundMin, $refundYears, $s->int('discount_rate_bp')) : null;
+        $zone = $refundMin <= 0 ? 'wipeout' : ($lossWorst > $int('deep_loss_ratio_bp') / 10_000 ? 'deep_loss' : 'moderate_loss');
+        $pv = $v['show_present_value'] === true ? self::presentValue($refundMin, $refundYears, $int('discount_rate_bp')) : null;
 
-        // Transfer through Lokta: 0% commission for the seller (PLAN 4.2).
+        // Transfer through Lokta: 0% commission for the seller (PLAN 4.2). The seller's own figure (a share or an
+        // amount, step 3) replaces the default.
+        $unitFixed = $in['unit_transfer_fee_fixed'] ?? null;
         if ($in['unit_transfer_fee_bp'] !== null) {
             $feeSource = 'unit';
             $feeBp = $in['unit_transfer_fee_bp'];
             $transferFee = self::part($total, $feeBp);
-        } elseif ($s->string('transfer_fee_mode') === 'fixed') {
+        } elseif ($unitFixed !== null) {
+            $feeSource = 'unit';
+            $feeBp = null;
+            $transferFee = $unitFixed;
+        } elseif ($v['transfer_fee_mode'] === 'fixed') {
             $feeSource = 'setting';
             $feeBp = null;
-            $transferFee = $s->int('transfer_fee_fixed');
+            $transferFee = $int('transfer_fee_fixed');
         } else {
             $feeSource = 'setting';
-            $feeBp = $s->int('transfer_fee_bp');
+            $feeBp = $int('transfer_fee_bp');
             $transferFee = self::part($total, $feeBp);
         }
-        $sellerPaysFee = $s->string('transfer_fee_payer') === 'seller';
+        $sellerPaysFee = $v['transfer_fee_payer'] === 'seller';
         $givenUp = $in['accepts_less'] && $in['lowest_accepted_amount'] !== null ? max(0, $paid - $in['lowest_accepted_amount']) : 0;
-        $arrears = $in['has_overdue'] && $in['overdue_settlement'] === OverdueSettlement::Deducted->value ? $in['overdue_amount'] : 0;
+        $deducted = $in['has_overdue'] && $in['overdue_settlement'] === OverdueSettlement::Deducted->value;
+        $selfPaid = $in['has_overdue'] && $in['overdue_settlement'] === OverdueSettlement::SellerPaysFirst->value;
+        $arrears = $deducted ? $in['overdue_amount'] : 0;
+        $arrearsFees = $deducted ? $lateFees : 0;
         $receive = $paid - $givenUp;
-        $net = $receive - ($sellerPaysFee ? $transferFee : 0) - $arrears;
+        $net = $receive - ($sellerPaysFee ? $transferFee : 0) - $arrears - $arrearsFees;
 
+        $overridden = $policy?->overrides() ?? [];
+        $ignored = ['deep_loss_ratio_bp', ...($v['show_present_value'] === true ? [] : ['discount_rate_bp'])];
         $provisional = [];
         foreach ($this->settings->all() as $key => $entry) {
-            if (in_array($key, self::SETTINGS, true) && $entry['provisional']) {
+            if (in_array($key, self::SETTINGS, true) && ! in_array($key, $ignored, true) && $entry['provisional'] && ! array_key_exists($key, $overridden)) {
                 // The unit's own transfer fee replaces the provisional default.
                 if ($feeSource === 'unit' && in_array($key, ['transfer_fee_mode', 'transfer_fee_bp', 'transfer_fee_fixed'], true)) {
                     continue;
@@ -107,10 +135,11 @@ final class ExitCalculator
             'cancel' => [
                 'penalty_min' => $penaltyMin,
                 'penalty_max' => $penaltyMax,
-                'penalty_basis' => $s->string('penalty_basis'),
+                'penalty_basis' => $v['penalty_basis'],
                 'late_fees' => $lateFees,
                 'refund_min' => $refundMin,
                 'refund_max' => $refundMax,
+                'refund_rule' => $v['refund_rule'],
                 'refund_years' => $refundYears,
                 'refund_pv_min' => $pv,
                 'zone' => $zone,
@@ -123,30 +152,49 @@ final class ExitCalculator
                 'transfer_fee_source' => $feeSource,
                 'transfer_fee_payer' => $sellerPaysFee ? 'seller' : 'buyer',
                 'arrears_to_developer' => $arrears,
+                'late_fees' => $arrearsFees,
                 'arrears_settlement' => $in['has_overdue'] ? $in['overdue_settlement'] : null,
-                'arrears_self' => $in['has_overdue'] && $in['overdue_settlement'] === OverdueSettlement::SellerPaysFirst->value ? $in['overdue_amount'] : 0,
+                // Settled by the seller before the transfer: the arrears and their penalty.
+                'arrears_self' => $selfPaid ? $in['overdue_amount'] + $lateFees : 0,
                 'lokta_fee' => 0,
                 'net' => $net,
             ],
             'advantage_min' => $net - $refundMax,
             'advantage_max' => $net - $refundMin,
             'provisional' => $provisional,
+            // The values the figures used, and whose terms they are: the market's, or one developer's own.
+            'settings' => $v,
+            'policy' => $policy === null ? null : [
+                'developer' => $policy->developer?->slug,
+                'overrides' => array_keys($overridden),
+                'checked_on' => $policy->checked_on->format('Y-m-d'),
+            ],
         ];
     }
 
     /**
-     * The settings as they were, kept with each exit report (PLAN 3.7 #16), so a later change never rewrites one.
+     * The values as they were, kept with each exit report (PLAN 3.7 #16), so a later change never rewrites one.
      *
      * @return array<string, int|bool|string>
      */
-    public function snapshot(): array
+    public function snapshot(?DeveloperPolicy $policy = null): array
+    {
+        return $this->values($policy);
+    }
+
+    /**
+     * The settings the calculation reads, with the policy's overrides on top.
+     *
+     * @return array<string, int|bool|string>
+     */
+    private function values(?DeveloperPolicy $policy): array
     {
         $out = [];
         foreach (self::SETTINGS as $key) {
             $out[$key] = $this->settings->get($key);
         }
 
-        return $out;
+        return [...$out, ...($policy?->overrides() ?? [])];
     }
 
     /** Whole years from the contract month to today, at least 1 (the refund "mirrors" them, PLAN 4.2). */

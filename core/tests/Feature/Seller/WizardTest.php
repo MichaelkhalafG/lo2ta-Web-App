@@ -282,3 +282,30 @@ it('keys a typed name that matches no entry, or two entries, as typed text', fun
         ->and(ContractKeys::nameKey('شركة إعمار مصر'))->toBe(ContractKeys::nameKey('اعمار'))
         ->and(ContractKeys::nameKey('Group'))->toBe('GROUP');
 });
+
+it('takes the seller\'s own transfer fee as a share or an amount, never both, in place of the EGP 50,000 default', function () {
+    $id = completeDraft($this->seller)->public_id;
+    $base = ['total_price' => 6_000_000, 'paid_amount' => 1_500_000, 'market_price_estimate' => 8_000_000,
+        'installment_amount' => 112_500, 'installment_frequency' => 'quarterly', 'next_due_date' => now()->addMonth()->toDateString(), 'years_left' => 10,
+        'accepts_less' => false, 'has_overdue' => false];
+
+    // Nothing typed: the default fixed amount (client 2026-11-25).
+    step($id, 3, [...$base, 'transfer_fee_bp' => null, 'transfer_fee_fixed' => null], $this->h, true)->assertOk()
+        ->assertJsonPath('data.exit_report.transfer.transfer_fee', 50_000)
+        ->assertJsonPath('data.exit_report.transfer.transfer_fee_source', 'setting');
+
+    // An amount: it replaces the default and stays private.
+    step($id, 3, [...$base, 'transfer_fee_bp' => null, 'transfer_fee_fixed' => 35_000], $this->h, true)->assertOk()
+        ->assertJsonPath('data.exit_report.transfer.transfer_fee', 35_000)
+        ->assertJsonPath('data.exit_report.transfer.transfer_fee_source', 'unit');
+    expect(Unit::query()->where('public_id', $id)->value('transfer_fee_fixed'))->toBe(35_000)
+        ->and(Unit::PRIVATE)->toContain('transfer_fee_fixed');
+
+    // Both at once: refused on the amount field.
+    step($id, 3, [...$base, 'transfer_fee_bp' => 250, 'transfer_fee_fixed' => 35_000], $this->h, true)->assertStatus(422)->assertJsonValidationErrors('transfer_fee_fixed');
+
+    // A share: 2.5% of 6,000,000.
+    step($id, 3, [...$base, 'transfer_fee_bp' => 250, 'transfer_fee_fixed' => null], $this->h, true)->assertOk()
+        ->assertJsonPath('data.exit_report.transfer.transfer_fee', 150_000);
+    step($id, 3, [...$base, 'transfer_fee_fixed' => -1], $this->h)->assertStatus(422)->assertJsonValidationErrors('transfer_fee_fixed');
+});

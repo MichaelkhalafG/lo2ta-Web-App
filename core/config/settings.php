@@ -8,9 +8,15 @@
 | Types: int, bool, string, enum (with 'options'). Percentages are basis points (100 = 1%), money is whole EGP.
 | 'public' => true means the value may be sent to the public site (GET /api/v1/settings).
 |
-| Provisional calculator values (PLAN 2.2.9 point 8): penalty 10-15% of the total price, refund over the same years
-| and the 50% deep-loss line are aqarexit's hard-coded constants (docs/research/aqarexit-03-calculator.md), kept
-| only as a starting point. Every value marked provisional is researched with sources before launch (PLAN 4.3).
+| Calculator values (PLAN 4.3): researched 2026-11-24 (docs/research/market-values-2026-11.md), then answered and
+| confirmed by the client on 2026-11-25 (relayed by Michael): cancellation 15% of the total price, one value; the
+| refund in one payment; the transfer fee a fixed EGP 50,000 (a seller's own figure in step 3 replaces it); a
+| late-payment penalty of 1% of each late installment, charged once, on both exits; the maintenance deposit moves
+| to the buyer with the transfer (an information note). The sources, the date checked and the confirmation live in
+| market_values (config/market_values.php groups them).
+| Not confirmed, and not counted as provisional rates (Michael 2026-11-25): the 50% deep-loss line, a display
+| threshold (J6), and the 20% discount rate (the Central Bank's overnight deposit rate from 2026-10-29), used only if
+| the present-value line is switched on (it is off).
 */
 
 return [
@@ -20,9 +26,11 @@ return [
 
     // Developer transfer fee (decided 2026-11-17: the seller pays it, to the developer, not to Lokta)
     'transfer_fee_payer' => ['type' => 'enum', 'group' => 'transfer', 'default' => 'seller', 'options' => ['seller', 'buyer'], 'public' => true],
-    'transfer_fee_mode' => ['type' => 'enum', 'group' => 'transfer', 'default' => 'pct', 'options' => ['pct', 'fixed'], 'public' => true, 'provisional' => true],
-    'transfer_fee_bp' => ['type' => 'int', 'group' => 'transfer', 'default' => 0, 'min' => 0, 'max' => 2000, 'public' => true, 'provisional' => true],
-    'transfer_fee_fixed' => ['type' => 'int', 'group' => 'transfer', 'default' => 0, 'min' => 0, 'max' => 10_000_000, 'public' => true, 'provisional' => true],
+    // Client 2026-11-25: a fixed amount by default (most developers charge one). transfer_fee_bp applies only if the
+    // mode is switched to a percentage.
+    'transfer_fee_mode' => ['type' => 'enum', 'group' => 'transfer', 'default' => 'fixed', 'options' => ['pct', 'fixed'], 'public' => true],
+    'transfer_fee_bp' => ['type' => 'int', 'group' => 'transfer', 'default' => 0, 'min' => 0, 'max' => 2000, 'public' => true],
+    'transfer_fee_fixed' => ['type' => 'int', 'group' => 'transfer', 'default' => 50_000, 'min' => 0, 'max' => 10_000_000, 'public' => true],
 
     // Seller form (PLAN 2.2)
     'receipts_required' => ['type' => 'bool', 'group' => 'seller', 'default' => false, 'public' => true],
@@ -72,6 +80,8 @@ return [
     'rl_partnership_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 3, 'min' => 1, 'max' => 1000],
     'rl_request_user' => ['type' => 'int', 'group' => 'limits', 'default' => 10, 'min' => 1, 'max' => 1000],
     'rl_request_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 20, 'min' => 1, 'max' => 1000],
+    // Public calculator, per address and hour (Michael 2026-11-25). It stores nothing.
+    'rl_calculator_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 60, 'min' => 1, 'max' => 10000],
     'form_message_max' => ['type' => 'int', 'group' => 'limits', 'default' => 2000, 'min' => 200, 'max' => 10000, 'public' => true],
     // Team notices (Michael 2026-11-18): one of the agreement's two official mailboxes, e.g. info@loktaeg.com. Empty
     // until the mailbox exists: then every active admin account gets the notice (RUN D14).
@@ -80,13 +90,18 @@ return [
     'budget_max_areas' => ['type' => 'int', 'group' => 'buyer', 'default' => 10, 'min' => 1, 'max' => 50, 'public' => true],
 
     // Calculator (PLAN 4.2; provisional until researched)
-    'penalty_basis' => ['type' => 'enum', 'group' => 'calculator', 'default' => 'total', 'options' => ['total', 'paid'], 'public' => true, 'provisional' => true],
-    'penalty_min_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 1000, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
-    'penalty_max_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 1500, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
-    'late_fee_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 0, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
-    'refund_rule' => ['type' => 'enum', 'group' => 'calculator', 'default' => 'mirror', 'options' => ['mirror', 'fixed'], 'public' => true, 'provisional' => true],
-    'refund_years_fixed' => ['type' => 'int', 'group' => 'calculator', 'default' => 0, 'min' => 0, 'max' => 20, 'public' => true, 'provisional' => true],
+    // Client 2026-11-25: 15% of the total price, one value (min = max); the refund in one payment ('lump').
+    'penalty_basis' => ['type' => 'enum', 'group' => 'calculator', 'default' => 'total', 'options' => ['total', 'paid'], 'public' => true],
+    'penalty_min_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 1500, 'min' => 0, 'max' => 10000, 'public' => true],
+    'penalty_max_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 1500, 'min' => 0, 'max' => 10000, 'public' => true],
+    // Client 2026-11-25: 1% of each late installment, charged once, whatever the installment period. Charged on
+    // the overdue amount on both exits: it lowers the refund, and on a transfer it is settled with the arrears.
+    'late_fee_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 100, 'min' => 0, 'max' => 10000, 'public' => true],
+    'refund_rule' => ['type' => 'enum', 'group' => 'calculator', 'default' => 'lump', 'options' => ['lump', 'mirror', 'fixed'], 'public' => true],
+    'refund_years_fixed' => ['type' => 'int', 'group' => 'calculator', 'default' => 0, 'min' => 0, 'max' => 20, 'public' => true],
     'deep_loss_ratio_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 5000, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
     'show_present_value' => ['type' => 'bool', 'group' => 'calculator', 'default' => false, 'public' => true],
-    'discount_rate_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 0, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
+    'discount_rate_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 2000, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
+    // Information only, not in the calculation (PLAN 4.3 item 6; client 2026-11-25: it moves to the buyer).
+    'maintenance_deposit_moves' => ['type' => 'bool', 'group' => 'calculator', 'default' => true, 'public' => true],
 ];

@@ -35,7 +35,7 @@ class Unit extends Model
     public const PRIVATE = [
         'seller_id', 'contract_number', 'unit_number', 'contract_key', 'unit_key', 'active_contract_key',
         'active_unit_key', 'developer_other', 'compound_other', 'area_other', 'verified_by', 'withdraw_reason',
-        'step_reached', 'rejected_at', 'withdrawn_at', 'submitted_at', 'transfer_fee_bp', 'public_id', 'recheck_after_edit_at', 'withdraw_requested_at',
+        'step_reached', 'rejected_at', 'withdrawn_at', 'submitted_at', 'transfer_fee_bp', 'transfer_fee_fixed', 'public_id', 'recheck_after_edit_at', 'withdraw_requested_at',
         'sold_at',
     ];
 
@@ -65,7 +65,7 @@ class Unit extends Model
         'total_price', 'paid_amount', 'market_price_estimate', 'installment_amount', 'installment_frequency',
         'next_due_date', 'years_left', 'annual_extra_amount', 'delivery_payment', 'accepts_less',
         'lowest_accepted_amount', 'has_overdue', 'overdue_count', 'overdue_amount', 'overdue_settlement',
-        'maintenance_due', 'transfer_fee_bp',
+        'maintenance_due', 'transfer_fee_bp', 'transfer_fee_fixed',
         // Step 5 (the description moved here with the photos, PLAN 2.2.13 point 1)
         'description',
     ];
@@ -86,6 +86,7 @@ class Unit extends Model
             'contract_month' => 'integer',
             'delivery_month' => 'integer',
             'transfer_fee_bp' => 'integer',
+            'transfer_fee_fixed' => 'integer',
             'size_m2' => 'decimal:2',
             'garden_m2' => 'decimal:2',
             'roof_m2' => 'decimal:2',

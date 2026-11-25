@@ -13,6 +13,7 @@ return [
         'step' => 'This step does not exist.',
         'required' => 'This field is required.',
         'pair_one' => 'Choose from the list or type it, not both.',
+        'transfer_fee_one' => 'Give the transfer fee as a percentage or as an amount, not both.',
         'compound_developer' => 'This project does not belong to the developer you chose.',
         'sub_type_main' => 'The sub-type does not belong to the main type you chose.',
         'date_future' => 'This date is in the future.',
