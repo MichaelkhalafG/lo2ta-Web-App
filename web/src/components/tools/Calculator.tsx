@@ -5,7 +5,7 @@ import { useActionState, useId } from "react";
 import { Link } from "@/i18n/navigation";
 import { buyerCalcAction, sellerCalcAction, type CalcState } from "@/lib/actions/tools";
 import { money } from "@/lib/listing";
-import { monthYear, percent, type ApprovedDeveloper, type BuyerResult, type SellerResult } from "@/lib/tools";
+import { percent, type BuyerResult, type SellerResult } from "@/lib/tools";
 import { Field, Notice, Submit } from "../account/Form";
 import { ExitDrawing } from "./ExitDrawing";
 
@@ -48,8 +48,12 @@ function SelectField({ label, name, hint, error, defaultValue, children }: { lab
 const sellerInitial: CalcState<SellerResult> = {};
 const buyerInitial: CalcState<BuyerResult> = {};
 
-/** `askYears`: the years paid matter only while the refund follows the payment period (refund_rule "mirror"). */
-export function SellerCalculator({ developers, deepLossBp, ctaHref, askYears }: { developers: ApprovedDeveloper[]; deepLossBp: number; ctaHref: string; askYears: boolean }) {
+/**
+ * `askYears`: the years paid matter only while the refund follows the payment period (refund_rule "mirror").
+ * Market values only (K6): no developer is offered or named. `transferConditions` is the site text under the
+ * transfer fee (K5).
+ */
+export function SellerCalculator({ deepLossBp, ctaHref, askYears, transferConditions }: { deepLossBp: number; ctaHref: string; askYears: boolean; transferConditions: string }) {
   const t = useTranslations("tools");
   const locale = useLocale();
   const [state, action] = useActionState(sellerCalcAction, sellerInitial);
@@ -76,22 +80,12 @@ export function SellerCalculator({ developers, deepLossBp, ctaHref, askYears }: 
           <input type="hidden" name="years_paid" value="1" />
         )}
         <Field label={t("seller.overdue")} name="overdue_amount" inputMode="numeric" dir="ltr" defaultValue={v.overdue_amount} error={e.overdue_amount} hint={t("seller.overdueHint")} autoComplete="off" />
-        {developers.length > 0 ? (
-          <SelectField label={t("seller.developer")} name="developer" defaultValue={v.developer ?? ""} hint={t("seller.developerHint")} error={e.developer}>
-            <option value="">{t("seller.developerMarket")}</option>
-            {developers.map((d) => (
-              <option key={d.slug} value={d.slug}>
-                {d.name}
-              </option>
-            ))}
-          </SelectField>
-        ) : null}
         <div className="max-w-xs">
           <Submit pendingLabel={t("pending")}>{t("submit")}</Submit>
         </div>
       </form>
 
-      <div aria-live="polite">{state.result ? <SellerAnswer result={state.result} developers={developers} deepLossBp={deepLossBp} ctaHref={ctaHref} /> : <EmptyAnswer text={t("seller.waiting")} />}</div>
+      <div aria-live="polite">{state.result ? <SellerAnswer result={state.result} deepLossBp={deepLossBp} ctaHref={ctaHref} transferConditions={transferConditions} /> : <EmptyAnswer text={t("seller.waiting")} />}</div>
     </div>
   );
 }
@@ -118,14 +112,12 @@ function Line({ label, value, note, strong = false }: { label: string; value: st
   );
 }
 
-function SellerAnswer({ result, developers, deepLossBp, ctaHref }: { result: SellerResult; developers: ApprovedDeveloper[]; deepLossBp: number; ctaHref: string }) {
+function SellerAnswer({ result, deepLossBp, ctaHref, transferConditions }: { result: SellerResult; deepLossBp: number; ctaHref: string; transferConditions: string }) {
   const t = useTranslations("tools");
-  const locale = useLocale();
   const { cancel, transfer } = result;
   const currency = t("currency");
   const paid = transfer.receive;
   const range = (a: number, b: number) => (a === b ? money(a) : `${money(a)} – ${money(b)}`);
-  const developer = result.policy ? developers.find((d) => d.slug === result.policy?.developer) : undefined;
   const zone = cancel.zone === "deep_loss" ? t("result.zone.deep_loss", { line: percent(deepLossBp) }) : t(`result.zone.${cancel.zone}`);
 
   return (
@@ -163,6 +155,7 @@ function SellerAnswer({ result, developers, deepLossBp, ctaHref }: { result: Sel
             <Line label={t("result.loktaFee")} value={money(transfer.lokta_fee)} />
             <Line label={t("result.net")} value={money(transfer.net)} strong />
           </dl>
+          <p className="border-t border-line pt-3 text-micro text-text-3">{transferConditions}</p>
         </div>
       </div>
 
@@ -173,10 +166,7 @@ function SellerAnswer({ result, developers, deepLossBp, ctaHref }: { result: Sel
         </span>
       </div>
 
-      <div className="flex flex-col gap-1 text-micro text-text-3">
-        {developer && result.policy ? <p>{t("result.developerTerms", { developer: developer.name, month: monthYear(result.policy.checked_on.slice(0, 7), locale) })}</p> : null}
-        {result.provisional.length > 0 ? <p>{t("result.provisional")}</p> : null}
-      </div>
+      {result.provisional.length > 0 ? <p className="text-micro text-text-3">{t("result.provisional")}</p> : null}
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
         <Link href={ctaHref} className="inline-flex h-control-lg items-center justify-center rounded-sm bg-gold px-6 font-semibold text-on-gold transition-colors duration-150 hover:bg-gold-bright">

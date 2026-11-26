@@ -56,7 +56,8 @@ it('shows each value with its settings, status, sources and note to the admin', 
         ->where('values.0.settings.1.value', 1500)
         ->where('values.0.sources.0.ref', 'S1')
         ->has('policies', 0)
-        ->where('display.confirmed', false));
+        // K3: the 25% deep-loss line is confirmed by Michael.
+        ->where('display.confirmed', true));
 });
 
 it('saves a value, keeps it provisional until confirmed, and logs every change', function () {
@@ -101,10 +102,14 @@ it('refuses a range upside down and a value outside its limits, on the right fie
         ->assertSessionHasErrors('settings.transfer_fee_fixed');
     $this->actingAs($this->admin, 'admin')->put('/dashboard/calculator/values/cancellation', valueBody(['penalty_max_bp' => 1500], ['checked_on' => '2099-01-01']))
         ->assertSessionHasErrors('checked_on');
+    // K4: the deposit range is a pair too.
+    $this->actingAs($this->admin, 'admin')->put('/dashboard/calculator/values/maintenance_deposit', valueBody(['maintenance_deposit_min_bp' => 1200, 'maintenance_deposit_max_bp' => 1000]))
+        ->assertSessionHasErrors('settings.maintenance_deposit_max_bp');
 
     // All or nothing: the valid transfer_fee_bp in the refused call was not kept.
     expect(app(Settings::class)->int('transfer_fee_bp'))->toBe(0)
-        ->and(app(Settings::class)->int('penalty_min_bp'))->toBe(1500);
+        ->and(app(Settings::class)->int('penalty_min_bp'))->toBe(1500)
+        ->and(app(Settings::class)->int('maintenance_deposit_min_bp'))->toBe(800);
     $this->actingAs($this->admin, 'admin')->put('/dashboard/calculator/values/no_such_value', valueBody([]))->assertNotFound();
 });
 
@@ -149,12 +154,12 @@ it('adds a developer policy only from the developer\'s own terms, one per develo
 
     $policy = DeveloperPolicy::query()->firstOrFail();
     expect($policy->client_approved_at)->toBeNull()
-        ->and($policy->penalty_basis)->toBeNull()
-        ->and($this->getJson('/api/v1/market-values', apiHeaders())->json('data.developers'))->toBe([]);
+        ->and($policy->penalty_basis)->toBeNull();
 
     $this->actingAs($this->admin, 'admin')->put("/dashboard/calculator/policies/{$policy->id}", [...$body, 'approved' => true])->assertSessionHasNoErrors();
+    // Approved, it stays internal (K6): the public market values never name it.
     expect($policy->refresh()->client_approved_by)->toBe($this->admin->id)
-        ->and($this->getJson('/api/v1/market-values', apiHeaders())->json('data.developers.0.slug'))->toBe('nile-homes')
+        ->and($this->getJson('/api/v1/market-values', apiHeaders())->json('data'))->not->toHaveKey('developers')
         ->and(ActivityLog::query()->where('action', 'developer_policies.updated')->exists())->toBeTrue();
 
     $this->actingAs($this->admin, 'admin')->delete("/dashboard/calculator/policies/{$policy->id}")->assertSessionHasNoErrors();

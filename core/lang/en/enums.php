@@ -122,6 +122,8 @@ return [
     ],
     'TextSource' => [
         'placeholder' => 'Placeholder',
+        'ours' => 'Written by us, the client reviews',
+        'legal_review' => 'Awaiting legal review',
         'client' => 'Client text',
     ],
     'Readiness' => [

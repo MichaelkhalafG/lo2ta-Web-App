@@ -69,6 +69,8 @@ return [
         'deep_loss_ratio_bp' => 'حد الخسارة الكبيرة',
         'discount_rate_bp' => 'معدل الخصم',
         'maintenance_deposit_moves' => 'وديعة الصيانة تنتقل إلى المشتري',
+        'maintenance_deposit_min_bp' => 'وديعة الصيانة، من',
+        'maintenance_deposit_max_bp' => 'وديعة الصيانة، إلى',
         'show_present_value' => 'عرض القيمة الحالية للمبلغ المسترد',
     ],
     'calculator' => [
@@ -201,7 +203,8 @@ return [
     'overview' => [
         'title' => 'نظرة عامة',
         'units' => 'الوحدات حسب الحالة',
-        'placeholder_texts' => 'نصوص مؤقتة بانتظار نص العميل',
+        'texts' => 'نصوص الموقع حسب الحالة',
+        'legal_review' => 'نصوص بانتظار المراجعة القانونية (م. إيناس)',
         'provisional_settings' => 'إعدادات بقيم مؤقتة بانتظار البحث أو التأكيد',
         'mail_problems' => 'رسائل بريد لم تُرسل',
         'none' => 'لا يوجد',

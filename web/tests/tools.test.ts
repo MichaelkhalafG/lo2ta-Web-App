@@ -11,6 +11,9 @@ test("the client's values of 2026-11-25 read as single values, never as a range"
   assert.deepEqual(describeValue(entry("refund", { refund_rule: "lump", refund_years_fixed: 0 })), { key: "refundLump", values: {} });
   assert.deepEqual(describeValue(entry("late_fee", { late_fee_bp: 100 })), { key: "lateFee", values: { rate: "1%" } });
   assert.deepEqual(describeValue(entry("transfer_fee", { transfer_fee_mode: "fixed", transfer_fee_bp: 0, transfer_fee_fixed: 50_000 })), { key: "transferFeeFixed", values: { amount: "50,000" } });
+  // K4: "usually 8% to 10% of the unit price, moves to the buyer with the transfer".
+  assert.deepEqual(describeValue(entry("maintenance_deposit", { maintenance_deposit_moves: true, maintenance_deposit_min_bp: 800, maintenance_deposit_max_bp: 1000 })), { key: "maintenanceRangeMoves", values: { min: "8%", max: "10%" } });
+  assert.deepEqual(describeValue(entry("maintenance_deposit", { maintenance_deposit_moves: false, maintenance_deposit_min_bp: 1000, maintenance_deposit_max_bp: 1000 })), { key: "maintenanceOneStays", values: { rate: "10%" } });
   assert.deepEqual(describeValue(entry("maintenance_deposit", { maintenance_deposit_moves: true })), { key: "maintenanceMoves", values: {} });
   assert.deepEqual(describeValue(entry("maintenance_deposit", { maintenance_deposit_moves: false })), { key: "maintenanceStays", values: {} });
 });
@@ -29,7 +32,7 @@ test("every phrase has its words in both languages", () => {
   for (const lang of ["en", "ar"]) {
     const messages = JSON.parse(readFileSync(new URL(`../messages/${lang}.json`, import.meta.url), "utf-8"));
     const words = messages.tools.values.text as Record<string, string>;
-    for (const key of ["cancellationOneTotal", "cancellationPaid", "refundLump", "refundFixed", "refundMirror", "lateFee", "transferFee", "transferFeeFixed", "maintenanceMoves", "maintenanceStays", "discountRate"]) {
+    for (const key of ["cancellationOneTotal", "cancellationPaid", "refundLump", "refundFixed", "refundMirror", "lateFee", "transferFee", "transferFeeFixed", "maintenanceMoves", "maintenanceStays", "maintenanceRangeMoves", "maintenanceOneMoves", "maintenanceRangeStays", "maintenanceOneStays", "discountRate"]) {
       assert.equal(typeof words[key], "string", `${lang}: tools.values.text.${key}`);
     }
   }
@@ -52,4 +55,14 @@ test("monthYear, percent and the tab from the address bar", () => {
   assert.equal(calculatorTab("buyer"), "buyer");
   assert.equal(calculatorTab(["buyer"]), "seller");
   assert.equal(calculatorTab("<script>"), "seller");
+});
+
+test("the calculator messages no longer offer or name a developer (K6)", () => {
+  for (const lang of ["en", "ar"]) {
+    const messages = JSON.parse(readFileSync(new URL(`../messages/${lang}.json`, import.meta.url), "utf-8"));
+    for (const key of ["developer", "developerMarket", "developerHint"]) {
+      assert.equal(messages.tools.seller[key], undefined, `${lang}: tools.seller.${key}`);
+    }
+    assert.equal(messages.tools.result.developerTerms, undefined, `${lang}: tools.result.developerTerms`);
+  }
 });

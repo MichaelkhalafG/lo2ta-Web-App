@@ -1,11 +1,13 @@
 <?php
 
+use App\Enums\TextSource;
 use App\Models\ActivityLog;
 use App\Models\Developer;
 use App\Models\DeveloperPolicy;
 use App\Models\MarketValue;
 use App\Models\ReportIndicator;
 use App\Models\Setting;
+use App\Models\SiteText;
 use App\Models\Unit;
 use App\Models\User;
 use App\Support\Calculator\ExitCalculator;
@@ -19,7 +21,8 @@ use Illuminate\Testing\TestResponse;
 /*
 | Phase 6 (PLAN 4, plan approved 2026-11-24): the researched values loaded as provisional (Michael 2026-11-25), the
 | public market values without sources (J10), the calculator's two tabs (stores nothing, J12; limited per address),
-| developer policies only once the client approves them (J3), and the client's indicators.
+| developer policies only once the client approves them (J3) and never in the public calculator (K6), and the
+| client's indicators.
 */
 
 beforeEach(function () {
@@ -59,6 +62,11 @@ it('loads the values the client confirmed on 2026-11-25, dated, and keeps the di
         ->and($value('transfer_fee_mode'))->toBe('fixed')
         ->and($value('transfer_fee_fixed'))->toBe(50_000)
         ->and($value('maintenance_deposit_moves'))->toBeTrue()
+        ->and($value('maintenance_deposit_min_bp'))->toBe(800)
+        ->and($value('maintenance_deposit_max_bp'))->toBe(1000)
+        // K3: the deep-loss line is 25%, confirmed by Michael, so not provisional.
+        ->and($value('deep_loss_ratio_bp'))->toBe(2500)
+        ->and($all['deep_loss_ratio_bp']['provisional'])->toBeFalse()
         ->and($value('discount_rate_bp'))->toBe(2000)
         ->and($value('show_present_value'))->toBeFalse()
         ->and($value('rl_calculator_ip'))->toBe(60)
@@ -96,9 +104,10 @@ it('sends the public site each value and the month checked, never the sources, n
         ->and($response->json('data.values.0'))->toMatchArray(['checked' => '2026-11', 'provisional' => false, 'under_review' => false])
         ->and($response->json('data.values.0.values'))->toBe(['penalty_basis' => 'total', 'penalty_min_bp' => 1500, 'penalty_max_bp' => 1500])
         ->and($response->json('data.values.3.values'))->toBe(['transfer_fee_mode' => 'fixed', 'transfer_fee_bp' => 0, 'transfer_fee_fixed' => 50_000])
-        ->and($response->json('data.values.4.values'))->toBe(['maintenance_deposit_moves' => true])
-        ->and($response->json('data.developers'))->toBe([]);
-    foreach (['masrawy', 'youm7', 'http', 'S1', 'Saada', 'origin', 'note', 'figure', 'publisher', '800', 'confirmed'] as $leak) {
+        // K4: the 8% to 10% deposit is public now, with "moves to the buyer".
+        ->and($response->json('data.values.4.values'))->toBe(['maintenance_deposit_moves' => true, 'maintenance_deposit_min_bp' => 800, 'maintenance_deposit_max_bp' => 1000])
+        ->and($response->json('data'))->not->toHaveKey('developers');
+    foreach (['masrawy', 'youm7', 'http', 'S1', 'Saada', 'origin', 'note', 'figure', 'publisher', 'confirmed'] as $leak) {
         expect(stripos($body, $leak))->toBeFalse("the public answer contains {$leak}");
     }
 });
@@ -121,7 +130,7 @@ it('computes the seller tab with the confirmed values, nothing provisional', fun
     expect($r['cancel'])->toMatchArray(['penalty_min' => 900_000, 'penalty_max' => 900_000, 'refund_min' => 600_000, 'refund_max' => 600_000, 'refund_rule' => 'lump', 'refund_years' => 0])
         ->and($r['transfer'])->toMatchArray(['transfer_fee' => 50_000, 'transfer_fee_bp' => null, 'net' => 1_450_000, 'lokta_fee' => 0])
         ->and($r['provisional'])->toBe([])
-        ->and($r['policy'])->toBeNull()
+        ->and($r)->not->toHaveKey('policy')
         ->and($r)->not->toHaveKey('inputs');
 });
 
@@ -171,27 +180,19 @@ it('computes the buyer tab: the 1% fee and no transfer fee in the buyer figures'
         ->and($r)->not->toHaveKey('transfer_fee');
 });
 
-it('uses a developer policy only once the client approves it, and names only that developer (J3)', function () {
-    $policy = approvedPolicy(approved: false);
+it('uses the market values only in the public calculator, even for a developer with an approved policy (K6)', function () {
+    approvedPolicy();
 
-    expect($this->getJson('/api/v1/market-values?locale=en', apiHeaders())->json('data.developers'))->toBe([]);
-    sellerCalc(['developer' => 'nile-homes'])->assertUnprocessable()->assertJsonValidationErrors('developer');
+    $values = $this->getJson('/api/v1/market-values?locale=en', apiHeaders())->assertOk();
+    expect($values->json('data'))->not->toHaveKey('developers')
+        ->and((string) $values->getContent())->not->toContain('Nile');
 
-    $policy->update(['client_approved_at' => now()]);
-    expect($this->getJson('/api/v1/market-values?locale=en', apiHeaders())->json('data.developers'))
-        ->toBe([['slug' => 'nile-homes', 'name' => 'Nile Homes', 'checked' => '2026-11']]);
-
-    $r = sellerCalc(['developer' => 'nile-homes'])->assertOk()->json('data');
-    // 5-8% of 6,000,000 and 2% transfer fee from the developer's own terms; those keys are no longer provisional.
-    expect($r['cancel'])->toMatchArray(['penalty_min' => 300_000, 'penalty_max' => 480_000])
-        ->and($r['transfer']['transfer_fee'])->toBe(120_000)
-        ->and($r['policy'])->toMatchArray(['developer' => 'nile-homes', 'checked_on' => '2026-11-20'])
-        ->and($r['transfer']['transfer_fee_bp'])->toBe(200)
-        ->and($r['cancel']['refund_years'])->toBe(3)
-        ->and($r['provisional'])->toBe([]);
-
-    $policy->developer?->update(['is_active' => false]);
-    sellerCalc(['developer' => 'nile-homes'])->assertUnprocessable();
+    // A developer field is ignored: the figures are the market's (15%, the fixed EGP 50,000), with no name.
+    $response = sellerCalc(['developer' => 'nile-homes'])->assertOk();
+    expect($response->json('data.cancel.penalty_min'))->toBe(900_000)
+        ->and($response->json('data.transfer.transfer_fee'))->toBe(50_000)
+        ->and($response->json('data'))->not->toHaveKey('policy')
+        ->and(stripos((string) $response->getContent(), 'nile'))->toBeFalse();
 });
 
 it('applies an approved policy to the exit report of that developer\'s unit', function () {
@@ -239,6 +240,18 @@ it('prints the month each value was checked in the exit report, and marks a deve
     // The cancellation, the refund rule and the transfer fee come from the developer's terms; the late fee does not.
     expect(substr_count($own, 'assume.developer_terms'))->toBe(3)
         ->and(substr_count($own, 'assume.checked 2026-11'))->toBe(1);
+});
+
+it('keeps the "texts not final" band while an exit report text awaits legal review (K7)', function () {
+    // As seeded: every text is ours except the disclaimer, which awaits legal review.
+    expect(SiteText::query()->where('group', 'exit_report')->where('source', TextSource::LegalReview->value)->pluck('key')->all())->toBe(['exit_report.disclaimer_text'])
+        ->and(ExitReportPdf::textsNotFinal())->toBeTrue();
+
+    SiteText::query()->where('key', 'exit_report.disclaimer_text')->firstOrFail()->update(['source' => TextSource::Client]);
+    expect(ExitReportPdf::textsNotFinal())->toBeFalse();
+
+    SiteText::query()->where('key', 'exit_report.title')->firstOrFail()->update(['is_placeholder' => true, 'source' => TextSource::Placeholder]);
+    expect(ExitReportPdf::textsNotFinal())->toBeTrue();
 });
 
 it('takes "rates" off the exit report band once every value the figures use is confirmed; texts keep it on', function () {

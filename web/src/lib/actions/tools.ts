@@ -38,7 +38,6 @@ export async function sellerCalcAction(_prev: CalcState<SellerResult>, formData:
     paid_amount: field(formData, "paid_amount"),
     years_paid: field(formData, "years_paid"),
     overdue_amount: field(formData, "overdue_amount"),
-    developer: field(formData, "developer"),
   };
   const result = await core<{ data: SellerResult }>("POST", "calculator/seller", locale, {
     body: {
@@ -46,7 +45,6 @@ export async function sellerCalcAction(_prev: CalcState<SellerResult>, formData:
       paid_amount: amount(values.paid_amount),
       years_paid: amount(values.years_paid),
       overdue_amount: amount(values.overdue_amount),
-      developer: values.developer === "" ? null : values.developer,
     },
   });
 

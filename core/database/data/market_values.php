@@ -3,7 +3,9 @@
 /*
 | The market values as researched on 2026-11-24 (docs/research/market-values-2026-11.md, PLAN 4.3). The client
 | answered and confirmed five of them on 2026-11-25 (relayed by Michael): 'confirmed_at' carries that date. The
-| discount rate stays provisional (used only if the present-value line is switched on).
+| discount rate stays provisional (used only if the present-value line is switched on). The legal notes from S10 and
+| S11 (full refund when the developer is at fault; no automatic cancellation after 75% paid) are approved for texts
+| (PLAN K2); they are not values and change no figure.
 | Sources are internal (J10). 'origin' groups sources that report the same study or the same article, which count
 | as one (J1). 'counted' => false marks a reference that is not counted for the range. Page copies of every counted
 | source are kept outside the repository in research-raw/market-values-2026-11/.
@@ -72,7 +74,7 @@ return [
     ],
     'maintenance_deposit' => [
         'checked_on' => $read,
-        'note' => 'Client 2026-11-25: it moves to the buyer with the transfer; shown as an information note only. Research: 8-10% of the unit price (S3, S12), not confirmed by the client, so it stays internal (Michael 2026-11-25).',
+        'note' => 'Client 2026-11-25: it moves to the buyer with the transfer; shown as an information note only. Research: 8-10% of the unit price (S3, S12); shown publicly as "usually 8% to 10% of the unit price, moves to the buyer with the transfer", confirmed (Michael, PLAN K4).',
         'confirmed_at' => $client,
         'sources' => [$s3, $s12],
     ],

@@ -227,7 +227,7 @@ class CalculatorController extends Controller
      */
     private static function checkPairs(array $input): void
     {
-        foreach ([['penalty_min_bp', 'penalty_max_bp']] as [$low, $high]) {
+        foreach ([['penalty_min_bp', 'penalty_max_bp'], ['maintenance_deposit_min_bp', 'maintenance_deposit_max_bp']] as [$low, $high]) {
             if (isset($input[$low], $input[$high]) && is_numeric($input[$low]) && is_numeric($input[$high]) && (int) $input[$low] > (int) $input[$high]) {
                 throw ValidationException::withMessages(["settings.{$high}" => Text::get('calculator.range_order')]);
             }

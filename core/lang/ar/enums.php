@@ -122,6 +122,8 @@ return [
     ],
     'TextSource' => [
         'placeholder' => 'نص مؤقت',
+        'ours' => 'كتبناه، بانتظار مراجعة العميل',
+        'legal_review' => 'بانتظار المراجعة القانونية',
         'client' => 'نص العميل',
     ],
     'Readiness' => [

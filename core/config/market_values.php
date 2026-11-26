@@ -32,7 +32,7 @@ return [
             'public' => 'always',
         ],
         'maintenance_deposit' => [
-            'settings' => ['maintenance_deposit_moves'],
+            'settings' => ['maintenance_deposit_moves', 'maintenance_deposit_min_bp', 'maintenance_deposit_max_bp'],
             'public' => 'always',
         ],
         'discount_rate' => [

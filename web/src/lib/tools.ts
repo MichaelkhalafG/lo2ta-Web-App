@@ -1,8 +1,8 @@
 /*
  * The public tools (Phase 6): the market values the calculator and the reports page show, and the calculator's
  * input rules. Pure functions only, so they run in tests without the app. The public site never receives a source,
- * a note or the name of a developer the client has not approved (J3, J10); each value shows its range or rule and
- * the month it was checked.
+ * a note or a developer name (J10; K6: the public calculator uses the market values only); each value shows its
+ * range or rule and the month it was checked.
  */
 
 export type MarketValueEntry = {
@@ -13,9 +13,7 @@ export type MarketValueEntry = {
   values: Record<string, number | boolean | string>;
 };
 
-export type ApprovedDeveloper = { slug: string; name: string; checked: string };
-
-export type MarketValues = { values: MarketValueEntry[]; developers: ApprovedDeveloper[] };
+export type MarketValues = { values: MarketValueEntry[] };
 
 export type Indicator = { title: string; value: string; unit: "pct" | "egp" | "count" | "months" | "years"; note: string | null; as_of: string };
 
@@ -45,7 +43,6 @@ export type SellerResult = {
   advantage_max: number;
   provisional: string[];
   settings: Record<string, number | boolean | string>;
-  policy: { developer: string | null; overrides: string[]; checked_on: string } | null;
 };
 
 export type BuyerResult = { contract_price: number; price_today: number; fee_bp: number; fee: number; fee_vat: number; gain: number; gain_bp: number };
@@ -101,8 +98,17 @@ export function describeValue(entry: MarketValueEntry): Phrase {
       return v.transfer_fee_mode === "fixed"
         ? { key: "transferFeeFixed", values: { amount: new Intl.NumberFormat("en-US").format(num(v, "transfer_fee_fixed")) } }
         : { key: "transferFee", values: { rate: percent(num(v, "transfer_fee_bp")) } };
-    case "maintenance_deposit":
-      return { key: v.maintenance_deposit_moves === false ? "maintenanceStays" : "maintenanceMoves", values: {} };
+    case "maintenance_deposit": {
+      // K4: "usually 8% to 10% of the unit price, moves to the buyer with the transfer".
+      const min = num(v, "maintenance_deposit_min_bp");
+      const max = Math.max(min, num(v, "maintenance_deposit_max_bp"));
+      const moves = v.maintenance_deposit_moves === false ? "Stays" : "Moves";
+      if (max === 0) {
+        return { key: `maintenance${moves}`, values: {} };
+      }
+
+      return min === max ? { key: `maintenanceOne${moves}`, values: { rate: percent(min) } } : { key: `maintenanceRange${moves}`, values: { min: percent(min), max: percent(max) } };
+    }
     case "discount_rate":
       return { key: "discountRate", values: { rate: percent(num(v, "discount_rate_bp")) } };
   }

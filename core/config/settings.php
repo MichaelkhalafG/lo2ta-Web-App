@@ -14,9 +14,11 @@
 | late-payment penalty of 1% of each late installment, charged once, on both exits; the maintenance deposit moves
 | to the buyer with the transfer (an information note). The sources, the date checked and the confirmation live in
 | market_values (config/market_values.php groups them).
-| Not confirmed, and not counted as provisional rates (Michael 2026-11-25): the 50% deep-loss line, a display
-| threshold (J6), and the 20% discount rate (the Central Bank's overnight deposit rate from 2026-10-29), used only if
-| the present-value line is switched on (it is off).
+| Later the same day (Michael, PLAN K3 and K4): the deep-loss line is 25%, confirmed by Michael (a display threshold,
+| J6, editable in the dashboard); the maintenance deposit is shown as "usually 8% to 10% of the unit price, moves to
+| the buyer with the transfer", confirmed.
+| Not confirmed, and not counted as a provisional rate (Michael 2026-11-25): the 20% discount rate (the Central Bank's
+| overnight deposit rate from 2026-10-29), used only if the present-value line is switched on (it is off).
 */
 
 return [
@@ -99,9 +101,12 @@ return [
     'late_fee_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 100, 'min' => 0, 'max' => 10000, 'public' => true],
     'refund_rule' => ['type' => 'enum', 'group' => 'calculator', 'default' => 'lump', 'options' => ['lump', 'mirror', 'fixed'], 'public' => true],
     'refund_years_fixed' => ['type' => 'int', 'group' => 'calculator', 'default' => 0, 'min' => 0, 'max' => 20, 'public' => true],
-    'deep_loss_ratio_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 5000, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
+    'deep_loss_ratio_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 2500, 'min' => 0, 'max' => 10000, 'public' => true],
     'show_present_value' => ['type' => 'bool', 'group' => 'calculator', 'default' => false, 'public' => true],
     'discount_rate_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 2000, 'min' => 0, 'max' => 10000, 'public' => true, 'provisional' => true],
-    // Information only, not in the calculation (PLAN 4.3 item 6; client 2026-11-25: it moves to the buyer).
+    // Information only, not in the calculation (PLAN 4.3 item 6; client 2026-11-25: it moves to the buyer; K4: shown
+    // as "usually 8% to 10% of the unit price").
     'maintenance_deposit_moves' => ['type' => 'bool', 'group' => 'calculator', 'default' => true, 'public' => true],
+    'maintenance_deposit_min_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 800, 'min' => 0, 'max' => 5000, 'public' => true],
+    'maintenance_deposit_max_bp' => ['type' => 'int', 'group' => 'calculator', 'default' => 1000, 'min' => 0, 'max' => 5000, 'public' => true],
 ];

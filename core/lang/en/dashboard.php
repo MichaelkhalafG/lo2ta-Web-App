@@ -69,6 +69,8 @@ return [
         'deep_loss_ratio_bp' => 'Deep loss line',
         'discount_rate_bp' => 'Discount rate',
         'maintenance_deposit_moves' => 'The maintenance deposit moves to the buyer',
+        'maintenance_deposit_min_bp' => 'Maintenance deposit, from',
+        'maintenance_deposit_max_bp' => 'Maintenance deposit, to',
         'show_present_value' => 'Show the present value of the refund',
     ],
     'calculator' => [
@@ -201,7 +203,8 @@ return [
     'overview' => [
         'title' => 'Overview',
         'units' => 'Units by state',
-        'placeholder_texts' => 'Placeholder texts waiting for the client',
+        'texts' => 'Site texts by state',
+        'legal_review' => 'Texts awaiting legal review (Eng. Enas)',
         'provisional_settings' => 'Settings with provisional values waiting for research or confirmation',
         'mail_problems' => 'E-mails not sent',
         'none' => 'None',

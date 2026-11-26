@@ -10,7 +10,8 @@ import { useStep, useWizard } from "./WizardContext";
 
 /**
  * Step 3, the money (PLAN 2.2.2, 2.2.9, 2.2.12; board 07.1). The exit report beside it updates after each autosave.
- * The transfer fee is the developer's, paid by the seller to the developer, never to Lokta (PLAN 6 row 8c).
+ * The transfer fee is the developer's, paid by the seller to the developer, never to Lokta (PLAN 6 row 8c); under
+ * it, the transfer-conditions line (K5).
  */
 export function Step3Money() {
   const t = useTranslations("sell.step3");
@@ -123,6 +124,8 @@ export function Step3Money() {
           <MoneyInput label={t("transferFeeAmount")} unit={egp} value={values.transfer_fee_fixed} onChange={(v) => set("transfer_fee_fixed", v)} hint={t("transferFeeHint")} error={errors.transfer_fee_fixed} />
         ) : null}
         {feeMode === "none" ? <p className="text-small text-text-3">{t("transferFeeNoneHint")}</p> : null}
+        {/* K5: some developers set conditions before approving a transfer (site text, edited in the dashboard). */}
+        {reference.texts["seller.transfer_conditions"] ? <p className="text-small text-text-2">{reference.texts["seller.transfer_conditions"]}</p> : null}
       </Section>
 
       <StepNav backHref="2" backLabel={common("back2")} nextLabel={t("next")} onNext={() => void next(`/sell/${unit.id}/4`)} />

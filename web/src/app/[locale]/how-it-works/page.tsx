@@ -19,7 +19,11 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
       group="how"
       locale={locale}
       label="LK-A1"
-      sections={[{ title: "how.seller_title", body: "how.seller_body" }, { title: "how.buyer_title", body: "how.buyer_body" }]}
+      sections={[
+        { title: "how.seller_title", body: "how.seller_body" },
+        { title: "how.buyer_title", body: "how.buyer_body" },
+        { title: "how.deal_title", body: "how.deal_body" },
+      ]}
     />
   );
 }

@@ -2,6 +2,8 @@
 
 use App\Models\ActivityLog;
 use App\Models\AdminUser;
+use App\Models\SiteText;
+use Database\Seeders\ReferenceSeeder;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -114,11 +116,24 @@ it('gives settings, texts, staff and commissions to the admin role only', functi
     }
 });
 
+it('shows the site texts by state and lists those awaiting legal review on the overview (K7)', function () {
+    $this->seed(ReferenceSeeder::class);
+    $admin = AdminUser::factory()->create();
+
+    $this->actingAs($admin, 'admin')->get('/dashboard')
+        ->assertInertia(fn (Assert $page) => $page->component('Overview')
+            ->where('texts', fn ($rows) => collect($rows)->firstWhere('source', 'placeholder')['count'] === 0
+                && collect($rows)->firstWhere('source', 'legal_review')['count'] === SiteText::query()->where('source', 'legal_review')->count()
+                && collect($rows)->firstWhere('source', 'ours')['count'] > 0)
+            ->where('legalReview', fn ($rows) => collect($rows)->pluck('key')->contains('legal.terms.body')
+                && ! collect($rows)->pluck('key')->contains('home.hero.lead')));
+});
+
 it('names the provisional settings on the overview instead of showing their keys (audit D12)', function () {
     $admin = AdminUser::factory()->create();
 
     $this->actingAs($admin, 'admin')->get('/dashboard')
         ->assertInertia(fn (Assert $page) => $page->component('Overview')
-            ->where('provisionalSettings.0', ['key' => 'deep_loss_ratio_bp', 'label' => 'حد الخسارة الكبيرة'])
+            ->where('provisionalSettings.0', ['key' => 'discount_rate_bp', 'label' => 'معدل الخصم'])
             ->where('provisionalSettings', fn ($rows) => collect($rows)->every(fn (array $r): bool => $r['label'] !== $r['key'])));
 });

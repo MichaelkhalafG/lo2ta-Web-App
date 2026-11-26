@@ -19,7 +19,7 @@ export default async function FaqPage({ params }: PageProps<"/[locale]/faq">) {
       group="faq"
       locale={locale}
       label="LK-A3"
-      sections={[{ faq: [["faq.q1", "faq.a1"], ["faq.q2", "faq.a2"], ["faq.q3", "faq.a3"], ["faq.q4", "faq.a4"]] }]}
+      sections={[{ faq: Array.from({ length: 10 }, (_, i): [string, string] => [`faq.q${i + 1}`, `faq.a${i + 1}`]) }]}
     />
   );
 }

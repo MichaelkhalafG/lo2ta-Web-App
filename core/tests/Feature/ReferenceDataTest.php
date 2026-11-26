@@ -74,7 +74,31 @@ it('seeds reference data add-only and leaves dashboard edits alone', function ()
         ->and(Area::query()->whereIn('id', $governorates)->whereNotNull('code')->count())->toBe(0)
         ->and(Area::query()->count())->toBe(71)
         ->and(Feature::query()->count())->toBe(35)
-        ->and(SiteText::query()->where('is_placeholder', true)->count())->toBe(SiteText::query()->count());
+        // K7: no placeholder left; the legal texts (PLAN 6 rows 6, 7, 8, 8a, 9, 10) and the FAQ answer that uses the
+        // legal notes await legal review; the About page is the client's own text (Michael 2026-11-26); every other
+        // text awaits the client's review.
+        ->and(SiteText::query()->where('is_placeholder', true)->count())->toBe(0)
+        ->and(SiteText::query()->where('source', TextSource::Placeholder->value)->count())->toBe(0)
+        ->and(SiteText::query()->where('source', TextSource::Client->value)->orderBy('key')->pluck('key')->all())->toBe([
+            'about.enas.body', 'about.enas.name', 'about.enas.role', 'about.enas.title', 'about.how', 'about.how_title',
+            'about.intro', 'about.story', 'about.tawfik.body', 'about.tawfik.name', 'about.tawfik.role', 'about.tawfik.title',
+        ])
+        // Eng. Enas's story in the feminine (Michael 2026-11-26).
+        ->and(SiteText::query()->where('key', 'about.enas.body')->value('ar'))->toContain('كنت مؤمنة')->not->toContain('مؤمن إن')
+        ->and(SiteText::query()->where('key', 'about.enas.role')->value('ar'))->toBe('الشريكة المحامية')
+        ->and(SiteText::query()->where('key', 'home.trust.partner_lawyer')->value('ar'))->toBe('الشريكة المحامية')
+        ->and(SiteText::query()->where('key', 'home.trust.step1_sub')->value('ar'))->toBe('بإشراف الشريكة المحامية')
+        ->and(SiteText::query()->where('key', 'home.trust.body')->value('ar'))->toContain('ومحامية تحوّلت لمستثمرة عقارية')
+        // No text refers to Eng. Enas in the masculine (Michael 2026-11-26).
+        ->and(SiteText::query()->where('ar', 'like', '%محامٍ%')->orWhere('ar', 'like', '%الشريك المحامي%')->orWhere('ar', 'like', '%المحامي الشريك%')->count())->toBe(0)
+        ->and(SiteText::query()->where('source', TextSource::LegalReview->value)->orderBy('key')->pluck('key')->all())->toBe([
+            'buyer.fee_consent', 'calculator.disclaimer', 'exit_report.disclaimer_text', 'faq.a10', 'faq.q10',
+            'legal.privacy.body', 'legal.privacy.id_retention', 'legal.terms.body',
+            'seller.declaration.data_matches', 'seller.declaration.owner_not_broker', 'seller.declaration.terms_privacy',
+            'seller.no_over.body', 'seller.no_over.confirm', 'seller.no_over.title', 'seller.notice.owner_only',
+        ])
+        // Nothing we wrote still says it is a placeholder.
+        ->and(SiteText::query()->where('ar', 'like', '%نص مؤقت%')->orWhere('en', 'like', '%Placeholder%')->count())->toBe(0);
 
     Feature::query()->where('code', 'gym')->update(['name_en' => 'Fitness centre']);
     $this->seed(ReferenceSeeder::class);

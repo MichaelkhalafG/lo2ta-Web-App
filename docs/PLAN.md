@@ -663,6 +663,63 @@ checks photos in review for building numbers, signs or documents and can hide a 
 | D66 | Public calculator: two tabs as links (`?tab=buyer`), forms post to server actions, so both work without JavaScript; core computes, stores nothing (J12) and limits 60 calculations per address and hour (`rl_calculator_ip`, Michael 2026-11-25). Overdue installments on the seller tab are paid from the proceeds (the public calculator has no settlement choice). The years-paid field shows only while the refund rule follows the payment period | J12; the wizard keeps the choice | 1 route |
 | D67 | Public values list (calculator and reports): each value in words with "checked <month year>", "provisional" or "under review" (12 months, J8); never a source, link, note or unapproved developer name (J10, J3). The reports page shows the client's indicators only once one is published (J9); their source stays internal | J8-J10 | 1 component |
 
+**Decisions after Phase 6 (Michael 2026-11-25, after the Phase 6 commit a530e12; recorded only, nothing built yet;
+to build in the next session):**
+
+- K1, areas: the client approves the list in 3.3 as it is. One change: wherever governorates are offered as a
+  choice (seller wizard, the listing filters, the dashboard), they are shown as a single vertical list, one under
+  the other. Michael 2026-11-26: the wizard and filter dropdowns already list them one under the other and stay;
+  the buyer budget form goes to one column; the dashboard's area screens (Phase 7) follow the same rule.
+- K2, legal notes from the research: the client raised no objection, so they are treated as approved: a full
+  refund when the developer is at fault, and no automatic cancellation once 75% of the price is paid. Texts may
+  now rely on them (the legal texts still go to legal review, K7).
+- K3, deep-loss warning: the threshold changes from 50% to 25% (`deep_loss_ratio_bp` 2500), confirmed by Michael,
+  dated 2026-11-25; it stays editable in the dashboard (J6). Replaces the 50% line of D64.
+- K4, maintenance deposit: shown as confirmed with the wording "usually 8% to 10% of the unit price, moves to the
+  buyer with the transfer". Replaces the note-only wording of D61; the 8-10% range is now public.
+- K5, transfer conditions (V5): one line in the calculator and in the wizard's transfer-fee area (step 3) telling
+  the seller that some developers set conditions before approving a transfer, and to check with their developer.
+- K6, developers: no developer names on the public site. Developer policies stay internal. Replaces the public
+  naming in J3 and D65 (an approved developer listed in the public calculator). Michael 2026-11-26, answer B: the
+  public calculator uses the market values only; an approved developer policy applies in the seller wizard (when
+  the seller picks their developer, the figures follow that policy, and no page shows the developer's name next to
+  them) and in the dashboard. Scope (Michael 2026-11-26): policies only; unit cards, unit and compound pages, the
+  filters and structured data keep the developer name as decided in 2.5.
+- K7, texts: every placeholder text is written by us, in Arabic and English, in the next session; the client
+  reviews later. The legal ones (disclaimer, terms, privacy, fee consent: PLAN 6 rows 6, 7, 8a, 9, 10) are marked
+  "awaiting legal review" for Eng. Enas before launch. Michael 2026-11-26: row 8 (seller notices and declarations)
+  is marked "awaiting legal review" too. Scope (Michael 2026-11-26): the site texts (the dashboard's placeholder
+  list); e-mail and interface messages are only corrected where they still say "placeholder" or promise what PLAN
+  does not support. Compound intros only for compounds in the data. The About page uses what exists for now (PLAN
+  facts and the founders' paragraph on the home page); the client's founders' bios and platform story, sent at the
+  start, come from Michael next and replace it. Michael pasted them the same day; the About page is built from them.
+- About page and exit report band (Michael 2026-11-26, on the K1-K7 report):
+  - The About page keeps the client's wording exactly as they wrote it; none of our suggested rewrites (the
+    sentences that read as promises are the client's text and the client's call). Only spelling, punctuation and
+    spacing typos are fixed; "تطلبتهم" reads "متطلباتهم". The page is marked as the client's own text (`client`),
+    not "awaiting legal review".
+  - Eng. Enas's story is in the feminine throughout ("كنت مؤمنة", "أنا مؤمنة", "كنت عايزة"); nothing else changes.
+    Her role caption on the About page is "الشريكة المحامية". On the home page too (Michael 2026-11-26): her
+    portrait caption reads "الشريكة المحامية" and the review table line "بإشراف الشريكة المحامية"; the English
+    ("Lawyer partner", "Led by our lawyer partner") carries no gender and stays.
+  - Everywhere a text refers to Eng. Enas it is in the feminine (Michael 2026-11-26): the home review paragraph reads
+    "ومحامية تحوّلت لمستثمرة عقارية" and the menu hint under About "المعماري والمحامية اللي ورا لقطة."; nothing
+    else changes. The design board in docs/design (a reference file, not on the site) is left as it was.
+  - The English of the About page follows the Arabic and stays marked as our draft for the client to review.
+  - Exit report band: answer A. "Draft: texts not final" stays on the PDF until Eng. Enas has reviewed the exit report
+    disclaimer (D69).
+
+**K1-K7 built (2026-11-26; choices for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D68 | Site text states in `site_texts.source`: `placeholder`, `ours`, `legal_review`, `client`; `is_placeholder` is true for placeholders only. The seeder writes our rows as `ours`, the rows marked legal (PLAN 6 rows 6, 7, 8, 8a, 9, 10, FAQ pair 10) as `legal_review`, the About page (the client's own text, Michael 2026-11-26) as `client` | the dashboard and the PDF band need to tell "written, client to review" from "waiting for the lawyer" | 1 enum, seeder |
+| D69 | The exit report band counts a text awaiting legal review as not final: today only the exit report disclaimer (row 10) keeps "Draft: texts not final" on. Michael 2026-11-26, answer A: the band stays until Eng. Enas has reviewed the disclaimer | his decision | 1 method (`ExitReportPdf::textsNotFinal`) |
+| D70 | A site text body may carry structure as plain text: "## " a heading, lines starting "1. " or "- " a list, "**lead:**" a bold lead; rendered as React elements, never as HTML (`web/src/lib/blocks.ts`) | the legal pages and the About page need headings and lists, and the client edits plain text in the dashboard | 1 function |
+| D71 | The deposit range is two settings (`maintenance_deposit_min_bp` 800, `maintenance_deposit_max_bp` 1000) in the maintenance value, a pair the editor checks like the cancellation range | the client may change the range; K4's wording reads from it | 2 settings |
+| D72 | The dashboard overview shows the site texts by state and lists every text awaiting legal review (key and where it is used); the site texts editor stays a later screen | "mark the legal texts in the dashboard" without building the editor now | 1 card |
+| D73 | The public calculator ignores a developer field and answers without `policy` (K6); the market-values answer has no `developers` list. Developer policies still apply to a seller's own unit in the wizard and the exit report, which stay private to the seller | K6 answer B | 1 route |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -696,8 +753,8 @@ Fifth Settlement is `LK-NC-…`). Codes stay short and few (42 today), the board
 and a code never says more about the location than the page already does. Alternative: a code per district (more
 codes to invent and keep unique, and longer unit codes).
 
-The revised list (`core/database/data/areas.php`; 10 governorates, 42 areas, 19 districts), for Michael and the
-client to complete:
+The revised list (`core/database/data/areas.php`; 10 governorates, 42 areas, 19 districts), approved by the client
+as it is (2026-11-25, K1: governorates offered as a choice are shown as one vertical list):
 
 | Governorate | Area (code) | Districts |
 |---|---|---|
@@ -909,6 +966,9 @@ average" on the page. The client reviews the numbers before launch.
   replaces it); late-payment penalty 1% of each late installment, charged once, whatever the installment period (J5:
   the line is on); the maintenance deposit moves to the buyer with the transfer (an information note). Loaded as
   confirmed, dated 2026-11-25 (D61-D64). Not answered: the transfer-conditions note (V5, left out) and the legal notes.
+- Later the same day (Michael, K2-K6 in section 2): legal notes approved; deep-loss line 25%; maintenance deposit
+  "usually 8% to 10%, moves to the buyer" as confirmed; one transfer-conditions line (V5); no developer named
+  publicly.
 
 ### 4.4 Exit report PDF content (proposal)
 
@@ -970,31 +1030,40 @@ Each item is a proposal for Michael to accept or drop.
 Agreement clause 7: the client supplies every text in Arabic and English and is responsible for its content.
 Until a text arrives, we draft a placeholder, flag it in `site_texts.is_placeholder`, and the dashboard lists it.
 
+Michael 2026-11-25 (K7): we write every placeholder text in Arabic and English in the next session, and the client
+reviews later. The legal ones (rows 6, 7, 8, 8a, 9, 10; row 8 added by Michael 2026-11-26) are marked "awaiting
+legal review" for Eng. Enas before launch.
+
+Written 2026-11-26 (K7): every site text is now ours or the client's; none is a placeholder. Each text carries its
+state in `site_texts.source`: `ours` (written by us, the client reviews), `legal_review` (awaiting legal review),
+`client`. The dashboard overview counts the texts by state and lists those awaiting legal review (D72).
+
 Legend: **P** = we draft a placeholder now; **C** = client text required before launch, with a placeholder only so the
-page works; **F** = a fact we must not invent (left visibly empty until supplied).
+page works; **F** = a fact we must not invent (left visibly empty until supplied); **ours** = written by us
+2026-11-26, the client reviews; **legal review** = written by us (or the client's text), awaiting legal review.
 
 | # | Text | AR | EN | Mark |
 |---|---|---|---|---|
 | 1 | Site name: لقطة / Lokta (decided 2026-11-17, Q2) | ✓ | ✓ | done |
-| 2 | Home: hero, value proposition, seller and buyer sections, steps, CTAs | ✓ | ✓ | P → C |
-| 3 | About page | ✓ | ✓ | C |
-| 4 | How it works: seller journey, buyer journey, fees | ✓ | ✓ | P → C |
-| 5 | FAQ questions and answers | ✓ | ✓ | P → C |
-| 6 | Privacy policy | ✓ | ✓ | C (legal; Eng. Enas) |
-| 7 | Terms and conditions | ✓ | ✓ | C (legal) |
-| 8 | Seller notices and declarations: owner-only notice, no-over modal, owner-not-broker, data matches documents (2.2.1, 2.2.2) | ✓ | ✓ | P → C (legal) |
-| 8a | Privacy policy paragraph on national ID copies and their retention: 90 days after sold, withdrawn or rejected; 180 days for abandoned drafts (2.2.8, option A) | ✓ | ✓ | C (legal; the client's text, added 2026-11-17) |
-| 8c | Transfer fee note: "the developer's transfer fee (paid by you to the developer, not to Lokta)" on step 3, the review step, the calculator and the exit report | ✓ | ✓ | P → C |
+| 2 | Home: hero, value proposition, seller and buyer sections, steps, CTAs | ✓ | ✓ | ours (board copy; the review paragraph is the client's) |
+| 3 | About page | ✓ | ✓ | client (founders' stories and platform story as written, typos fixed only; Eng. Enas's story in the feminine; EN our draft translation for the client, Michael 2026-11-26) |
+| 4 | How it works: seller journey, buyer journey, fees | ✓ | ✓ | ours |
+| 5 | FAQ questions and answers | ✓ | ✓ | ours (10 pairs); pair 10 uses the K2 legal notes: legal review |
+| 6 | Privacy policy | ✓ | ✓ | legal review (Eng. Enas) |
+| 7 | Terms and conditions | ✓ | ✓ | legal review (Eng. Enas) |
+| 8 | Seller notices and declarations: owner-only notice, no-over modal, owner-not-broker, data matches documents (2.2.1, 2.2.2) | ✓ | ✓ | legal review (Eng. Enas) |
+| 8a | Privacy policy paragraph on national ID copies and their retention: 90 days after sold, withdrawn or rejected; 180 days for abandoned drafts (2.2.8, option A) | ✓ | ✓ | legal review (Eng. Enas) |
+| 8c | Transfer fee note: "the developer's transfer fee (paid by you to the developer, not to Lokta)" on step 3, the review step, the calculator and the exit report | ✓ | ✓ | ours |
 | 8b | Seller e-mails (8, 2.2.7) and the "48 hours" promise | ✓ | ✓ | P → C |
-| 9 | Buyer fee consent wording | ✓ | ✓ | C (legal) |
-| 10 | Calculator and exit report disclaimers | ✓ | ✓ | C (legal) |
-| 11 | Exit report PDF wording (headings, explanations) | ✓ | ✓ | P → C |
-| 12 | Developers page intro and partnership points | ✓ | ✓ | P → C |
-| 13 | Reports page intro and methodology | ✓ | ✓ | P → C |
+| 9 | Buyer fee consent wording | ✓ | ✓ | legal review (Eng. Enas) |
+| 10 | Calculator and exit report disclaimers | ✓ | ✓ | legal review (Eng. Enas) |
+| 11 | Exit report PDF wording (headings, explanations) | ✓ | ✓ | ours |
+| 12 | Developers page intro and partnership points | ✓ | ✓ | ours |
+| 13 | Reports page intro and methodology | ✓ | ✓ | ours |
 | 14 | Initial indicators for the reports page (with sources) | ✓ | ✓ | F |
 | 15 | Contact facts: phone, e-mail, address, working hours, social profiles | | | F |
 | 16 | Company facts for markup and footer: legal name, founding year | | | F |
-| 17 | Compound intros (per compound) | ✓ | ✓ | P (short, factual) → C |
+| 17 | Compound intros (per compound) | ✓ | ✓ | none written: the data has only the invented sample compounds (K7: only compounds in the data); the index intro is ours |
 | 18 | E-mail templates (about 20, listed in 2.x). Written so far as placeholders (`core/lang/{ar,en}/mail.php`): confirm your e-mail, reset your password, new budget (to the team) | ✓ | ✓ | P → C |
 | 19 | Form labels, hints, validation and error messages (account pages: `web/messages/*.json` `account`; core validation and account messages: `core/lang/{ar,en}/validation.php`, `accounts.php`) | ✓ | ✓ | P (we write; client reviews) |
 | 20 | Unit state and deal stage labels shown to users | ✓ | ✓ | P |
@@ -1093,6 +1162,12 @@ first payment and all client texts) is a contract matter for Michael.
       court-ordered cancellation) are unconfirmed and no text relies on them; the 50% line and the discount rate are
       not confirmed; calculator and reports texts are placeholders (PLAN 6 rows 10, 13); no developer publishes its
       own terms yet (J3)
+- [x] Decisions K1-K7 (Michael 2026-11-25 and 26, section 2) built 2026-11-26 (D68-D73): the budget form's
+      governorates in one column, the 25% line, the deposit wording, the transfer-conditions line, no developer
+      named or offered in the public calculator, every site text written (legal ones awaiting legal review), the
+      About page from the client's own text (marked `client`)
+- [ ] Open: the discount rate; contact and company facts (PLAN 6 rows 15, 16); legal review of the texts marked
+      for it (the exit report band stays until then, D69)
 
 **Phase 7: Dashboard operations**
 - [ ] Units review and document review; outcomes: request changes, reject, publish, publish as verified

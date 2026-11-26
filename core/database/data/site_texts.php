@@ -1,30 +1,32 @@
 <?php
 
 /*
-| Placeholder texts (agreement clause 7, PLAN 6). Every row starts as a placeholder; the client's text replaces it
-| from the dashboard and clears the flag. English wording for the seller notices is Michael's placeholder from the
-| seller spec of 2026-11-17; the Arabic is our draft. The seeder adds missing keys only and never overwrites.
+| Site texts for the seller flow, the exit report, the buyer request and the ID retention paragraph (agreement
+| clause 7, PLAN 6). Written by us (K7, Michael 2026-11-26) for the client to review; a row ending in 'legal' waits
+| for legal review (Eng. Enas) before launch (PLAN 6 rows 8, 8a, 9, 10). The English of the seller notices is
+| Michael's wording from the seller spec of 2026-11-17. The dashboard replaces any of them; the seeder adds missing
+| keys only and never overwrites.
 |
-| [key, group, ar, en, note]
+| [key, group, ar, en, note, 'legal'?]
 */
 
 return [
     ['seller.notice.owner_only', 'seller',
         'نتعامل مع مالك الوحدة فقط. الطلبات المقدمة من وسطاء أو سماسرة تُرفض، وأي وحدة يتبين أنها من وسيط تُحذف.',
         "We deal with the unit's owner only. Requests from brokers or intermediaries are rejected, and any unit found to come from one is removed.",
-        'Fixed notice on every seller step (PLAN 2.2.1)'],
+        'Fixed notice on every seller step (PLAN 2.2.1; row 8)', 'legal'],
     ['seller.no_over.title', 'seller',
         'بدون أوفر، أبدًا',
         'No over price, ever',
-        'Blocking modal on step 1 (PLAN 2.2.1)'],
+        'Blocking modal on step 1 (PLAN 2.2.1; row 8)', 'legal'],
     ['seller.no_over.body', 'seller',
-        'إذا نُشرت وحدتك ثم طلبت أوفر، تُحذف الوحدة.',
-        'If your unit is published and you ask for an over price, it is removed.',
-        'Blocking modal on step 1 (PLAN 2.2.1)'],
+        'أقصى مبلغ تطلبه من المشتري هو ما دفعته فعلًا. إذا نُشرت وحدتك ثم طلبت أوفر، تُحذف الوحدة.',
+        'The most you can ask the buyer for is what you actually paid. If your unit is published and you ask for an over price, it is removed.',
+        'Blocking modal on step 1 (PLAN 2.2.1; row 8)', 'legal'],
     ['seller.no_over.confirm', 'seller',
         'فهمت، أعرض وحدتي بدون أوفر',
         'I understand, I list without over',
-        'Button that closes the no-over modal'],
+        'Button that closes the no-over modal (row 8)', 'legal'],
     ['seller.step3.recover_paid', 'seller',
         'تسترد ما دفعته، بدون أوفر.',
         'You recover what you paid, with no over.',
@@ -41,6 +43,10 @@ return [
         'معظم المطورين يرفضون التنازل قبل سداد الأقساط المتأخرة.',
         'Most developers refuse a transfer before arrears are paid.',
         'Hint next to the overdue question on step 3'],
+    ['seller.transfer_conditions', 'seller',
+        'بعض المطوّرين بيحطوا شروط قبل ما يوافقوا على التنازل. اتأكد منها مع المطوّر بتاعك.',
+        'Some developers set conditions before they approve a transfer. Check them with your developer.',
+        'Under the transfer fee: wizard step 3 and the calculator (K5, Michael 2026-11-25)'],
     ['seller.photos.warning', 'seller',
         'لا ترفع صورًا تظهر فيها بيانات شخصية أو رقم الوحدة أو مستندات.',
         'Do not upload photos showing personal data, the unit number or documents.',
@@ -52,23 +58,22 @@ return [
     ['seller.declaration.owner_not_broker', 'seller',
         'أقر بأنني مالك الوحدة، ولست وسيطًا أو سمسارًا.',
         'I am the owner, not a broker or intermediary.',
-        'Required declaration on step 6'],
+        'Required declaration on step 6 (row 8)', 'legal'],
     ['seller.declaration.data_matches', 'seller',
         'أقر بأن البيانات مطابقة لعقدي ومستنداتي.',
         'The data matches my contract and documents.',
-        'Required declaration on step 6'],
+        'Required declaration on step 6 (row 8)', 'legal'],
     ['seller.declaration.terms_privacy', 'seller',
         'أوافق على الشروط والأحكام وسياسة الخصوصية.',
         'I accept the terms and privacy policy.',
-        'Required declaration on step 6'],
+        'Required declaration on step 6 (row 8)', 'legal'],
     ['seller.submitted.review_promise', 'seller',
         'نراجع طلبك خلال 48 ساعة ونرد عليك بالبريد الإلكتروني.',
         'We review within 48 hours and reply by e-mail.',
         'Confirmation screen and e-mail after submit (PLAN 2.2.2)'],
-    // Exit report PDF (PLAN 2.2.14, 4.4; Michael 2026-11-18): neutral labels only, no legal or advisory sentence,
-    // all placeholders for the client's wording (PLAN 6 rows 10 and 11).
+    // Exit report PDF (PLAN 2.2.14, 4.4): neutral labels, no advisory sentence; the disclaimer is legal (row 10).
     ['exit_report.title', 'exit_report', 'تقرير الخروج التقديري', 'Estimated exit report', 'PDF title'],
-    ['exit_report.draft_band', 'exit_report', 'مسودة: النصوص والنسب ليست نهائية', 'Draft: texts and rates not final', 'Band on every page while any text or rate is provisional (PLAN 2.2.14)'],
+    ['exit_report.draft_band', 'exit_report', 'مسودة: النصوص والنسب ليست نهائية', 'Draft: texts and rates not final', 'Band on every page while a rate is provisional (PLAN 2.2.14)'],
     ['exit_report.reference', 'exit_report', 'رقم الطلب', 'Reference', 'Label'],
     ['exit_report.date', 'exit_report', 'التاريخ', 'Date', 'Label'],
     ['exit_report.version.declared', 'exit_report', 'حسب البيانات المُعلنة', 'As declared', 'Version label (Q8)'],
@@ -103,22 +108,25 @@ return [
     ['exit_report.assume.late_fee', 'exit_report', 'غرامة التأخير على المتأخرات', 'Late fee on arrears', 'Assumption label'],
     ['exit_report.assume.refund_lump', 'exit_report', 'دفعة واحدة', 'In one payment', 'Assumption detail: the refund in one payment (client 2026-11-25)'],
     ['exit_report.late_fees', 'exit_report', 'غرامة التأخير للمطوّر', 'Late-payment penalty to the developer', 'Label: 1% of each late installment (client 2026-11-25)'],
-    ['exit_report.draft_band_texts', 'exit_report', 'مسودة: النصوص ليست نهائية', 'Draft: texts not final', 'Band on every page while a text is still a placeholder and every rate is confirmed'],
+    ['exit_report.draft_band_texts', 'exit_report', 'مسودة: النصوص ليست نهائية', 'Draft: texts not final', 'Band on every page while a text is not final (a placeholder, or awaiting legal review)'],
     ['exit_report.assume.checked', 'exit_report', 'روجعت', 'checked', 'Before the month a market value was last checked, e.g. "checked 2026-11" (Phase 6, J10)'],
-    ['exit_report.assume.developer_terms', 'exit_report', 'من شروط المطور المنشورة', "from the developer's published terms", 'Beside a value taken from an approved developer policy (J3)'],
-    ['exit_report.disclaimer', 'exit_report', 'إخلاء المسؤولية', 'Disclaimer', 'Heading; the client writes the text (PLAN 6 row 10)'],
-    ['exit_report.disclaimer_text', 'exit_report', '[نص إخلاء المسؤولية من العميل]', "[The client's disclaimer text]", 'Client legal text (PLAN 6 row 10)'],
-    // Request a unit (PLAN 2.3): the fee consent is legal text from the client (PLAN 6 row 9); versioned per consent.
+    ['exit_report.assume.developer_terms', 'exit_report', 'من شروط المطور المنشورة', "from the developer's published terms", 'Beside a value taken from an approved developer policy (the seller wizard only, K6)'],
+    ['exit_report.disclaimer', 'exit_report', 'إخلاء المسؤولية', 'Disclaimer', 'Heading (PLAN 6 row 10)'],
+    ['exit_report.disclaimer_text', 'exit_report',
+        'هذا التقرير تقديري، مبني على البيانات التي أدخلتها وعلى قيم السوق التي تستخدمها «لقطة» يوم إصداره. الأرقام الفعلية يحددها عقدك وشروط المطوّر، وقد تختلف عن هذا التقدير. التقرير لا يُعد استشارة قانونية أو مالية، ولا يغني عن مراجعة عقدك.',
+        "This report is an estimate, based on the data you entered and on the market values Lokta uses on the day it is issued. The actual figures are set by your contract and the developer's terms, and may differ from this estimate. The report is not legal or financial advice and does not replace reading your contract.",
+        'Exit report disclaimer (PLAN 6 row 10)', 'legal'],
+    // Request a unit (PLAN 2.3): the fee consent is versioned per consent (D24).
     ['buyer.fee_consent', 'buyer',
-        'نص مؤقت: أوافق على عمولة لقطة على المشتري، وقيمتها :amount ج.م (1% من سعر التعاقد)، تُستحق عند إتمام التنازل فقط.',
-        'Placeholder: I accept the Lokta fee for the buyer of :amount EGP (1% of the contract price), due only on completion of the transfer.',
-        'Fee consent on the request form; the client writes the final legal text (PLAN 6 row 9)'],
+        'أوافق على أن عمولة «لقطة» على المشتري :amount ج.م (1% من سعر التعاقد)، وأنها تُستحق فقط عند إتمام التنازل.',
+        "I agree that Lokta's fee for the buyer is :amount EGP (1% of the contract price), due only when the transfer is completed.",
+        'Fee consent on the request form (PLAN 6 row 9)', 'legal'],
     ['buyer.request_note', 'buyer',
         'مفيش حجز ولا دفع على الموقع. بعد طلبك بنتواصل معاك بالإيميل ونرتّب الخطوة الجاية مع المالك.',
         'There is no booking or payment on the site. After your request we contact you by e-mail and arrange the next step with the owner.',
         'Under the request button (board 06.3)'],
     ['legal.privacy.id_retention', 'legal',
-        'نص مؤقت: تُحذف صور بطاقة الرقم القومي بعد 90 يومًا من بيع الوحدة أو سحبها أو رفضها، وبعد 180 يومًا من آخر نشاط على أي مسودة لم تُرسل.',
-        'Placeholder: national ID copies are deleted 90 days after the unit is sold, withdrawn or rejected, and 180 days after the last activity on a draft that was never submitted.',
-        'Privacy policy paragraph; the client writes the final text (PLAN 6 row 8a)'],
+        'تُحذف صور بطاقة الرقم القومي بعد 90 يومًا من بيع الوحدة أو سحبها أو رفضها، وبعد 180 يومًا من آخر نشاط على أي مسودة لم تُرسل. بعد الحذف يبقى لدينا سجل بأن المستند كان موجودًا ومتى رُوجع ومتى حُذف، دون الصورة نفسها.',
+        'National ID copies are deleted 90 days after the unit is sold, withdrawn or rejected, and 180 days after the last activity on a draft that was never submitted. After deletion we keep a record that the document existed, when it was reviewed and when it was deleted, but not the copy itself.',
+        'Privacy policy paragraph on ID copies (PLAN 2.2.8, 6 row 8a)', 'legal'],
 ];

@@ -90,6 +90,12 @@ On a database seeded before then, the calculator settings rows already exist and
 the dashboard (Calculator settings) or remove those rows before seeding. Nothing is deployed yet, so a first deploy
 needs nothing extra.
 
+The texts written on 2026-11-26 (K1-K7) are in the seed data with their state (ours or awaiting legal review), and the
+deep-loss line (25%) and the deposit range (8% to 10%) are setting defaults. A database seeded before then keeps its
+old texts and settings rows: a first deploy needs nothing extra; any earlier copy needs those rows removed before
+seeding (`site_texts`, and the settings `deep_loss_ratio_bp`, `maintenance_deposit_min_bp`,
+`maintenance_deposit_max_bp`). The `about.body` text is no longer used.
+
 The dashboard routes `/dashboard/files/documents/{document}` and `/dashboard/files/photos/{photo}` stay on the
 dashboard host only.
 

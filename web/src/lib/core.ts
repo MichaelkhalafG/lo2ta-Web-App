@@ -97,15 +97,7 @@ export function text(texts: Texts, key: string): string {
   return texts[key] ?? key;
 }
 
-/** Paragraphs of a multi-paragraph text (separated by a blank line). */
-export function paragraphs(texts: Texts, key: string): string[] {
-  return text(texts, key)
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter((p) => p !== "");
-}
-
-/** The market values the calculator and the reports page show, and the developers the client approved (J3). */
+/** The market values the calculator and the reports page show (no developer names: K6). */
 export async function marketValues(locale: Locale): Promise<import("./tools").MarketValues> {
   return (await coreGet<{ data: import("./tools").MarketValues }>("market-values", locale, ["tools"])).data;
 }

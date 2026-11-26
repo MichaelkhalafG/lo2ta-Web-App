@@ -5,13 +5,14 @@ import { useT } from '@/lib/i18n';
 
 interface Props {
     units: { state: string; label: string; count: number }[];
-    placeholderTexts: number;
+    texts: { source: string; label: string; count: number }[];
+    legalReview: { key: string; note: string }[];
     provisionalSettings: { key: string; label: string }[];
     mailProblems: number;
 }
 
 /** Dashboard home: counts of what waits for action. The screens behind them come in their phases. */
-export default function Overview({ units, placeholderTexts, provisionalSettings, mailProblems }: Props) {
+export default function Overview({ units, texts, legalReview, provisionalSettings, mailProblems }: Props) {
     const t = useT();
 
     return (
@@ -35,9 +36,18 @@ export default function Overview({ units, placeholderTexts, provisionalSettings,
             <div className="grid gap-6 md:grid-cols-3">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t('overview.placeholder_texts')}</CardTitle>
+                        <CardTitle>{t('overview.texts')}</CardTitle>
                     </CardHeader>
-                    <CardContent className="font-mono text-2xl tabular-nums">{placeholderTexts}</CardContent>
+                    <CardContent>
+                        <dl className="flex flex-col gap-2">
+                            {texts.map((s) => (
+                                <div key={s.source} className="flex items-baseline justify-between gap-3 border-b pb-2 last:border-b-0 last:pb-0">
+                                    <dt className="text-sm text-muted-foreground">{s.label}</dt>
+                                    <dd className="font-mono text-lg tabular-nums">{s.count}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
@@ -66,6 +76,30 @@ export default function Overview({ units, placeholderTexts, provisionalSettings,
                     </CardContent>
                 </Card>
             </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>{t('overview.legal_review')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {legalReview.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">{t('overview.none')}</p>
+                    ) : (
+                        <ul className="flex flex-col divide-y">
+                            {legalReview.map((text) => (
+                                <li key={text.key} className="flex flex-col gap-1 py-2 sm:flex-row sm:items-baseline sm:gap-4">
+                                    <Badge variant="warning" className="w-fit font-mono" dir="ltr">
+                                        {text.key}
+                                    </Badge>
+                                    <span className="text-sm text-muted-foreground" dir="ltr">
+                                        {text.note}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </CardContent>
+            </Card>
         </DashboardLayout>
     );
 }

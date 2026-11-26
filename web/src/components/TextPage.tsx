@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
-import { paragraphs, siteTexts, text } from "@/lib/core";
+import { siteTexts, text } from "@/lib/core";
 import { pageMetadata } from "@/lib/page";
 import { ComingSoon } from "./ComingSoon";
-import { ContentPage, Paragraphs } from "./ContentPage";
+import { Body, ContentPage } from "./ContentPage";
 
 /**
  * A page made of site texts (PLAN 6): `{group}.title`, `{group}.intro`, then sections. A section is either a body
@@ -47,7 +47,9 @@ export async function TextPage({
               {section.faq.map(([q, a]) => (
                 <div key={q} className="flex flex-col gap-2 border-b border-line py-6">
                   <dt className="text-h3 text-text-1">{text(texts, q)}</dt>
-                  <dd>{text(texts, a)}</dd>
+                  <dd>
+                    <Body text={text(texts, a)} headingLevel={3} />
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -57,12 +59,12 @@ export async function TextPage({
           return (
             <section key={i} className="flex flex-col gap-3">
               <h2 className="text-h3 text-text-1">{text(texts, section.title)}</h2>
-              <Paragraphs items={paragraphs(texts, section.body)} />
+              <Body text={text(texts, section.body)} headingLevel={3} />
             </section>
           );
         }
 
-        return <Paragraphs key={i} items={paragraphs(texts, section.body)} />;
+        return <Body key={i} text={text(texts, section.body)} />;
       })}
     </ContentPage>
   );

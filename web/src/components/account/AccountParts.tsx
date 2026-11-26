@@ -218,7 +218,8 @@ export function BudgetForm({
           aria-label={t("areasSearch")}
           className="h-control-md max-w-sm rounded-sm border border-line-strong bg-bg-1 px-4 text-text-1"
         />
-        <div className="grid gap-4 md:grid-cols-2">
+        {/* One governorate under the other, never side by side (K1, the client 2026-11-25). */}
+        <div className="flex flex-col gap-4">
           {areas.map((gov) => {
             const shown = gov.areas.filter((a) => match(a.name) || a.districts.some((d) => match(d.name)));
             if (shown.length === 0) {

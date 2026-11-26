@@ -7,6 +7,7 @@ use App\Models\MarketValue;
 use App\Models\SiteText;
 use App\Models\Unit;
 use App\Support\Uploads\UploadService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
@@ -42,7 +43,7 @@ final class ExitReportPdf
 
             return is_string($value) && $value !== '' ? $value : $key;
         };
-        $band = self::band($results['provisional'] !== [], $texts->contains(fn (SiteText $t): bool => $t->is_placeholder) || $texts->isEmpty());
+        $band = self::band($results['provisional'] !== [], self::textsNotFinal($texts));
         $draft = $band !== null;
 
         $html = view('pdf.exit-report', [
@@ -75,11 +76,26 @@ final class ExitReportPdf
 
     /**
      * The band names what is not final (Michael 2026-11-25): "texts and rates" while any value the figures used is
-     * provisional, "texts" while only a placeholder text remains, none when both are final.
+     * provisional, "texts" while a text is not final (a placeholder, or awaiting legal review), none when both are
+     * final.
      */
-    public static function band(bool $ratesProvisional, bool $textsPlaceholder): ?string
+    public static function band(bool $ratesProvisional, bool $textsNotFinal): ?string
     {
-        return $ratesProvisional ? 'draft_band' : ($textsPlaceholder ? 'draft_band_texts' : null);
+        return $ratesProvisional ? 'draft_band' : ($textsNotFinal ? 'draft_band_texts' : null);
+    }
+
+    /**
+     * Whether a text the report prints is not final: a placeholder, or awaiting legal review (K7; Michael 2026-11-26,
+     * answer A: "Draft: texts not final" stays until Eng. Enas has reviewed the disclaimer). No texts at all counts as
+     * not final.
+     *
+     * @param  Collection<array-key, SiteText>|null  $texts  the exit_report texts; read when null
+     */
+    public static function textsNotFinal(?Collection $texts = null): bool
+    {
+        $texts ??= SiteText::query()->where('group', 'exit_report')->get();
+
+        return $texts->isEmpty() || $texts->contains(static fn (SiteText $t): bool => $t->is_placeholder || ! $t->source->isFinal());
     }
 
     private static function render(string $html, string $locale, ?string $band): string

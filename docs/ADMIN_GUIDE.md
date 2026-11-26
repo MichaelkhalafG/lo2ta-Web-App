@@ -33,12 +33,15 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
   site marks it "under review" until the date checked is updated.
 - The values confirmed on 2026-11-25: cancellation 15% of the total price; refund in one payment; transfer fee a fixed
   EGP 50,000 (a seller's own figure in step 3, a percentage or an amount, replaces it for that unit); late-payment
-  penalty 1% of the overdue installments, on both the cancellation and the transfer; the maintenance deposit moves to
-  the buyer. A low and high end that are equal make one value; different ends show a range.
+  penalty 1% of the overdue installments, on both the cancellation and the transfer; the maintenance deposit is
+  "usually 8% to 10% of the unit price, moves to the buyer with the transfer" (its range is the two deposit
+  settings). A low and high end that are equal make one value; different ends show a range.
 - **Developer policies:** add one only from the developer's own published terms (its website or published contract),
-  with the link and dates. Press reports and customer accounts do not count. A policy is used, and the developer is
-  named on the public calculator, only when **Approved by the client** is on (Michael, J3).
-- **Display:** the 50% deep-loss line is a display threshold, not a market value; the present-value line is off
+  with the link and dates. Press reports and customer accounts do not count. A policy is used only when **Approved by
+  the client** is on (Michael, J3), and then only for that developer's units in the seller wizard and the seller's
+  exit report. The public calculator always uses the market values and never names a developer (Michael, K6).
+- **Display:** the 25% deep-loss line (confirmed by Michael) is a display threshold, not a market value; the
+  present-value line is off
   (decided 2026-11-17) and uses the discount rate only when switched on.
 - Every change is in the activity log.
 
@@ -47,3 +50,15 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
 - Only figures the client supplies, each with its date and an internal source. Nothing shows on the reports page
   until an indicator is published (Michael, J9). Our own listing statistics come later, and only for groups of at
   least 30 cases.
+
+## Site texts
+
+- Every text on the site is a site text, in Arabic and English. Its state: **written by us, the client reviews**,
+  **awaiting legal review**, or **the client's text**. The overview counts them and lists every text awaiting legal
+  review (privacy policy, terms, the seller notices and declarations, the ID paragraph, the fee consent, the two
+  disclaimers and the FAQ answer on cancelling). Why: those must not go live before Eng. Enas reviews them (Michael,
+  K7). The About page is the client's own text: change it only as the client asks.
+- A text body is plain text. A blank line starts a new paragraph; a line starting "## " is a heading; lines starting
+  "1. " or "- " make a list; "**words:**" at the start of a paragraph or list item is shown in bold. Nothing else is
+  formatted, and no HTML is ever read.
+- Changing the fee consent or a declaration starts a new version: requests and submits after the change carry it.

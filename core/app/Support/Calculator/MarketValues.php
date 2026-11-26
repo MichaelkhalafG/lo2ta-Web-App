@@ -2,7 +2,6 @@
 
 namespace App\Support\Calculator;
 
-use App\Models\DeveloperPolicy;
 use App\Models\MarketValue;
 use App\Support\Cache\VersionedCache;
 use App\Support\Settings\Settings;
@@ -50,7 +49,7 @@ final class MarketValues
 
     /**
      * The values the public site lists, in order. Each carries its settings' values, the month it was checked, and
-     * whether it is provisional or under review. No sources, no notes, no names (J3, J10).
+     * whether it is provisional or under review. No sources, no notes, no developer names (J10, K6).
      *
      * @return list<array{key: string, checked: string, under_review: bool, provisional: bool, values: array<string, int|bool|string>}>
      */
@@ -81,28 +80,6 @@ final class MarketValues
                     'values' => $values,
                 ];
             }
-
-            return $out;
-        });
-    }
-
-    /**
-     * Developers whose own terms the client approved (J3): the only ones the public calculator may name.
-     *
-     * @return list<array{slug: string, name: string, checked: string}>
-     */
-    public function approvedDevelopers(string $locale): array
-    {
-        /** @var list<array{slug: string, name: string, checked: string}> */
-        return VersionedCache::remember('tools', "developers:{$locale}:".VersionedCache::version('places'), static function () use ($locale): array {
-            $out = [];
-            foreach (DeveloperPolicy::query()->approved()->with('developer')->get() as $policy) {
-                if ($policy->developer === null) {
-                    continue;
-                }
-                $out[] = ['slug' => $policy->developer->slug, 'name' => $policy->developer->nameFor($locale), 'checked' => $policy->checked_on->format('Y-m')];
-            }
-            usort($out, static fn (array $a, array $b): int => strcmp($a['name'], $b['name']));
 
             return $out;
         });

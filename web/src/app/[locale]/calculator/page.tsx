@@ -20,13 +20,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/calculat
  * The exit calculator (PLAN 1.2, 4.1; Phase 6): the seller tab compares cancelling with the developer against
  * selling through Lokta; the buyer tab shows the day-one difference. Figures come from core with the market values
  * (provisional until the client confirms them); the values list shows each range and the month it was checked,
- * never its sources (J10). The tab is a link, so both tabs work without JavaScript.
+ * never its sources (J10) and never a developer (K6). The tab is a link, so both tabs work without JavaScript.
  */
 export default async function CalculatorPage({ params, searchParams }: PageProps<"/[locale]/calculator">) {
   const locale = await pageLocale(params);
   const tab = calculatorTab((await searchParams).tab);
-  const [texts, market, settings, t] = await Promise.all([siteTexts("calculator", locale), marketValues(locale), publicSettings(locale), getTranslations("tools")]);
-  const deepLossBp = typeof settings.deep_loss_ratio_bp === "number" ? settings.deep_loss_ratio_bp : 5000;
+  const [texts, sellerTexts, market, settings, t] = await Promise.all([siteTexts("calculator", locale), siteTexts("seller", locale), marketValues(locale), publicSettings(locale), getTranslations("tools")]);
+  const deepLossBp = typeof settings.deep_loss_ratio_bp === "number" ? settings.deep_loss_ratio_bp : 2500;
   const tabs = [
     { key: "seller", href: PATH, label: t("tabs.seller") },
     { key: "buyer", href: `${PATH}?tab=buyer`, label: t("tabs.buyer") },
@@ -60,7 +60,7 @@ export default async function CalculatorPage({ params, searchParams }: PageProps
           })}
         </nav>
 
-        {tab === "buyer" ? <BuyerCalculator /> : <SellerCalculator developers={market.developers} deepLossBp={deepLossBp} ctaHref="/sell" askYears={settings.refund_rule === "mirror"} />}
+        {tab === "buyer" ? <BuyerCalculator /> : <SellerCalculator deepLossBp={deepLossBp} ctaHref="/sell" askYears={settings.refund_rule === "mirror"} transferConditions={text(sellerTexts, "seller.transfer_conditions")} />}
       </div>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">

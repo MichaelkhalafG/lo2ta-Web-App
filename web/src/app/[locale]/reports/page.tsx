@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Paragraphs } from "@/components/ContentPage";
+import { Body } from "@/components/ContentPage";
 import { ValuesList } from "@/components/tools/ValuesList";
-import { indicators, marketValues, paragraphs, publicSettings, siteTexts, text } from "@/lib/core";
+import { indicators, marketValues, publicSettings, siteTexts, text } from "@/lib/core";
 import { money } from "@/lib/listing";
 import { pageLocale, pageMetadata } from "@/lib/page";
 import { monthYear, type Indicator } from "@/lib/tools";
@@ -28,7 +28,7 @@ function indicatorValue(item: Indicator): string {
 /**
  * Reports and indicators (PLAN 1.2; Phase 6, J9, J10): the values the calculator uses, each with its range and the
  * month it was checked, without sources; then the client's indicators, hidden until the first one is published;
- * then the methodology (client text, PLAN 6 row 13).
+ * then the methodology (our text for the client to review, PLAN 6 row 13).
  */
 export default async function ReportsPage({ params }: PageProps<"/[locale]/reports">) {
   const locale = await pageLocale(params);
@@ -76,7 +76,7 @@ export default async function ReportsPage({ params }: PageProps<"/[locale]/repor
             <h2 id="method-title" className="text-h3 text-text-1">
               {t("methodTitle")}
             </h2>
-            <Paragraphs items={paragraphs(texts, "reports.methodology")} />
+            <Body text={text(texts, "reports.methodology")} headingLevel={3} />
           </section>
         </div>
       </div>

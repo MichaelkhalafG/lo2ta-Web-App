@@ -798,9 +798,6 @@
       "yearsOption": "{count, plural, one {# year} other {# years}}",
       "overdue": "Overdue installments (optional)",
       "overdueHint": "The amount you are behind on, if any.",
-      "developer": "Developer (optional)",
-      "developerMarket": "Market values",
-      "developerHint": "Only developers whose own published terms we have checked are listed.",
       "waiting": "Type the contract price and what you paid, and your two exits appear here."
     },
     "result": {
@@ -828,7 +825,6 @@
       "loktaFee": "Lokta commission for the seller",
       "net": "You keep",
       "difference": "In your favour when you sell",
-      "developerTerms": "Using {developer}'s own published terms, checked {month}.",
       "provisional": "Estimate: the market values are not final yet.",
       "cta": "Get your free exit report",
       "ctaHint": "List your unit and the report is prepared from your figures.",
@@ -882,7 +878,11 @@
         "discountRate": "{rate} a year, the Central Bank of Egypt's overnight deposit rate",
         "refundLump": "Paid back in one payment",
         "maintenanceMoves": "Moves to the buyer with the transfer. For information; not in the figures.",
-        "maintenanceStays": "Stays with the seller after the transfer. For information; not in the figures."
+        "maintenanceStays": "Stays with the seller after the transfer. For information; not in the figures.",
+        "maintenanceRangeMoves": "Usually {min} to {max} of the unit price, moves to the buyer with the transfer",
+        "maintenanceOneMoves": "Usually {rate} of the unit price, moves to the buyer with the transfer",
+        "maintenanceRangeStays": "Usually {min} to {max} of the unit price, stays with the seller after the transfer",
+        "maintenanceOneStays": "Usually {rate} of the unit price, stays with the seller after the transfer"
       }
     },
     "indicators": {

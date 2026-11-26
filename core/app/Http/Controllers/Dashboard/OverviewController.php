@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\MailState;
+use App\Enums\TextSource;
 use App\Enums\UnitState;
 use App\Http\Controllers\Controller;
 use App\Models\MailOutbox;
@@ -42,9 +43,21 @@ class OverviewController extends Controller
             $provisional[] = ['key' => $key, 'label' => is_string($label) && $label !== "dashboard.setting_labels.{$key}" ? $label : $key];
         }
 
+        // Site texts by state (K7): how many are still placeholders, written by us for the client's review, or awaiting
+        // legal review; the last are listed by key, with where each is used.
+        $bySource = SiteText::query()->selectRaw('source, count(*) as total')->groupBy('source')->pluck('total', 'source');
+        $texts = [];
+        foreach (TextSource::cases() as $source) {
+            $count = $bySource->get($source->value, 0);
+            $texts[] = ['source' => $source->value, 'label' => $source->label(), 'count' => is_numeric($count) ? (int) $count : 0];
+        }
+        $legal = SiteText::query()->where('source', TextSource::LegalReview->value)->orderBy('group')->orderBy('key')->get(['key', 'note'])
+            ->map(static fn (SiteText $t): array => ['key' => $t->key, 'note' => is_string($t->note) ? $t->note : ''])->values()->all();
+
         return Inertia::render('Overview', [
             'units' => $units,
-            'placeholderTexts' => SiteText::query()->where('is_placeholder', true)->count(),
+            'texts' => $texts,
+            'legalReview' => $legal,
             'provisionalSettings' => $provisional,
             'mailProblems' => MailOutbox::query()
                 ->whereIn('state', [MailState::Failed->value, MailState::Dead->value])

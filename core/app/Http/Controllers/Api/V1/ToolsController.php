@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\DeveloperPolicy;
 use App\Models\ReportIndicator;
 use App\Support\Accounts\ClientIp;
 use App\Support\Cache\VersionedCache;
@@ -19,7 +18,8 @@ use Illuminate\Validation\ValidationException;
  * The public tools (PLAN 1.2, 4.1; Phase 6): the exit calculator's two tabs, the market values the calculator and
  * the reports page show, and the client's indicators. The calculator stores nothing and needs no sign-in (J12);
  * each calculation counts against an hourly limit per address (rl_calculator_ip, Michael 2026-11-25).
- * Nothing here carries a source, a note or a developer name that the client has not approved (J3, J10).
+ * Nothing here carries a source, a note or a developer name (J10; K6, Michael 2026-11-26: the public calculator
+ * uses the market values only, developer policies stay with the seller wizard and the dashboard).
  */
 class ToolsController extends Controller
 {
@@ -27,10 +27,7 @@ class ToolsController extends Controller
 
     public function marketValues(MarketValues $values): JsonResponse
     {
-        return response()->json(['data' => [
-            'values' => $values->publicList(),
-            'developers' => $values->approvedDevelopers(app()->getLocale()),
-        ]]);
+        return response()->json(['data' => ['values' => $values->publicList()]]);
     }
 
     public function indicators(): JsonResponse
@@ -50,7 +47,7 @@ class ToolsController extends Controller
     }
 
     /** Seller tab (PLAN 4.1): cancelling with the developer against transferring through Lokta. */
-    public function seller(Request $request, ExitCalculator $calculator, MarketValues $values, Throttle $throttle): JsonResponse
+    public function seller(Request $request, ExitCalculator $calculator, Throttle $throttle): JsonResponse
     {
         $throttle->hit('calculator', ['rl_calculator_ip' => 'ip:'.ClientIp::of($request)]);
         $request->validate([
@@ -58,7 +55,6 @@ class ToolsController extends Controller
             'paid_amount' => ['required', 'integer', 'min:1', 'max:'.self::MONEY_MAX],
             'years_paid' => ['required', 'integer', 'min:1', 'max:30'],
             'overdue_amount' => ['nullable', 'integer', 'min:0', 'max:'.self::MONEY_MAX],
-            'developer' => ['nullable', 'string', 'max:96'],
         ]);
         $total = $request->integer('total_price');
         $paid = $request->integer('paid_amount');
@@ -70,18 +66,7 @@ class ToolsController extends Controller
             throw ValidationException::withMessages(['overdue_amount' => self::text('tools.overdue_over_remaining')]);
         }
 
-        // Only a developer the client approved can be picked (J3); any other value is refused, never guessed.
-        $policy = null;
-        $slug = trim($request->string('developer')->toString());
-        if ($slug !== '') {
-            $known = array_column($values->approvedDevelopers(app()->getLocale()), 'slug');
-            if (! in_array($slug, $known, true)) {
-                throw ValidationException::withMessages(['developer' => self::text('tools.unknown_developer')]);
-            }
-            $policy = DeveloperPolicy::query()->approved()->with('developer')
-                ->whereHas('developer', static fn ($q) => $q->where('slug', $slug))->first();
-        }
-
+        // Market values only (K6): a developer field, if sent, is ignored like any other unknown field.
         $result = $calculator->compute([
             'total_price' => $total,
             'paid_amount' => $paid,
@@ -93,8 +78,8 @@ class ToolsController extends Controller
             'accepts_less' => false,
             'lowest_accepted_amount' => null,
             'unit_transfer_fee_bp' => null,
-        ], $policy);
-        unset($result['inputs']);
+        ]);
+        unset($result['inputs'], $result['policy']);
 
         return response()->json(['data' => $result]);
     }

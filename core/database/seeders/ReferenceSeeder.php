@@ -113,23 +113,33 @@ class ReferenceSeeder extends Seeder
         $this->command?->line("  features: {$added} added");
     }
 
+    /**
+     * Our texts (K7, Michael 2026-11-26): every row is written by us and waits for the client's review ('ours'); a
+     * row marked 'legal' waits for legal review first (PLAN 6 rows 6, 7, 8, 8a, 9, 10 and FAQ pair 10); a row marked
+     * 'client' is the client's own text (the About page, Michael 2026-11-26).
+     */
     private function siteTexts(): void
     {
-        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string}> $seller */
+        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string, 5?: string}> $seller */
         $seller = require database_path('data/site_texts.php');
-        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string}> $pages */
+        /** @var list<array{0: string, 1: string, 2: string, 3: string, 4: string, 5?: string}> $pages */
         $pages = require database_path('data/site_texts_pages.php');
         $rows = array_merge($seller, $pages);
         $added = 0;
-        foreach ($rows as [$key, $group, $ar, $en, $note]) {
+        foreach ($rows as $text) {
+            [$key, $group, $ar, $en, $note] = $text;
             $row = SiteText::query()->firstOrNew(['key' => $key]);
             if (! $row->exists) {
                 $row->fill([
                     'group' => $group,
                     'ar' => $ar,
                     'en' => $en,
-                    'is_placeholder' => true,
-                    'source' => TextSource::Placeholder,
+                    'is_placeholder' => false,
+                    'source' => match ($text[5] ?? null) {
+                        'legal' => TextSource::LegalReview,
+                        'client' => TextSource::Client,
+                        default => TextSource::Ours,
+                    },
                     'note' => $note,
                 ])->save();
                 $added++;
