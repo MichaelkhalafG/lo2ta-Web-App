@@ -8,7 +8,7 @@
         <p style="margin:0 0 12px;color:#AEB9C8;font-size:15px;line-height:1.85;white-space:pre-line;">{{ $reason }}</p>
     @endif
     @if (($fields ?? []) !== [])
-        <p style="margin:0 0 6px;color:#EDF1F6;font-size:15px;font-weight:600;">{{ __('mail.unit_notice.fields') }}</p>
+        <p style="margin:0 0 6px;color:#EDF1F6;font-size:15px;font-weight:600;">{{ __($kind === 'change_rejected' ? 'mail.unit_notice.changes' : 'mail.unit_notice.fields') }}</p>
         <ul style="margin:0 0 12px;padding-inline-start:20px;color:#AEB9C8;font-size:15px;line-height:1.85;">
             @foreach ($fields as $row)
                 <li>{{ $row['label'] }}: {{ $row['note'] }}</li>

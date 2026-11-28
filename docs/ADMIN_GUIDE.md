@@ -46,6 +46,16 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
 - **Duplicate attempts** lists every blocked attempt to send a contract another active unit holds, and every contract
   file already on another unit. It is read only: no block is lifted from there (PLAN 8.2, Q23).
 
+## After publishing (both roles; part 7.3)
+
+- **Figure changes to approve:** a seller changed figures on a live unit; the listing keeps the earlier ones until you
+  decide. **Approve** puts the new figures live together (the seller sees it in My account); **Reject** needs a
+  reason, which the seller gets by e-mail. A change that no longer fits the live unit cannot be approved: reject it.
+- **Check after edit:** the seller changed the description or the photos, and that was live at once. Read the change;
+  **Put this description back** if the new one breaks the rules (reason required); hide a bad photo on the unit
+  screen; then **Mark as checked**.
+- **Documents added after publishing** wait there until you review them on the unit screen.
+
 ## Calculator settings (admin only)
 
 - Each value (cancellation, refund, late-payment penalty, transfer fee, maintenance deposit, discount rate) has its

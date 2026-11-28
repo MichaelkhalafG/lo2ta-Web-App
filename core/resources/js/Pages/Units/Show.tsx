@@ -87,6 +87,8 @@ interface Props {
         deal_tag: boolean;
         withdraw_requested: boolean;
         withdraw_reason: string | null;
+        pending_change: boolean;
+        recheck: boolean;
         public_url: string | null;
         warnings: string[];
     };
@@ -125,6 +127,16 @@ export default function UnitShow(props: Props) {
                 <StateBadge tone={unitTone(unit.state)}>{unit.state_label}</StateBadge>
                 {unit.verified ? <Badge variant="verified">{t('units.badge_verified')}</Badge> : null}
                 {unit.deal_tag ? <Badge variant="outline">{t('units.badge_deal')}</Badge> : null}
+                {unit.pending_change ? (
+                    <Link href="/dashboard/changes">
+                        <Badge variant="warning">{t('changes.pending')}</Badge>
+                    </Link>
+                ) : null}
+                {unit.recheck ? (
+                    <Link href="/dashboard/changes">
+                        <Badge variant="warning">{t('changes.recheck')}</Badge>
+                    </Link>
+                ) : null}
                 <span className="font-mono text-sm text-muted-foreground" dir="ltr">
                     {[unit.code, unit.reference].filter(Boolean).join(' · ')}
                 </span>

@@ -100,8 +100,13 @@ return [
             'subject' => 'Your request to withdraw :reference',
             'body' => 'We received your request to withdraw :reference, but a deal is open on it and we cannot withdraw it now. The reason is below, and we will contact you.',
         ],
+        'change_rejected' => [
+            'subject' => 'The changes to your unit :reference were not approved',
+            'body' => 'We reviewed the figures you changed on your unit :reference and cannot approve them. The unit stays listed with its earlier figures. The reason is below.',
+        ],
         'reason' => 'Reason',
         'fields' => 'What to change',
+        'changes' => 'The figures you sent',
         'documents' => 'Documents we need a clearer copy of',
         'report' => 'The exit report after our review is attached; you can download it any time from your account.',
         'open_unit' => 'See your unit on the site',

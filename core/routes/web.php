@@ -4,6 +4,7 @@ use App\Http\Controllers\Dashboard\AccountController;
 use App\Http\Controllers\Dashboard\ActivityController;
 use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\CalculatorController;
+use App\Http\Controllers\Dashboard\ChangesController;
 use App\Http\Controllers\Dashboard\DuplicatesController;
 use App\Http\Controllers\Dashboard\FilesController;
 use App\Http\Controllers\Dashboard\IndicatorsController;
@@ -93,6 +94,15 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
             });
         });
         Route::get('duplicates', DuplicatesController::class)->middleware('can:review-units')->name('duplicates');
+
+        // After publishing (part 7.3, G15, G17): figure changes, free edits to check, documents added later.
+        Route::middleware('can:review-units')->prefix('changes')->name('changes')->whereNumber(['change', 'unit'])->group(function (): void {
+            Route::get('/', [ChangesController::class, 'index']);
+            Route::post('{change}/approve', [ChangesController::class, 'approve'])->name('.approve');
+            Route::post('{change}/reject', [ChangesController::class, 'reject'])->name('.reject');
+            Route::post('units/{unit}/checked', [ChangesController::class, 'checked'])->name('.checked');
+            Route::post('units/{unit}/restore-description', [ChangesController::class, 'restore'])->name('.restore');
+        });
 
         Route::middleware('can:view-documents')->group(function (): void {
             Route::get('files/documents/{document}', [FilesController::class, 'document'])->where('document', SellerUnits::ID)->name('files.document');

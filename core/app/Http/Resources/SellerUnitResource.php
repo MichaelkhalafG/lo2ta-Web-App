@@ -114,6 +114,8 @@ class SellerUnitResource extends JsonResource
             // Part 7.2: the team's last word while it matters to the seller (changes requested, rejected), and every
             // figure the team corrected, with its reason (G3). Never a staff name.
             'review' => self::review($unit),
+            // Part 7.3 (G15): the team's last decision on a figure change sent after publishing.
+            'last_change' => self::lastChange($unit),
             'team_changes' => self::teamChanges($unit),
             // The live exit report beside step 3 and on step 6 (board 07.1): the same calculation as the PDF.
             'exit_report' => app(ExitCalculator::class)->forUnit($unit),
@@ -156,6 +158,24 @@ class SellerUnitResource extends JsonResource
             'fields' => $fields,
             'documents' => $documents,
             'at' => $review->created_at->toIso8601String(),
+        ];
+    }
+
+    /**
+     * @return array{state: string, note: string|null, at: string|null, fields: list<string>}|null
+     */
+    private static function lastChange(Unit $unit): ?array
+    {
+        $change = $unit->pendingChanges()->whereIn('state', ['approved', 'rejected'])->latest('reviewed_at')->latest('id')->first();
+        if ($change === null) {
+            return null;
+        }
+
+        return [
+            'state' => $change->state,
+            'note' => $change->state === 'rejected' ? $change->note : null,
+            'at' => $change->reviewed_at?->timezone('Africa/Cairo')->format('Y-m-d'),
+            'fields' => array_map(static fn ($f): string => FieldDisplay::label((string) $f), array_keys($change->changes)),
         ];
     }
 

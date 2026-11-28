@@ -57,6 +57,17 @@ export default async function AccountUnitPage({ params }: PageProps<"/[locale]/a
 
       {unit.review ? <ReviewNotice review={unit.review} /> : null}
 
+      {unit.last_change && !unit.pending_change ? (
+        <p role="status" className="rounded-sm border border-line bg-surface-1 p-5 text-small text-text-2">
+          <span className="text-text-1">
+            {unit.last_change.state === "approved"
+              ? t("lastChangeApproved", { fields: unit.last_change.fields.join(locale === "ar" ? "، " : ", "), date: unit.last_change.at ?? "" })
+              : t("lastChangeRejected", { fields: unit.last_change.fields.join(locale === "ar" ? "، " : ", "), date: unit.last_change.at ?? "" })}
+          </span>
+          {unit.last_change.note ? <span className="mt-1 block">{t("teamChangesReason", { reason: unit.last_change.note })}</span> : null}
+        </p>
+      ) : null}
+
       {unit.team_changes.length > 0 ? (
         <section aria-labelledby="team-changes" className="flex flex-col gap-3 rounded-sm border border-line bg-surface-1 p-5">
           <h2 id="team-changes" className="text-body font-semibold">

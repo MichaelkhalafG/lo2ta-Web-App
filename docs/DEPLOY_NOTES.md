@@ -113,6 +113,10 @@ after review as a PDF attachment), `seller.unit_verified`, `seller.withdraw_decl
 core's `FRONTEND_URL` setting (`app.frontend_url`), so it must be the public site's address. Publishing writes two PDFs
 per unit under `storage/app/private/exit-reports/` (mPDF, PHP memory as in section 2).
 
+Part 7.3 (after publishing, 2026-11-28) adds no migration. New dashboard routes: `/dashboard/changes` and
+`/dashboard/changes/{change}/approve`, `/dashboard/changes/{change}/reject`, `/dashboard/changes/units/{unit}/checked`,
+`/dashboard/changes/units/{unit}/restore-description`. New seller e-mail template: `seller.change_rejected`.
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.

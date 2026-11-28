@@ -34,7 +34,9 @@ it('marks the current page active and later pages without a link', function () {
         ->where('nav.1.items.0.href', '/dashboard/units')
         ->where('nav.1.items.0.active', false)
         ->where('nav.1.items.1.key', 'pending_changes')
-        ->where('nav.1.items.1.href', null)
+        ->where('nav.1.items.1.href', '/dashboard/changes')
+        ->where('nav.5.items.3.key', 'features')
+        ->where('nav.5.items.3.href', null)
         ->where('abilities.view-activity', true)
         ->where('admin.initials', mb_strtoupper(mb_substr($admin->name, 0, 1)).mb_strtoupper(mb_substr(explode(' ', $admin->name)[1] ?? '', 0, 1))));
 });

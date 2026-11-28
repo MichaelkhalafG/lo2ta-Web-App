@@ -27,7 +27,7 @@ final class Navigation
         ],
         'units' => [
             ['review_queue', 'ClipboardCheck', 'dashboard.units', 'review-units'],
-            ['pending_changes', 'History', null, null],
+            ['pending_changes', 'History', 'dashboard.changes', 'review-units'],
             ['duplicates', 'Copy', 'dashboard.duplicates', 'review-units'],
         ],
         'people' => [

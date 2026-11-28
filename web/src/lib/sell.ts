@@ -113,6 +113,8 @@ export type SellerUnit = {
   review: SellerReview | null;
   /** Figures the team corrected during review, each with its reason (G3). */
   team_changes: TeamChange[];
+  /** The team's last decision on a figure change sent after publishing (G15); `at` is a Cairo date. */
+  last_change: { state: "approved" | "rejected"; note: string | null; at: string | null; fields: string[] } | null;
 };
 
 export type SellerReview = {

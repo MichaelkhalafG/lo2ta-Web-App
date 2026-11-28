@@ -196,6 +196,8 @@ class UnitsController extends Controller
                 'deal_tag' => $unit->deal_tag,
                 'withdraw_requested' => $unit->withdraw_requested_at !== null,
                 'withdraw_reason' => $unit->withdraw_reason,
+                'pending_change' => $unit->pendingChanges()->where('state', 'pending')->exists(),
+                'recheck' => $unit->recheck_after_edit_at !== null && $unit->state->isPublic(),
                 'public_url' => $unit->state->isPublic() && is_string($unit->slug) ? Links::frontend('/units/'.$unit->slug, $locale) : null,
                 'warnings' => $rules->warnings($unit),
             ],

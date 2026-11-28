@@ -785,6 +785,15 @@ No one can switch off or demote themselves, or the last active admin.
 | D88 | Field names for staff, the seller's "changed by the team" list and the e-mails are the wizard's own words, copied into core (`seller.field_labels`) | one name per field everywhere | lang lines |
 | D89 | A withdrawal request (reserved unit) is decided by either role: approved = withdrawn as if the seller did it (keys released, photos off the site, waiting changes closed, "withdrawn" e-mail); declined needs a reason, e-mailed to the seller. Part 7.5 adds closing the deal (Q24) | 2.2.7 "a request that the admin handles" | 1 route |
 
+**Part 7.3 built (2026-11-28, unattended run; choices for review; open question Q25 in 8.2):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D90 | A figure change sent after publishing is approved or rejected whole, by either role. Approving runs the seller's step-2 and step-3 rules again on the live unit with the change; a change that no longer passes cannot be approved and must be rejected with a reason | the live unit may have moved since the seller sent it (market estimate corrected by the team, time passing) | 1 check |
+| D91 | An approval sends no e-mail; My account shows the last decision with the fields and the Cairo date (G15). A rejection e-mails the reason and each field as old → new | G15 | template |
+| D92 | "Check after edit" lists the seller's free edits since the team last marked the unit checked (description and feature edits, photo uploads, deletions and reorders). "Put this description back" takes the text from that edit's own log line, on the same unit only, and runs the contact-details check again; a photo is hidden from the unit screen (G17). "Mark as checked" ends the list entry, logged | G17; a text taken from the log must pass today's rules | 1 class |
+| D93 | Documents a seller adds after publishing are listed on the same screen until they are reviewed on the unit screen | they change nothing on the listing (2.2.7) but must not be forgotten | 1 query |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1241,7 +1250,8 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] 7.2 Units review and document review; outcomes: request changes, reject, publish, publish as verified;
       verified on and off; photo hiding; withdrawal requests; duplicates (G1-G3, G19; 2026-11-28, D79-D89; the
       duplicate override is open, Q23)
-- [ ] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17)
+- [x] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17; 2026-11-28, D90-D93;
+      the admin's edit of locked fields is open, Q25)
 - [ ] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10)
 - [ ] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18)
 - [ ] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16)
@@ -1335,6 +1345,7 @@ out) and waits for Michael.
 |---|---|---|---|
 | Q23 | Duplicate override (2.4: "can override with a reason") | A. Keep the duplicates screen read only: a wrong block is solved by correcting the earlier unit's numbers or asking the seller (no code). B. An override on the blocked draft lets that seller submit; the two units then share a contract, so their keys are stored with a suffix (one migration, one screen, a test). C. Override only the file warnings, which never block anyway (no value) | **A, built read only.** An override switches off the one guard against the same contract listed twice, and no real case has come up yet. Needs Michael's review: B can be added later without touching what exists |
 | Q24 | Who decides a seller's withdrawal request during an open deal | A. Both roles (the reviewer works deals, 2.4). B. Admin only (one route moves under `can:verify-units` or a new gate) | **A, built.** Deals are the reviewer's work in PLAN 2.4, and the seller's request should not wait for an admin. Needs Michael's review: B is a one-line change |
+| Q25 | 2.2.7: the admin may change a published unit's locked fields (developer, compound, area, type, contract and unit numbers, contract date, total price) | A. Not built: the seller withdraws and lists again, as 2.2.7 also allows (no code). B. An admin-only form for the type, contract date and total price, with a reason; developer, compound, area and the numbers stay locked because they make the duplicate keys and the unit code (one form, a test). C. All locked fields, with the keys and the slug worked out again (the code never changes, 2.2.8) | **A, nothing built.** The 7.3 checklist does not name it; the total price changes the 1% fee buyers have consented to (D24), which is a money rule. Needs Michael's review |
 
 ---
 

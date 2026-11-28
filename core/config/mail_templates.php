@@ -31,6 +31,7 @@ return [
     'seller.unit_published' => SellerUnitNoticeMail::class,
     'seller.unit_verified' => SellerUnitNoticeMail::class,
     'seller.withdraw_declined' => SellerUnitNoticeMail::class,
+    'seller.change_rejected' => SellerUnitNoticeMail::class,
     'buyer.request_received' => BuyerRequestMail::class,
     'admin.unit_request' => TeamFactsMail::class,
     'admin.contact_message' => TeamFactsMail::class,

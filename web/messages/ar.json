@@ -193,7 +193,9 @@
       },
       "teamChanges": "أرقام صحّحها فريق لقطة",
       "teamChangesNote": "الأرقام دي صحّحها فريق لقطة، والسبب مكتوب تحت كل تغيير. لو فيه حاجة مش مظبوطة رد على رسالتنا.",
-      "teamChangesReason": "السبب: {reason}"
+      "teamChangesReason": "السبب: {reason}",
+      "lastChangeApproved": "فريق لقطة اعتمد تعديلاتك ({fields}) يوم {date}، والأرقام الجديدة معروضة.",
+      "lastChangeRejected": "فريق لقطة ما اعتمدش تعديلاتك ({fields}) يوم {date}، والوحدة معروضة بأرقامها القديمة."
     },
     "requests": {
       "title": "طلباتي",

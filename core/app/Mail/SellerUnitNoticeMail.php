@@ -20,7 +20,7 @@ use Illuminate\Mail\Mailables\Envelope;
  */
 class SellerUnitNoticeMail extends Mailable implements OutboxTemplate
 {
-    public const KINDS = ['withdrawn', 'changes_requested', 'rejected', 'published', 'published_verified', 'verified', 'withdraw_declined'];
+    public const KINDS = ['withdrawn', 'changes_requested', 'rejected', 'published', 'published_verified', 'verified', 'withdraw_declined', 'change_rejected'];
 
     /**
      * @param  list<array{label: string, note: string}>  $fields

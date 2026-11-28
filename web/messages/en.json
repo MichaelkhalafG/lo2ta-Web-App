@@ -193,7 +193,9 @@
       },
       "teamChanges": "Figures corrected by the Lokta team",
       "teamChangesNote": "The Lokta team corrected these figures; the reason is under each one. If something looks wrong, reply to our e-mail.",
-      "teamChangesReason": "Reason: {reason}"
+      "teamChangesReason": "Reason: {reason}",
+      "lastChangeApproved": "The Lokta team approved your changes ({fields}) on {date}; the new figures are live.",
+      "lastChangeRejected": "The Lokta team did not approve your changes ({fields}) on {date}; the unit stays listed with its earlier figures."
     },
     "requests": {
       "title": "My requests",
