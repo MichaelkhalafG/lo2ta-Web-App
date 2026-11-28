@@ -62,3 +62,20 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
   "1. " or "- " make a list; "**words:**" at the start of a paragraph or list item is shown in bold. Nothing else is
   formatted, and no HTML is ever read.
 - Changing the fee consent or a declaration starts a new version: requests and submits after the change carry it.
+
+## Staff (admin only) and your own account
+
+- **Invite** a new staff member from Staff: name, e-mail, role and the language of their e-mails. They receive a link
+  to choose their own password; it works once, for 60 minutes. If it runs out, use **Send a password link**. Why: no
+  one ever types or sees another person's password (Michael, G13 and G14).
+- **Forgotten password:** an admin sends a password link from Staff. The old password keeps working until the link is
+  used; the new password then signs that person out on every device.
+- **Switch off** an account instead of deleting it: the activity log keeps the name. Switching off signs the person out
+  at once and stops any password link. No one can switch off or demote themselves, and the last active admin cannot be
+  switched off or demoted.
+- **Roles:** admin does everything, including settings, texts, staff, commissions and the activity log; reviewer works
+  on units, documents, requests and deals.
+- **My account** (the menu under your name): change your own password with the current one. Five wrong tries pause the
+  form for ten minutes. Your other sessions are signed out; this one stays.
+- The first admin of a new server is still created on the server with `php artisan admin:create` (password at a hidden
+  prompt).

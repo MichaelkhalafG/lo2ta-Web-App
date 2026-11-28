@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Support\Accounts\LoginGuard;
 use App\Support\Activity\ActivityLogger;
+use App\Support\Staff\StaffPasswords;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,6 +70,7 @@ class AuthController extends Controller
         if ($admin instanceof AdminUser) {
             // Quiet save: the login itself is logged once below, not as an "admin_users.updated" line.
             $admin->forceFill(['last_login_at' => now()])->saveQuietly();
+            $request->session()->put(StaffPasswords::SESSION_KEY, StaffPasswords::sessionMark($admin));
             $log->record('admin.login', $admin);
         }
 

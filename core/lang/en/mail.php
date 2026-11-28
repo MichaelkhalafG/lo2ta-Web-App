@@ -29,12 +29,24 @@ return [
         'button' => 'Choose a new password',
         'note' => 'If it was not you, change your password now. The pause stops every sign-in attempt until it ends.',
     ],
-    // Staff (second security pass N1): the dashboard has no password reset, so the lock simply runs out.
+    // Staff (second security pass N1): the lock runs out; an admin can send a set-password link (G13).
     'staff_login_locked' => [
         'subject' => 'Sign-in to your dashboard account is paused',
         'body' => 'There were many sign-in attempts with a wrong password on your Lokta dashboard account, so we paused sign-in for a while to protect it. If it was you, wait until the pause ends and try again.',
         'button' => 'Sign-in page',
-        'note' => 'If it was not you, tell the platform administrator straight away so the password can be changed. The pause stops every sign-in attempt until it ends.',
+        'note' => 'If it was not you, tell an admin straight away so they can send you a link to choose a new password. The pause stops every sign-in attempt until it ends.',
+    ],
+    'staff_invite' => [
+        'subject' => 'Your Lokta dashboard account',
+        'body' => 'An account was made for you on the Lokta dashboard. Press the button to choose your password, then sign in with your e-mail.',
+        'button' => 'Choose my password',
+        'note' => 'The link works once, for 60 minutes. If it runs out, ask an admin to send a new one.',
+    ],
+    'staff_reset' => [
+        'subject' => 'Choose a new dashboard password',
+        'body' => 'An admin sent you a link to choose a new password for your Lokta dashboard account. Your current password keeps working until you use it.',
+        'button' => 'Choose a new password',
+        'note' => 'The link works once, for 60 minutes. If you did not expect it, tell an admin.',
     ],
     'new_budget' => [
         'subject' => 'A buyer registered a budget',

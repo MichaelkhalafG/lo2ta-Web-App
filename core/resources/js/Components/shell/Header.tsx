@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { LogOut, Menu } from 'lucide-react';
+import { LogOut, Menu, UserRound } from 'lucide-react';
 
 import { Badge } from '@/Components/ui/badge';
 import { Ltr } from '@/Components/ui/bidi';
@@ -85,6 +85,10 @@ function UserMenu() {
                     </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2" onSelect={() => router.visit('/dashboard/account')}>
+                    <UserRound className="h-4 w-4" />
+                    {t('shell.my_account')}
+                </DropdownMenuItem>
                 <DropdownMenuItem destructive className="gap-2" onSelect={() => router.post('/dashboard/logout')}>
                     <LogOut className="h-4 w-4" />
                     {t('nav.logout', 'تسجيل الخروج')}

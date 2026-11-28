@@ -720,6 +720,55 @@ to build in the next session):**
 | D72 | The dashboard overview shows the site texts by state and lists every text awaiting legal review (key and where it is used); the site texts editor stays a later screen | "mark the legal texts in the dashboard" without building the editor now | 1 card |
 | D73 | The public calculator ignores a developer field and answers without `policy` (K6); the market-values answer has no `developers` list. Developer policies still apply to a seller's own unit in the wizard and the exit report, which stay private to the seller | K6 answer B | 1 route |
 
+### 2.7 Dashboard operations (phase 7; plan approved by Michael 2026-11-27)
+
+Parts, built in this order, each ending with the checks, a browser run (Arabic and English, 1280 and 390), a pause
+save and a commit script rehearsed on a throwaway clone: 7.1 staff and safety; 7.2 unit review and publishing; 7.3
+after publishing; 7.4 buyers (users, budgets, matching, the request inbox); 7.5 deals and commissions; 7.6 inboxes and
+content (contact and partnership inboxes, areas, compounds, developers, site texts); 7.7 closing pass (the privacy scan
+over buyer e-mails, a security review of every phase 7 route, docs).
+
+Every new route checks the staff role on the server, and every staff write is in the activity log. Two roles (Q5):
+admin and reviewer. Design: the dashboard shell copied from Watchizer (section 9) in the Lokta tokens; a unit's
+history and a deal's stages read as a drawing's revision block.
+
+**Michael's decisions (2026-11-27):**
+
+| # | Decision |
+|---|---|
+| G1 | Only an admin publishes a unit as verified or turns "verified" on or off. |
+| G2 | National ID copies: both roles while the unit is under review (submitted, changes requested) or in an open deal; admin only otherwise. Every opening is logged. |
+| G3 | A figure the team changes during review needs a reason; it is logged and shown to the seller in "My account". |
+| G4 | Sellers and buyers: view, plus an admin-only suspend with a reason that blocks sign-in and takes the person's units off the site; logged and reversible. |
+| G5 | The team e-mail for a contact or partnership message keeps the full message and the sender's details (name, e-mail, phone, message), as today. Handled messages are deleted after 12 months (a setting). |
+| G6 | CSV exports, admin only: deals, commissions, requests, buyers, sellers and units, with every data field. Document files and national ID copies are files, not fields, and stay out. Every export is logged with who and when. |
+| G7 | The commission uses the exact amount the buyer consented to on the request; a deal opened without a request uses the rate on the day it opens. |
+| G8 | Commissions are recorded only: status and reference; no invoice document, no part-payments. |
+| G9 | Matching, cash needed: the amount to the owner (the lowest accepted amount when the seller opted in, otherwise what was paid) plus the 1% due on completion. |
+| G10 | Matching: cash, installment (both as a monthly figure), type and area (an area includes its districts) must fit; compound, bedrooms, delivery and target price rank the results. |
+| G11 | One open deal per unit; other interested buyers wait as requests. |
+| G12 | When a unit is sold, the other open requests on it close as "unit sold" and each buyer gets a short e-mail. |
+| G13 | Staff passwords: each staff member changes their own (with the current one); an admin can send a one-use set-password link by e-mail (60 minutes) for a forgotten password; no one types another person's password; a change signs that person out everywhere. |
+| G14 | New staff are invited from the dashboard with the same link; `admin:create` stays for the first admin. |
+| G15 | A pending figure change: the seller is e-mailed when it is rejected (with the reason); an approval shows in "My account". |
+| G16 | Areas, compounds and developers are added and edited by an admin; a reviewer maps a seller's "other" entry to an existing one during review. An area code never changes once a unit uses it. |
+| G17 | "Check after edit": a description can be put back from the log; a changed photo can only be hidden. |
+| G18 | A deal moves forward one stage at a time, or back one with a note; cancelled at any stage with a reason; completed is final. |
+| G19 | The "after review" exit report is attached to the "published" e-mail and stays downloadable in "My account". |
+| G20 | We write the new e-mails in Arabic and English, marked as ours for the client to review. |
+
+No one can switch off or demote themselves, or the last active admin.
+
+**Part 7.1 built (2026-11-27; choices for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D74 | Set-password links in their own table (`admin_password_links`): only the sha256 of a 64-hex token is stored, one use, 60 minutes; a new link ends the earlier ones; switching an account off ends its links. The page shows one neutral message for a wrong, used or expired link, and ten bad links an hour pause an address | a leaked database row cannot be used as a link; nobody can tell whether an e-mail is staff | 1 table |
+| D75 | "Signed out everywhere" by a mark in each session: the staff id plus an HMAC of the password hash, written at sign-in and checked on every request; a new password changes it, so every other session ends on its next request (the person's own session gets the new mark) | works with the database sessions as they are, no session table scan | 1 middleware |
+| D76 | A changed password needs at least 12 characters (as `admin:create`); five wrong current passwords in ten minutes pause "My account" | the same floor for every way a staff password is set | 1 constant |
+| D77 | Staff accounts are never deleted, only switched off; the staff history shows the last ten events per person, sign-ins left out | the activity log keeps pointing at the person | 1 query |
+| D78 | Security tests for every later part: RoutePermissionTest fails on any signed-in dashboard route without a `can:` ability unless it is on the short list open to both roles (overview, sign-out, own account); LogCoverageTest makes every model either log itself or say which named log lines cover it | a new screen cannot slip in unchecked or unlogged | 2 tests |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1169,14 +1218,17 @@ first payment and all client texts) is a contract matter for Michael.
 - [ ] Open: the discount rate; contact and company facts (PLAN 6 rows 15, 16); legal review of the texts marked
       for it (the exit report band stays until then, D69)
 
-**Phase 7: Dashboard operations**
-- [ ] Units review and document review; outcomes: request changes, reject, publish, publish as verified
-- [ ] Verified on and off, market price edits, "لقطة" tag, pending changes after publish (all logged)
-- [ ] Matching screen, deals and stages, commissions
-- [ ] Inboxes: unit requests, partnership requests, contact messages
-- [ ] E-mails to both parties per stage
-- [ ] Staff management, including changing a staff password (open item: today `admin:create` only creates accounts,
-      so a staff password cannot be changed; Michael 2026-11-24 decision B: wait for this phase)
+**Phase 7: Dashboard operations** (plan approved 2026-11-27, section 2.7, G1-G20)
+- [x] 7.1 Staff and safety: staff list, invite and set-password link, own password change, sign-out everywhere,
+      the last-admin guard; route-permission and log-coverage tests; shared review components (G13, G14;
+      2026-11-27, D74-D78). Closes the staff-password open item (Michael 2026-11-24, decision B)
+- [ ] 7.2 Units review and document review; outcomes: request changes, reject, publish, publish as verified;
+      verified on and off; photo hiding; withdrawal requests; duplicates (G1-G3, G19)
+- [ ] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17)
+- [ ] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10)
+- [ ] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18)
+- [ ] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16)
+- [ ] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs
 
 **Phase 8: English, SEO, quality**
 - [ ] Every page and e-mail complete in English

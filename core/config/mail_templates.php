@@ -20,6 +20,8 @@ return [
     'account.reset_password' => AccountActionMail::class,
     'account.login_locked' => AccountActionMail::class,
     'admin.login_locked' => AccountActionMail::class,
+    'admin.staff_invite' => AccountActionMail::class,
+    'admin.staff_reset' => AccountActionMail::class,
     'admin.new_budget' => NewBudgetMail::class,
     'seller.unit_received' => UnitReceivedMail::class,
     'admin.unit_submitted' => UnitTeamNoticeMail::class,

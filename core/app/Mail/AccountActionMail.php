@@ -10,7 +10,8 @@ use Illuminate\Mail\Mailables\Envelope;
 /**
  * An account e-mail with one button: verify the e-mail address or reset the password (PLAN 2.1). The template code
  * (account.verify_email / account.reset_password / account.login_locked, and admin.login_locked for staff with the
- * kind staff_login_locked) picks the wording in lang/{locale}/mail.php.
+ * kind staff_login_locked; admin.staff_invite and admin.staff_reset, the staff set-password links of G13 and G14)
+ * picks the wording in lang/{locale}/mail.php.
  */
 class AccountActionMail extends Mailable implements OutboxTemplate
 {
@@ -27,7 +28,7 @@ class AccountActionMail extends Mailable implements OutboxTemplate
         $url = $payload['url'] ?? '';
 
         return new self(
-            in_array($kind, ['verify_email', 'reset_password', 'login_locked', 'staff_login_locked'], true) ? $kind : 'verify_email',
+            in_array($kind, ['verify_email', 'reset_password', 'login_locked', 'staff_login_locked', 'staff_invite', 'staff_reset'], true) ? $kind : 'verify_email',
             is_string($name) ? $name : '',
             is_string($url) ? $url : '',
         );

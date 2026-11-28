@@ -57,7 +57,7 @@ final class Navigation
             ['settings', 'Settings2', null, 'manage-settings'],
         ],
         'admin' => [
-            ['staff', 'ShieldCheck', null, 'manage-admins'],
+            ['staff', 'ShieldCheck', 'dashboard.staff', 'manage-admins'],
             ['activity', 'History', 'dashboard.activity', 'view-activity'],
         ],
     ];

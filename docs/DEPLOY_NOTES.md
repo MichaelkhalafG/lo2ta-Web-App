@@ -99,6 +99,12 @@ seeding (`site_texts`, and the settings `deep_loss_ratio_bp`, `maintenance_depos
 The dashboard routes `/dashboard/files/documents/{document}` and `/dashboard/files/photos/{photo}` stay on the
 dashboard host only.
 
+Part 7.1 (staff, 2026-11-27) adds the migration `2026_11_27_100000_create_admin_password_links_table` and the dashboard
+routes `/dashboard/staff`, `/dashboard/account` and `/dashboard/password/{token}` (dashboard host only, like every
+dashboard route). Staff invite and password-link e-mails carry an absolute link built from core's `APP_URL`, so
+`APP_URL` must be the dashboard's public address and mail must work before the first invite. The first admin is still
+created with `php artisan admin:create`.
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.
