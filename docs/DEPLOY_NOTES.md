@@ -138,6 +138,13 @@ the settings cache; before that the cached settings list does not know the key a
 `/dashboard/lists/compounds`, `/dashboard/lists/developers` (with their POST and PUT), `/dashboard/site-texts` and
 `/dashboard/site-texts/{siteText}`; `?export=csv` on the five list screens (admin only).
 
+**Phase 7 on the first deploy (parts 7.1 to 7.7, summary):** run the migrations in order
+(`2026_11_27_100000_create_admin_password_links_table`, `2026_11_28_100000_add_people_suspension`,
+`2026_11_28_100100_create_deals_and_commissions`, `2026_11_28_100200_add_inbox_handling`), then
+`php artisan db:seed --class=ReferenceSeeder` (add-only); `APP_URL` and `FRONTEND_URL` must be the public addresses
+(e-mail links); mail must work before the first invite; the cron line runs `messages:purge` (04:15 Cairo) beside
+`ids:purge` (04:00). Check both with `--dry-run` first.
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.

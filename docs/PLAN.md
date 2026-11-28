@@ -827,6 +827,12 @@ No one can switch off or demote themselves, or the last active admin.
 | D110 | CSV exports (G6, admin): each of the five lists exports what it shows (search and filters) with every data field: units with every column except the duplicate keys and the public id, plus the seller's details and the place names; sellers and buyers are one export of Sellers and buyers (filter Sellers or Buyers) with their budgets; deals, commissions and requests in full. No document files. Column names in the dashboard's language, choices as codes, times in Cairo time; the copied CSV guard against formula injection stays. Every export is logged as `export.csv` with the list, the filters, the search and the row count | G6 | 1 class |
 | D111 | Export file names carry Cairo time (they carried UTC) | the Cairo-time rule | 1 line |
 
+**Part 7.7 (2026-11-28, unattended run; closing pass; open question Q26 in 8.2):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D112 | The privacy scan over buyer e-mails (2.5) drives the real routes (two buyers' requests, a deal taken through every e-mailing stage, a cancelled deal, a sale closing the other request) on a unit filled with sentinels in every private column, its seller, a document and a staff name; every e-mail a buyer got is rendered with its subject in its language and must hold none of them, and its payload must hold none either. The seller's deal e-mails must hold none of the buyer's details (`tests/Feature/Api/BuyerMailPrivacyTest.php`) | a template change that leaks a field fails the suite | 1 test |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1289,7 +1295,8 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18; 2026-11-28, D99-D105)
 - [x] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16;
       2026-11-28, D106-D111)
-- [ ] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs
+- [x] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs (2026-11-28, D112;
+      staff access to a draft's files is open, Q26)
 
 **Phase 8: English, SEO, quality**
 - [ ] Every page and e-mail complete in English
@@ -1380,6 +1387,7 @@ out) and waits for Michael.
 | Q23 | Duplicate override (2.4: "can override with a reason") | A. Keep the duplicates screen read only: a wrong block is solved by correcting the earlier unit's numbers or asking the seller (no code). B. An override on the blocked draft lets that seller submit; the two units then share a contract, so their keys are stored with a suffix (one migration, one screen, a test). C. Override only the file warnings, which never block anyway (no value) | **A, built read only.** An override switches off the one guard against the same contract listed twice, and no real case has come up yet. Needs Michael's review: B can be added later without touching what exists |
 | Q24 | Who decides a seller's withdrawal request during an open deal | A. Both roles (the reviewer works deals, 2.4). B. Admin only (one route moves under `can:verify-units` or a new gate) | **A, built.** Deals are the reviewer's work in PLAN 2.4, and the seller's request should not wait for an admin. Needs Michael's review: B is a one-line change |
 | Q25 | 2.2.7: the admin may change a published unit's locked fields (developer, compound, area, type, contract and unit numbers, contract date, total price) | A. Not built: the seller withdraws and lists again, as 2.2.7 also allows (no code). B. An admin-only form for the type, contract date and total price, with a reason; developer, compound, area and the numbers stay locked because they make the duplicate keys and the unit code (one form, a test). C. All locked fields, with the keys and the slug worked out again (the code never changes, 2.2.8) | **A, nothing built.** The 7.3 checklist does not name it; the total price changes the 1% fee buyers have consented to (D24), which is a money rule. Needs Michael's review |
+| Q26 | Staff opening a draft's files by direct link. Since phase 4 (2.2.15, UploadSecurityTest) active staff may open any unit's document or photo; part 7.2 keeps drafts out of the dashboard (D87), so a draft's files are reachable only by a link copied from somewhere else. National ID copies of a draft are already admin only (G2) | A. Answer 404 for a draft's files to staff (two lines and one test changed). B. Keep as it is | **B, nothing changed.** It is an approved rule with its own test, and only staff can reach it. Recommended: A, for the same reason as D87. Needs Michael's review |
 
 ---
 
