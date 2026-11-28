@@ -198,12 +198,14 @@ class UnitsController extends Controller
                     $max = Unit::query()->lockForUpdate()->max('serial');
                     $model->serial = (is_numeric($max) ? max(0, (int) $max) : 0) + 1;
                 }
+                $keys = is_string($model->contract_key) && is_string($model->unit_key)
+                    ? DuplicateGuard::activeKeys($model, ['contract' => $model->contract_key, 'unit' => $model->unit_key])
+                    : ['active_contract_key' => null, 'active_unit_key' => null];
                 $model->forceFill([
                     'state' => UnitState::Submitted,
                     'step_reached' => 6,
                     'submitted_at' => now(),
-                    'active_contract_key' => $model->contract_key,
-                    'active_unit_key' => $model->unit_key,
+                    ...$keys,
                 ])->save();
                 foreach (Declarations::SUBMIT as $kind) {
                     Declarations::record($model, $user, $kind, ClientIp::of($request));

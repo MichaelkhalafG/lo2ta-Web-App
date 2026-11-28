@@ -147,16 +147,33 @@ it('serves a document to its owner as a download with safe headers and a generat
         ->and($response->streamedContent())->toBe(pdfFixture('clean.pdf'));
 });
 
-it('lets active staff open a document, logs it, and keeps everyone else out', function () {
+// Michael's answer to Q26 (2026-11-28, D117): a draft's files answer "not found" to every staff role; once the
+// unit is sent, active staff open them (each document opening logged). The seller's own route is unchanged.
+it('answers not found to every staff role for a draft\'s files, and lets active staff open them once the unit is sent', function () {
     documentUpload($this->unit, $this->h, upload('c.pdf', pdfFixture('clean.pdf')))->assertCreated();
-    $id = UnitDocument::query()->sole()->public_id;
-    $url = "/dashboard/files/documents/{$id}";
+    photoUpload($this->unit, $this->h, upload('p.jpg', testImage('jpeg', 1200, 900)))->assertCreated();
+    $document = UnitDocument::query()->sole();
+    $url = "/dashboard/files/documents/{$document->public_id}";
+    $photoUrl = '/dashboard/files/photos/'.UnitPhoto::query()->sole()->public_id;
+    $reviewer = AdminUser::factory()->create();
+    $admin = AdminUser::factory()->admin()->create();
 
     $this->get($url)->assertRedirect();
     $this->actingAs(AdminUser::factory()->inactive()->create(), 'admin')->get($url)->assertStatus(302);
-    $this->actingAs(AdminUser::factory()->create(), 'admin')->get($url)->assertOk();
+    foreach ([$reviewer, $admin] as $staff) {
+        $this->actingAs($staff, 'admin')->get($url)->assertNotFound();
+        $this->actingAs($staff, 'admin')->get($photoUrl)->assertNotFound();
+    }
+    expect(ActivityLog::query()->where('action', 'document.viewed')->count())->toBe(0)
+        ->and(ActivityLog::query()->where('action', 'document.view_refused')->count())->toBe(2);
+    $this->get("/api/v1/me/units/{$this->unit}/documents/{$document->public_id}", $this->h)->assertOk();
 
-    expect(ActivityLog::query()->where('action', 'document.viewed')->count())->toBe(1);
+    Unit::query()->where('public_id', $this->unit)->update(['state' => 'submitted', 'serial' => 1, 'submitted_at' => now()]);
+    foreach ([$reviewer, $admin] as $staff) {
+        $this->actingAs($staff, 'admin')->get($url)->assertOk();
+        $this->actingAs($staff, 'admin')->get($photoUrl)->assertOk();
+    }
+    expect(ActivityLog::query()->where('action', 'document.viewed')->count())->toBe(2);
 });
 
 it('never puts a draft photo on the public disk; publishing copies it under a new name and hiding removes it', function () {

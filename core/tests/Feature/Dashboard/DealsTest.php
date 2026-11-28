@@ -168,7 +168,10 @@ it('turns a seller\'s withdrawal into a request while any deal is open, and appr
     $id = $this->unit->documents()->where('type', DocumentType::NationalIdFront->value)->sole();
     $this->actingAs($this->reviewer, 'admin')->get("/dashboard/files/documents/{$id->public_id}")->assertOk();
 
-    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$this->unit->id}/withdrawal", ['approve' => true])->assertSessionHasNoErrors();
+    // Only an admin decides it (Q24, D116).
+    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$this->unit->id}/withdrawal", ['approve' => true])->assertForbidden();
+    expect($deal->refresh()->stage->value)->not->toBe('cancelled');
+    $this->actingAs($this->admin, 'admin')->post("/dashboard/units/{$this->unit->id}/withdrawal", ['approve' => true])->assertSessionHasNoErrors();
     expect($deal->refresh()->stage->value)->toBe('cancelled')->and($this->unit->refresh()->state)->toBe(UnitState::Withdrawn);
     $this->actingAs($this->reviewer, 'admin')->get("/dashboard/files/documents/{$id->public_id}")->assertForbidden();
 });

@@ -404,7 +404,8 @@ documents. As built (core, `app/Support/Uploads`, `app/Support/Seller`):
 - **Storage:** everything on the private disk under 40 random hex characters; the uploaded name is kept for display
   only. A photo gets a public copy (new random name) only when its unit is published and it is not hidden; hiding
   deletes the copy. Laravel's own private-file serving is switched off.
-- **Serving:** owner routes and staff routes (`view-documents`: both staff roles, every document opening logged) stream
+- **Serving:** owner routes and staff routes (`view-documents`: both staff roles, every document opening logged; a
+  draft's files answer "not found" to every staff role, Q26, 2026-11-28) stream
   with `nosniff`, a sandbox CSP, `no-store` and a generated file name; PDFs always as downloads.
 - **Server level:** `php artisan uploads:harden` writes the `.htaccess` files (docs/DEPLOY_NOTES.md section 1).
 - **Limits (Michael's answer, settings):** uploads 100 per hour per user and 200 per IP; submit 5 per user and 10 per
@@ -511,7 +512,7 @@ stage changed (selected) · deal completed. **To the admin team:** new unit requ
 | Verification | Add or remove "verified" at any time, with a reason (2.2.6) | badge on card and page; logged |
 | Market price and "لقطة" tag | Edit the seller's market estimate; set or clear the deal tag | logged |
 | Pending changes | Approve or reject edits made after publishing (2.2.7) | live values updated |
-| Duplicates | See blocked attempts (contract key blocks) and warnings (same contract file sha256); can override with a reason | logged |
+| Duplicates | See blocked attempts (contract key blocks) and warnings (same contract file sha256); an admin can override a block with a reason (Q23, D113-D115) | logged |
 | Compounds / developers / areas | Create, edit, merge "other" entries typed by sellers into the managed lists | compound pages fill up |
 | Matching | For a unit: buyers whose budget fits (cash ≥ cash required, installment fits, area/type match), ranked; for a buyer: units that fit. Open a deal from a pair | deal created, unit `reserved` when the seller accepts (Q16) |
 | Deals | Move a deal through its stages with a date and note; cancel with a reason | history, e-mails |
@@ -783,7 +784,7 @@ No one can switch off or demote themselves, or the last active admin.
 | D86 | Request changes: a reason (required), up to 20 notes on named fields, and every document marked "clearer copy" listed with its note; the seller sees them above the wizard step and in the e-mail | 2.2.6 "reason per field or document" | 1 form |
 | D87 | Drafts never open in the dashboard (404) and are not in the queue | a draft is the seller's work in progress; nothing in it is for review yet | 1 check |
 | D88 | Field names for staff, the seller's "changed by the team" list and the e-mails are the wizard's own words, copied into core (`seller.field_labels`) | one name per field everywhere | lang lines |
-| D89 | A withdrawal request (reserved unit) is decided by either role: approved = withdrawn as if the seller did it (keys released, photos off the site, waiting changes closed, "withdrawn" e-mail); declined needs a reason, e-mailed to the seller. Part 7.5 adds closing the deal (Q24) | 2.2.7 "a request that the admin handles" | 1 route |
+| D89 | (Changed by Michael's answer to Q24, 2026-11-28: admin only, D116.) A withdrawal request (reserved unit) is decided by either role: approved = withdrawn as if the seller did it (keys released, photos off the site, waiting changes closed, "withdrawn" e-mail); declined needs a reason, e-mailed to the seller. Part 7.5 adds closing the deal (Q24) | 2.2.7 "a request that the admin handles" | 1 route |
 
 **Part 7.3 built (2026-11-28, unattended run; choices for review; open question Q25 in 8.2):**
 
@@ -832,6 +833,17 @@ No one can switch off or demote themselves, or the last active admin.
 | # | Choice | Why | Reversing |
 |---|---|---|---|
 | D112 | The privacy scan over buyer e-mails (2.5) drives the real routes (two buyers' requests, a deal taken through every e-mailing stage, a cancelled deal, a sale closing the other request) on a unit filled with sentinels in every private column, its seller, a document and a staff name; every e-mail a buyer got is rendered with its subject in its language and must hold none of them, and its payload must hold none either. The seller's deal e-mails must hold none of the buyer's details (`tests/Feature/Api/BuyerMailPrivacyTest.php`) | a template change that leaks a field fails the suite | 1 test |
+
+**Michael's morning review (2026-11-28):** D79 to D112 accepted as built, the matching weights in D96 included. Answers
+to Q23-Q26 are in 8.2. Build choices for Q23, Q24 and Q26:
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D113 | Duplicate override (Q23): one record per blocked unit and the unit it matched (`duplicate_overrides`, unique pair: attempt, unit, matched unit, reason, admin, time). Only an admin (new ability `override-duplicates`), with a reason of 3 to 500 characters, logged as `duplicate.overridden` on the blocked unit (who, when, the attempt, the matched unit, the key). Allowed only on a blocked attempt whose unit is a draft or back with the seller and whose matched unit still exists. Not lifted from the dashboard | Michael's answer to Q23 | 1 migration |
+| D114 | The override excuses only the unit that was matched: any other active unit holding the same contract still blocks. A unit with an override stores its active keys with a `#u<id>` suffix, so both units can be active under the unique columns, and every key check compares by prefix, so a third listing of that contract is still blocked by either unit (seller checks, submit, and the team's place mapping) | one guard against the same contract listed twice stays in force | 1 class |
+| D115 | The seller is told nothing new: no e-mail and no new text. The block message already says "contact us", and the team answers in that conversation. No seller answer carries anything about overrides or the matched unit. Both roles see the override (who, when, reason) on the duplicates screen and the unit screen | Q23: "the seller is never told which unit matched"; no new client text | 1 screen line |
+| D116 | Withdrawal requests during a deal (Q24): a new admin-only ability `decide-withdrawals` on the route; the reviewer still sees the request, with "waiting for an admin" | Michael's answer to Q24 | 1 route |
+| D117 | A draft's files (Q26): every staff role gets "not found" for a draft's documents and photos, before any other check. A refused document is logged as `document.view_refused` with `draft: true`; photo openings were never logged and still are not. The seller's own file routes are unchanged | Michael's answer to Q26 | 2 lines |
 
 ---
 
@@ -1288,15 +1300,16 @@ first payment and all client texts) is a contract matter for Michael.
       2026-11-27, D74-D78). Closes the staff-password open item (Michael 2026-11-24, decision B)
 - [x] 7.2 Units review and document review; outcomes: request changes, reject, publish, publish as verified;
       verified on and off; photo hiding; withdrawal requests; duplicates (G1-G3, G19; 2026-11-28, D79-D89; the
-      duplicate override is open, Q23)
+      duplicate override built after Michael's answer to Q23, D113-D115)
 - [x] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17; 2026-11-28, D90-D93;
-      the admin's edit of locked fields is open, Q25)
+      the admin's edit of locked fields is not built, Michael's answer to Q25)
 - [x] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10; 2026-11-28, D94-D98)
 - [x] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18; 2026-11-28, D99-D105)
 - [x] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16;
       2026-11-28, D106-D111)
 - [x] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs (2026-11-28, D112;
-      staff access to a draft's files is open, Q26)
+      a draft's files answer "not found" to staff, Michael's answer to Q26, D117)
+- [x] Morning review 2026-11-28: D79-D112 accepted; Q23, Q24 and Q26 built (D113-D117), Q25 not built
 
 **Phase 8: English, SEO, quality**
 - [ ] Every page and e-mail complete in English
@@ -1377,10 +1390,18 @@ opposite: "we never publish a unit before reviewing its contract, payment receip
 **Description length.** Not in their public material: the only minimum in the catalogue is 10 characters on the
 contact form (`contact.errors.messageShort`). The portal code that validates the description is behind `/app`.
 
-### 8.2 Open for Michael's review (unattended run 2026-11-28)
+### 8.2 Reviewed by Michael (unattended run 2026-11-28; answers the same morning)
 
-Each item was decided by a safe, reversible choice so the run could go on; the choice is built (or, where marked, left
-out) and waits for Michael.
+Each item was first decided by a safe, reversible choice so the run could go on. Michael's answers (2026-11-28):
+
+| # | Answer |
+|---|---|
+| Q23 | Build the override, admin only: a written reason, logged with who and when; the seller is never told which unit matched; a test that a reviewer is refused (built: D113-D115) |
+| Q24 | Admin only, since approving cancels a deal and its commission (built: D116) |
+| Q25 | Agreed, not built: the seller withdraws and lists again |
+| Q26 | "Not found" for a draft's files, for every staff role; the phase 4 rule (2.2.15) and its test updated (built: D117) |
+
+The table as it stood for the review:
 
 | # | Question | Options (recommended first) | Taken tonight, and why |
 |---|---|---|---|

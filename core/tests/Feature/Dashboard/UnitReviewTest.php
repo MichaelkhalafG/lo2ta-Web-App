@@ -14,9 +14,11 @@ use App\Models\DuplicateAttempt;
 use App\Models\MailOutbox;
 use App\Models\Unit;
 use App\Models\User;
+use App\Support\Review\ReviewActions;
 use App\Support\Seller\ContractKeys;
 use App\Support\Uploads\UploadService;
 use Database\Seeders\ReferenceSeeder;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -248,20 +250,41 @@ it('maps a seller\'s other developer, compound and area to the lists, and refuse
     expect($twin->refresh()->developer_id)->toBeNull();
 });
 
-it('approves or declines a withdrawal request on a reserved unit', function () {
+it('lets an admin approve or decline a withdrawal request on a reserved unit', function () {
     $unit = withAreaCode(sentUnit($this->seller));
     $unit->forceFill(['state' => UnitState::Reserved, 'code' => 'LK-TS-0001', 'slug' => 'x-lk-ts-0001', 'published_at' => now(), 'withdraw_requested_at' => now(), 'withdraw_reason' => 'Sold elsewhere'])->save();
 
-    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => false])->assertSessionHasErrors('reason');
-    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => false, 'reason' => 'The buyer signs this week'])->assertSessionHasNoErrors();
+    $this->actingAs($this->admin, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => false])->assertSessionHasErrors('reason');
+    $this->actingAs($this->admin, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => false, 'reason' => 'The buyer signs this week'])->assertSessionHasNoErrors();
     expect($unit->refresh()->state)->toBe(UnitState::Reserved)->and($unit->withdraw_requested_at)->toBeNull()
         ->and(MailOutbox::query()->where('template', 'seller.withdraw_declined')->sole()->payload['reason'])->toBe('The buyer signs this week');
 
-    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => true])->assertSessionHasErrors('unit');
+    $this->actingAs($this->admin, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => true])->assertSessionHasErrors('unit');
     $unit->forceFill(['withdraw_requested_at' => now()])->save();
-    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => true])->assertSessionHasNoErrors();
+    $this->actingAs($this->admin, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => true])->assertSessionHasNoErrors();
     expect($unit->refresh()->state)->toBe(UnitState::Withdrawn)->and($unit->active_contract_key)->toBeNull()
         ->and(ActivityLog::query()->where('action', 'unit.withdraw_approved')->exists())->toBeTrue();
+});
+
+// Michael's answer to Q24 (2026-11-28, D116): approving cancels a deal and its commission, so only an admin decides.
+it('refuses a reviewer the withdrawal decision and shows the request as waiting for an admin', function () {
+    $unit = withAreaCode(sentUnit($this->seller));
+    $unit->forceFill(['state' => UnitState::Reserved, 'code' => 'LK-TS-0002', 'slug' => 'x-lk-ts-0002', 'published_at' => now(), 'withdraw_requested_at' => now(), 'withdraw_reason' => 'Sold elsewhere'])->save();
+    $logged = ActivityLog::query()->count();
+
+    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => true])->assertForbidden();
+    $this->actingAs($this->reviewer, 'admin')->post("/dashboard/units/{$unit->id}/withdrawal", ['approve' => false, 'reason' => 'The buyer signs this week'])->assertForbidden();
+    expect($unit->refresh()->state)->toBe(UnitState::Reserved)->and($unit->withdraw_requested_at)->not->toBeNull()
+        ->and(ActivityLog::query()->count())->toBe($logged)
+        ->and(MailOutbox::query()->count())->toBe(0);
+
+    // The service refuses too, whoever calls it.
+    expect(fn () => app(ReviewActions::class)->decideWithdrawal($unit, $this->reviewer, true, null))->toThrow(AuthorizationException::class);
+
+    $this->actingAs($this->reviewer, 'admin')->get("/dashboard/units/{$unit->id}")->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->where('can.withdrawal_request', true)->where('can.withdrawal', false));
+    $this->actingAs($this->admin, 'admin')->get("/dashboard/units/{$unit->id}")->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->where('can.withdrawal_request', true)->where('can.withdrawal', true));
 });
 
 it('sets and clears the Lokta deal tag on a public unit only, logged', function () {

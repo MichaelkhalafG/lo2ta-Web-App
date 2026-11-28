@@ -140,7 +140,8 @@ the settings cache; before that the cached settings list does not know the key a
 
 **Phase 7 on the first deploy (parts 7.1 to 7.7, summary):** run the migrations in order
 (`2026_11_27_100000_create_admin_password_links_table`, `2026_11_28_100000_add_people_suspension`,
-`2026_11_28_100100_create_deals_and_commissions`, `2026_11_28_100200_add_inbox_handling`), then
+`2026_11_28_100100_create_deals_and_commissions`, `2026_11_28_100200_add_inbox_handling`,
+`2026_11_28_100300_create_duplicate_overrides_table`), then
 `php artisan db:seed --class=ReferenceSeeder` (add-only); `APP_URL` and `FRONTEND_URL` must be the public addresses
 (e-mail links); mail must work before the first invite; the cron line runs `messages:purge` (04:15 Cairo) beside
 `ids:purge` (04:00). Check both with `--dry-run` first.

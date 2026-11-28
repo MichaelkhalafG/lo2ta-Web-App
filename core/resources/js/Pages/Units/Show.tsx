@@ -99,11 +99,12 @@ interface Props {
     documents: DocumentRow[];
     photos: PhotoRow[];
     duplicates: { at: string; kind: string; stage: string; blocked: boolean; other: string | null; other_id: number | null }[];
+    overrides: { at: string; by: string | null; reason: string; other: string | null; other_id: number | null }[];
     lastReview: { outcome: string; reason: string | null; fields: { label: string; note: string }[]; at: string } | null;
     blockers: string[];
     noteFields: Option[];
     history: { at: string; event: string; by: string; note: string | null }[];
-    can: { decide: boolean; reject: boolean; verify: boolean; flags: boolean; withdrawal: boolean; documents: boolean };
+    can: { decide: boolean; reject: boolean; verify: boolean; flags: boolean; withdrawal: boolean; withdrawal_request: boolean; documents: boolean };
 }
 
 const base = (id: number) => `/dashboard/units/${id}`;
@@ -162,7 +163,7 @@ export default function UnitShow(props: Props) {
                     <FieldsCard {...props} />
                     <DocumentsCard {...props} />
                     <PhotosCard {...props} />
-                    {props.duplicates.length > 0 ? <DuplicatesCard {...props} /> : null}
+                    {props.duplicates.length > 0 || props.overrides.length > 0 ? <DuplicatesCard {...props} /> : null}
                     <Section title={t('units.sections.history')}>
                         <RevisionBlock rows={props.history.map((h): Revision => ({ at: h.at, event: h.event, by: h.by, note: h.note }))} />
                     </Section>
@@ -305,7 +306,15 @@ function DecisionCard({ unit, blockers, can, lastReview, noteFields }: Props) {
                     </div>
                 </div>
             ) : null}
-            {!can.decide && !can.reject && !can.flags && !can.withdrawal ? <p className="text-sm text-muted-foreground">{unit.state_label}</p> : null}
+            {can.withdrawal_request && !can.withdrawal ? (
+                <div className="space-y-2 border-t pt-4">
+                    <p className="font-medium">{t('units.actions.withdrawal')}</p>
+                    <p className="text-sm text-muted-foreground">{t('units.actions.withdrawal_hint')}</p>
+                    {unit.withdraw_reason ? <p className="text-sm">“{unit.withdraw_reason}”</p> : null}
+                    <p className="text-sm">{t('units.actions.withdrawal_admin_only')}</p>
+                </div>
+            ) : null}
+            {!can.decide && !can.reject && !can.flags && !can.withdrawal && !can.withdrawal_request ? <p className="text-sm text-muted-foreground">{unit.state_label}</p> : null}
             {lastReview ? (
                 <div className="space-y-1 border-t pt-4 text-sm">
                     <p className="font-medium">
@@ -752,11 +761,24 @@ function PhotosCard({ unit, photos }: Props) {
     );
 }
 
-function DuplicatesCard({ duplicates }: Props) {
+function DuplicatesCard({ duplicates, overrides }: Props) {
     const t = useT();
 
     return (
         <Section title={t('units.sections.duplicates')}>
+            {overrides.map((o, i) => (
+                <Alert key={i} tone="info" className="mb-3 text-sm">
+                    <p className="font-medium">
+                        {t('units.duplicates.overridden', { unit: o.other ?? '—' })}
+                    </p>
+                    <p className="text-muted-foreground">
+                        <Num className="font-mono">{o.at}</Num> · <bdi>{o.by ?? '—'}</bdi>
+                    </p>
+                    <p>
+                        <bdi>{o.reason}</bdi>
+                    </p>
+                </Alert>
+            ))}
             <ul className="divide-y text-sm">
                 {duplicates.map((d, i) => (
                     <li key={i} className="flex flex-wrap items-center gap-2 py-2">

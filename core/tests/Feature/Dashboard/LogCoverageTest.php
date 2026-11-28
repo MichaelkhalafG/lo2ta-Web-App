@@ -21,6 +21,7 @@ const MODELS_LOGGED_ELSEWHERE = [
     'DealStageEvent' => 'itself a record of a stage move',
     'PartnershipRequest' => 'written by a visitor; the inbox logs each staff change (partnership_request.*)',
     'DuplicateAttempt' => 'itself a record of an attempt',
+    'DuplicateOverride' => 'created only by DuplicateOverrides, which logs duplicate.overridden (who, when, reason)',
     'ExitReport' => 'generated; the action that generates it is logged',
     'Unit' => 'seller steps and staff actions write named log lines (unit.*)',
     'UnitDeclaration' => 'itself a record of an acceptance (text version, time, IP)',

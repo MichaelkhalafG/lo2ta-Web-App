@@ -11,6 +11,7 @@ use App\Models\Area;
 use App\Models\Compound;
 use App\Models\Developer;
 use App\Models\DuplicateAttempt;
+use App\Models\DuplicateOverride;
 use App\Models\Unit;
 use App\Models\UnitDocument;
 use App\Models\UnitPhoto;
@@ -226,6 +227,10 @@ class UnitsController extends Controller
             'documents' => $documents,
             'photos' => $photos,
             'duplicates' => $duplicates,
+            // An admin's duplicate overrides on this unit (Q23, D115): who, when and why, for both roles.
+            'overrides' => DuplicateOverride::query()->where('unit_id', $unit->id)->with(['creator:id,name', 'matchedUnit:id,serial,code'])->latest('id')->get()
+                ->map(static fn (DuplicateOverride $o): array => [...DuplicatesController::overrideRow($o), 'other' => self::ref($o->matchedUnit), 'other_id' => $o->matched_unit_id])
+                ->values()->all(),
             'lastReview' => $last instanceof UnitReview ? [
                 'outcome' => $last->outcome->label(),
                 'reason' => $last->reason,
@@ -240,7 +245,9 @@ class UnitsController extends Controller
                 'reject' => in_array($unit->state, [UnitState::Submitted, UnitState::ChangesRequested], true),
                 'verify' => $me->isAdmin(),
                 'flags' => $unit->state->isPublic(),
-                'withdrawal' => in_array($unit->state, [UnitState::Reserved, UnitState::Published], true) && $unit->withdraw_requested_at !== null,
+                // The request shows to both roles; only an admin decides it (Q24, D116).
+                'withdrawal_request' => in_array($unit->state, [UnitState::Reserved, UnitState::Published], true) && $unit->withdraw_requested_at !== null,
+                'withdrawal' => in_array($unit->state, [UnitState::Reserved, UnitState::Published], true) && $unit->withdraw_requested_at !== null && $me->isAdmin(),
                 'documents' => $unit->state !== UnitState::Draft,
             ],
         ]);

@@ -24,6 +24,7 @@ use App\Support\Deals\DealFlow;
 use App\Support\Listing\UnitCode;
 use App\Support\Mail\Outbox;
 use App\Support\Seller\ContractKeys;
+use App\Support\Seller\DuplicateGuard;
 use App\Support\Seller\LiveEdits;
 use App\Support\Seller\StepRules;
 use App\Support\Settings\Settings;
@@ -382,13 +383,12 @@ final class ReviewActions
         $copy->forceFill(array_filter(['developer_id' => $developer?->id, 'compound_id' => $compound?->id, 'area_id' => $area?->id], static fn ($v): bool => $v !== null));
         $keys = ContractKeys::of($copy);
         if ($keys !== null) {
-            $match = Unit::query()->whereKeyNot($unit->id)
-                ->where(fn ($q) => $q->where('active_contract_key', $keys['contract'])->orWhere('active_unit_key', $keys['unit']))
-                ->first(['id', 'serial', 'code']);
+            // The same check as the seller's (prefix match, an admin's override excuses its one matched unit, D114).
+            $match = DuplicateGuard::match($copy, $keys, ['id', 'serial', 'code']);
             if ($match instanceof Unit) {
                 throw ValidationException::withMessages(['places' => Text::get('units.errors.place_duplicate', ['unit' => $match->code ?? sprintf('#%04d', (int) $match->serial)])]);
             }
-            $copy->forceFill(['contract_key' => $keys['contract'], 'unit_key' => $keys['unit'], 'active_contract_key' => $keys['contract'], 'active_unit_key' => $keys['unit']]);
+            $copy->forceFill(['contract_key' => $keys['contract'], 'unit_key' => $keys['unit'], ...DuplicateGuard::activeKeys($copy, $keys)]);
         }
         $after = ['developer_id' => $copy->developer_id, 'compound_id' => $copy->compound_id, 'area_id' => $copy->area_id];
         if ($after === $before) {
@@ -404,6 +404,10 @@ final class ReviewActions
      */
     public function decideWithdrawal(Unit $unit, AdminUser $by, bool $approve, ?string $reason): void
     {
+        // Admin only (Michael's answer to Q24, D116): approving cancels the deal and its commission.
+        if (! $by->isAdmin()) {
+            throw new AuthorizationException;
+        }
         self::mustBe($unit, [UnitState::Reserved, UnitState::Published]);
         if ($unit->withdraw_requested_at === null) {
             throw ValidationException::withMessages(['unit' => Text::get('units.errors.no_withdraw_request')]);

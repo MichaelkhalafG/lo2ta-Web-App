@@ -19,6 +19,8 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
 - A document flagged **encrypted** opens without a password but restricts printing or copying. Check that it is
   readable and matches the unit; ask the seller for an unprotected copy if it does not.
 - Every opening of a document is recorded in the activity log, national ID copies included.
+- A **draft's** files (a unit the seller has not sent yet) answer "not found" to every staff role, admins included
+  (PLAN 8.2, Q26). They open once the seller sends the unit.
 - **National ID copies** (G2): both roles open them while the unit is under review (sent, or back with the seller) or
   in an open deal; otherwise only an admin. A refused opening is logged too.
 - Photos: in review, check every photo for building numbers, signs or documents, and hide any that shows them
@@ -27,7 +29,9 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
 ## Unit review (both roles; part 7.2)
 
 - **Unit review** lists every unit a seller has sent (drafts stay with the seller). Filter by state; "Withdrawal
-  requests" shows the reserved units whose seller asked to withdraw.
+  requests" shows the reserved units whose seller asked to withdraw. Only an admin approves or declines a withdrawal
+  request, since approving it cancels the deal and its commission (PLAN 8.2, Q24); a reviewer sees the request as
+  waiting for an admin.
 - Open a unit: check the figures against the documents. **Approve** each document, or **Ask for a clearer copy** with a
   note the seller reads.
 - **Map to the lists** when the seller typed an "other" developer, compound or area: pick the managed entries. What the
@@ -44,7 +48,11 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
   clearer copy. **Reject** needs a reason and cannot be undone from the dashboard; the contract can then be listed again.
 - **Hide** a photo that shows a building number, a sign or a document (reason required); **Show again** puts it back.
 - **Duplicate attempts** lists every blocked attempt to send a contract another active unit holds, and every contract
-  file already on another unit. It is read only: no block is lifted from there (PLAN 8.2, Q23).
+  file already on another unit. An **admin** can **Override the block** on one blocked attempt, with a written reason
+  (PLAN 8.2, Q23): that unit may then be sent although the matching unit holds the same contract. The override covers
+  those two units only, so any other listing of the contract is still blocked; it is logged with who and when, both
+  roles see it on the unit screen, and it is not lifted from the dashboard. The seller is never told which unit
+  matched: tell them in the conversation they started (the block message asks them to contact us).
 
 ## After publishing (both roles; part 7.3)
 

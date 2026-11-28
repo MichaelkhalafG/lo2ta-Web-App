@@ -4,6 +4,7 @@ namespace App\Support\Review;
 
 use App\Enums\UnitState;
 use App\Models\AdminUser;
+use App\Models\Unit;
 use App\Models\UnitDocument;
 
 /**
@@ -16,8 +17,20 @@ final class DocumentAccess
     /** States in which a reviewer may open the national ID copies. Part 7.5 adds "an open deal" through Deal. */
     private const REVIEWER_ID_STATES = [UnitState::Submitted, UnitState::ChangesRequested, UnitState::Reserved];
 
+    /**
+     * A draft's files (or a file with no unit) stay the seller's: "not found" to every staff role (Q26, D117).
+     * The seller's own routes do not ask this.
+     */
+    public static function isDraftFile(?Unit $unit): bool
+    {
+        return ! $unit instanceof Unit || $unit->state === UnitState::Draft;
+    }
+
     public static function mayOpen(AdminUser $admin, UnitDocument $document): bool
     {
+        if (self::isDraftFile($document->unit)) {
+            return false;
+        }
         if (! $admin->is_active || ! is_string($document->path) || $document->purged_at !== null) {
             return false;
         }

@@ -94,7 +94,8 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
                 Route::put('places', [UnitsController::class, 'places'])->name('.places');
                 Route::put('documents/{document}', [UnitsController::class, 'document'])->name('.document');
                 Route::put('photos/{photo}', [UnitsController::class, 'photo'])->name('.photo');
-                Route::post('withdrawal', [UnitsController::class, 'withdrawal'])->name('.withdrawal');
+                // Approving cancels the open deal and its commission: admin only (Michael's answer to Q24, D116).
+                Route::post('withdrawal', [UnitsController::class, 'withdrawal'])->middleware('can:decide-withdrawals')->name('.withdrawal');
                 Route::middleware('can:verify-units')->group(function (): void {
                     Route::post('publish-verified', [UnitsController::class, 'publishVerified'])->name('.publish_verified');
                     Route::put('verified', [UnitsController::class, 'verified'])->name('.verified');
@@ -102,6 +103,9 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
             });
         });
         Route::get('duplicates', DuplicatesController::class)->middleware('can:review-units')->name('duplicates');
+        // Lifting one block, with a reason: admin only (Michael's answer to Q23, D113).
+        Route::post('duplicates/{attempt}/override', [DuplicatesController::class, 'override'])
+            ->middleware(['can:review-units', 'can:override-duplicates'])->whereNumber('attempt')->name('duplicates.override');
 
         // Sellers and buyers, budgets, matching and the request inbox (part 7.4; G4, G9, G10).
         Route::middleware('can:work-clients')->group(function (): void {
