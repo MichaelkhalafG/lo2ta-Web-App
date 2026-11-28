@@ -14,6 +14,7 @@ use App\Support\Activity\ActivityLogger;
 use App\Support\Calculator\ExitReportPdf;
 use App\Support\Mail\Outbox;
 use App\Support\Mail\TeamNotice;
+use App\Support\Review\OpenDeals;
 use App\Support\Seller\Declarations;
 use App\Support\Seller\DuplicateGuard;
 use App\Support\Seller\LiveEdits;
@@ -271,7 +272,8 @@ class UnitsController extends Controller
         $reason = trim((string) $request->string('reason')) ?: null;
         $reference = $model->code ?? ($model->serial !== null ? sprintf('#%04d', $model->serial) : '');
 
-        if ($model->state === UnitState::Reserved) {
+        // A deal is open (the unit is reserved, or an earlier stage of a deal, part 7.5): a request to the team.
+        if ($model->state === UnitState::Reserved || OpenDeals::has($model)) {
             if ($model->withdraw_requested_at === null) {
                 $model->forceFill(['withdraw_requested_at' => now(), 'withdraw_reason' => $reason])->save();
                 $log->record('unit.withdraw_requested', $model, null, ['reason' => $reason]);

@@ -2,15 +2,16 @@
 
 namespace App\Support\Review;
 
+use App\Models\Deal;
 use App\Models\Unit;
 
 /**
- * Whether a unit is in an open deal (G2, G11). Deals arrive in part 7.5; until then no unit is in one.
+ * Whether a unit is in an open deal (G2, G11): a deal holds `open_unit_id` while it is open.
  */
 final class OpenDeals
 {
     public static function has(Unit $unit): bool
     {
-        return false;
+        return Deal::query()->where('open_unit_id', $unit->id)->exists();
     }
 }

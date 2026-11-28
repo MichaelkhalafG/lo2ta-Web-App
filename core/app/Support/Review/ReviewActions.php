@@ -10,6 +10,7 @@ use App\Enums\UnitState;
 use App\Models\AdminUser;
 use App\Models\Area;
 use App\Models\Compound;
+use App\Models\Deal;
 use App\Models\Developer;
 use App\Models\ExitReport;
 use App\Models\Unit;
@@ -19,6 +20,7 @@ use App\Support\Accounts\Links;
 use App\Support\Activity\ActivityLogger;
 use App\Support\Calculator\ExitReportPdf;
 use App\Support\Dashboard\Text;
+use App\Support\Deals\DealFlow;
 use App\Support\Listing\UnitCode;
 use App\Support\Mail\Outbox;
 use App\Support\Seller\ContractKeys;
@@ -400,9 +402,9 @@ final class ReviewActions
      * The seller asked to withdraw a unit with an open deal (PLAN 2.2.7, 2.2.9 point 5). Approved: the unit leaves the
      * market as if the seller withdrew it. Declined: the request is cleared and the seller gets the reason.
      */
-    public function decideWithdrawal(Unit $unit, bool $approve, ?string $reason): void
+    public function decideWithdrawal(Unit $unit, AdminUser $by, bool $approve, ?string $reason): void
     {
-        self::mustBe($unit, [UnitState::Reserved]);
+        self::mustBe($unit, [UnitState::Reserved, UnitState::Published]);
         if ($unit->withdraw_requested_at === null) {
             throw ValidationException::withMessages(['unit' => Text::get('units.errors.no_withdraw_request')]);
         }
@@ -417,6 +419,12 @@ final class ReviewActions
             return;
         }
 
+        // The open deal ends first (part 7.5): the seller withdrew.
+        $deal = Deal::query()->where('open_unit_id', $unit->id)->first();
+        if ($deal instanceof Deal) {
+            app(DealFlow::class)->cancel($deal, $by, $reason ?? Text::get('deals.withdrawn_reason'));
+            $unit->refresh();
+        }
         DB::transaction(function () use ($unit): void {
             $unit->forceFill([
                 'state' => UnitState::Withdrawn, 'withdrawn_at' => now(), 'withdraw_requested_at' => null,

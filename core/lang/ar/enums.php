@@ -137,4 +137,21 @@ return [
         'matched' => 'اتفتحت صفقة',
         'closed' => 'مقفول',
     ],
+    // Part 7.5 (Q16, PLAN 2.4).
+    'DealStage' => [
+        'opened' => 'فُتحت',
+        'buyer_confirmed' => 'المشتري أكّد',
+        'seller_accepted' => 'البائع وافق',
+        'documents_approval' => 'المستندات وموافقة المطور',
+        'signing_payment' => 'التوقيع والدفع',
+        'completed' => 'اكتملت',
+        'cancelled' => 'أُلغيت',
+    ],
+    'CommissionStatus' => [
+        'expected' => 'متوقعة',
+        'due' => 'مستحقة',
+        'invoiced' => 'صدرت فاتورتها',
+        'collected' => 'حُصّلت',
+        'waived' => 'تم التنازل عنها',
+    ],
 ];

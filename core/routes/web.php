@@ -5,6 +5,8 @@ use App\Http\Controllers\Dashboard\ActivityController;
 use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\CalculatorController;
 use App\Http\Controllers\Dashboard\ChangesController;
+use App\Http\Controllers\Dashboard\CommissionsController;
+use App\Http\Controllers\Dashboard\DealsController;
 use App\Http\Controllers\Dashboard\DuplicatesController;
 use App\Http\Controllers\Dashboard\FilesController;
 use App\Http\Controllers\Dashboard\IndicatorsController;
@@ -111,6 +113,22 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
             Route::get('requests', [RequestsController::class, 'index'])->name('requests');
             Route::get('requests/{unitRequest}', [RequestsController::class, 'show'])->whereNumber('unitRequest')->name('requests.show');
             Route::put('requests/{unitRequest}', [RequestsController::class, 'update'])->whereNumber('unitRequest')->name('requests.update');
+
+            // Deals (part 7.5; G7, G11, G18).
+            Route::get('deals', [DealsController::class, 'index'])->name('deals');
+            Route::post('deals', [DealsController::class, 'store'])->name('deals.store');
+            Route::prefix('deals/{deal}')->whereNumber('deal')->name('deals.')->group(function (): void {
+                Route::get('/', [DealsController::class, 'show'])->name('show');
+                Route::post('forward', [DealsController::class, 'forward'])->name('forward');
+                Route::post('back', [DealsController::class, 'back'])->name('back');
+                Route::post('cancel', [DealsController::class, 'cancel'])->name('cancel');
+            });
+        });
+
+        // Commissions (part 7.5; G7, G8): admin only.
+        Route::middleware('can:manage-commissions')->group(function (): void {
+            Route::get('commissions', [CommissionsController::class, 'index'])->name('commissions');
+            Route::put('commissions/{commission}', [CommissionsController::class, 'update'])->whereNumber('commission')->name('commissions.update');
         });
 
         // After publishing (part 7.3, G15, G17): figure changes, free edits to check, documents added later.

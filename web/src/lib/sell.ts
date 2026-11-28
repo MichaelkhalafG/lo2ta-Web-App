@@ -106,6 +106,8 @@ export type SellerUnit = {
   exit_report: ExitReport | null;
   pending_change: Record<string, [unknown, unknown]> | null;
   withdraw_requested: boolean;
+  /** A deal is open on the unit (part 7.5): withdrawing becomes a request to the team. */
+  deal_open: boolean;
   can_edit_live: boolean;
   can_withdraw: boolean;
   has_exit_report: boolean;

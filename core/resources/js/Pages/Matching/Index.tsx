@@ -1,5 +1,8 @@
 import { Link, router } from '@inertiajs/react';
 
+import { ConfirmAction } from '@/Components/shell/ConfirmAction';
+import { Button } from '@/Components/ui/button';
+
 import { Alert } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Num } from '@/Components/ui/bidi';
@@ -97,6 +100,20 @@ export default function MatchingIndex({ mode, subject, rows, pick }: Props) {
                                         {t('matching.per_month')}: <Num>{row.facts.monthly}</Num>
                                     </p>
                                     <p className="text-xs text-muted-foreground">{t('matching.score', { score: row.score })}</p>
+                                    {mode === 'unit' && subject ? (
+                                        <ConfirmAction
+                                            title={t('deals.open')}
+                                            consequence={t('deals.open_consequence')}
+                                            confirmLabel={t('deals.open')}
+                                            tone="default"
+                                            trigger={
+                                                <Button type="button" size="sm" variant="outline" className="mt-1">
+                                                    {t('matching.open_deal')}
+                                                </Button>
+                                            }
+                                            onConfirm={() => router.post('/dashboard/deals', { unit_id: subject.id, buyer_id: row.id })}
+                                        />
+                                    ) : null}
                                 </div>
                             </li>
                         ))}

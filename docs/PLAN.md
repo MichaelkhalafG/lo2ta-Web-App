@@ -804,6 +804,18 @@ No one can switch off or demote themselves, or the last active admin.
 | D97 | Request inbox (both roles): assign to an active staff member, a team note never shown to the buyer, "contacted" from new only, "close" needs a reason and sends nothing to the buyer (2.3 lists no such e-mail); "matched" is set when a deal opens (part 7.5). New columns `unit_requests.assigned_to` and `staff_note` | PLAN 2.4 "assign, note, close" | 1 migration |
 | D98 | Sellers and buyers: drafts are not counted as units (shown as a separate count); the person's history shows the account's own log lines (registered, e-mail confirmed, profile, password reset, sign-in locks, suspension) | a draft is the seller's work in progress (D87) | 1 query |
 
+**Part 7.5 built (2026-11-28, unattended run; choices for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D99 | G11 is held by the database: `deals.open_unit_id` is filled only while the deal is open and is unique, so two staff opening at once cannot both succeed. A deal opens only on a published unit that is on the site, never for its seller or a suspended account, from a request (the request becomes "matched") or from a matching pair (both roles) | the same pattern as the active contract keys | 1 column |
+| D100 | The unit follows its deal: reserved from "seller accepted" to "signing and payment" (Q16); a step back before the acceptance or a cancellation puts it back on the market; completion makes it sold (sold date, contract keys released, public photos removed, waiting figure changes closed) | Q16, 2.2.6 states | 1 method |
+| D101 | The commission is written when the deal opens (G7): the request's exact consent amount and rate, or today's `buyer_fee_bp` × total price without a request; VAT at `vat_bp` (0). Expected → due at completion; a cancelled deal's commission becomes "waived: deal cancelled". An admin moves it due → invoiced → collected (a date and a reference each) or waives it with a reason; nothing else (G8). A reviewer sees no commission figures | G7, G8; 2.4 roles | 1 table |
+| D102 | E-mails to both parties (template `deal.notice`) at opened, developer approval obtained (the move into "signing and payment"), completed and cancelled; a buyer's e-mail names the unit by code, card title, compound and area only (PLAN 2.5), a seller's by code; neither carries the other party's details. Other buyers get `buyer.request_closed_sold` when the unit sells (G12) | 2.3, 2.4, 2.5 | templates |
+| D103 | A cancelled deal puts its request back to "contacted" so the team follows up; other requests on the unit stay open during a deal (G11) and close as "unit sold" only at completion (G12) | the buyer of a cancelled deal may still want a unit | 1 line |
+| D104 | Any open deal, not only a reserved unit, turns the seller's withdrawal into a request to the team (2.2.7 "while a deal is open"); approving the request cancels the deal first, with the team's reason or "the seller withdrew" | before this part a seller could withdraw a published unit at once while an early-stage deal was open on it | 1 condition |
+| D105 | Arrows in a history line point to where the deal went in each reading direction (← in Arabic, → in English); note and event text in the revision block are isolated so an English note reads right in an Arabic table | found in the browser run | 1 line |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1263,7 +1275,7 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17; 2026-11-28, D90-D93;
       the admin's edit of locked fields is open, Q25)
 - [x] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10; 2026-11-28, D94-D98)
-- [ ] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18)
+- [x] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18; 2026-11-28, D99-D105)
 - [ ] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16)
 - [ ] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs
 

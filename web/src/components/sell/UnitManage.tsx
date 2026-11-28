@@ -148,7 +148,7 @@ function WithdrawForm() {
   const [sure, setSure] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, start] = useTransition();
-  const reserved = unit.state.code === "reserved";
+  const reserved = unit.state.code === "reserved" || unit.deal_open;
 
   return (
     <section className="flex flex-col gap-4 border-t border-line pt-6">

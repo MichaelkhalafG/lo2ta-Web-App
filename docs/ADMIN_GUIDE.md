@@ -68,6 +68,18 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
 - **Unit requests**: assign a request, keep a team note (the buyer never sees it), mark it contacted, or close it with
   a reason. Closing sends nothing to the buyer.
 
+## Deals and commissions (part 7.5)
+
+- **Open a deal** from a unit request (Open a deal) or from Matching on a unit. Only one deal can be open on a unit;
+  other buyers wait as requests. Both parties are e-mailed.
+- **Move** a deal one stage at a time (an optional note), or **back** one stage (a note is required). **Cancel** it at
+  any open stage with a reason: the unit returns to the market and both parties are told. Completed is final: the unit
+  is sold and the other open requests on it close as "unit sold", each buyer told by e-mail.
+- The unit is **reserved** from "seller accepted"; a step back before that, or a cancellation, puts it back on the site.
+- **Commissions** (admin only): one record per deal, fixed when it opens (the amount the buyer agreed to on the
+  request, or the rate of that day). Mark it invoiced, then collected, with a date and a reference each, or waive it
+  with a reason. There is no invoice file and no part-payment.
+
 ## Calculator settings (admin only)
 
 - Each value (cancellation, refund, late-payment penalty, transfer fee, maintenance deposit, discount rate) has its

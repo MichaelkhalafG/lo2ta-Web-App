@@ -15,6 +15,7 @@ use App\Models\UnitPhoto;
 use App\Models\UnitReview;
 use App\Support\Calculator\ExitCalculator;
 use App\Support\Review\FieldDisplay;
+use App\Support\Review\OpenDeals;
 use App\Support\Seller\StepRules;
 use BackedEnum;
 use Illuminate\Http\Request;
@@ -108,6 +109,8 @@ class SellerUnitResource extends JsonResource
             // After publishing (PLAN 2.2.7): what waits for the admin, and what the seller may still do.
             'pending_change' => $unit->pendingChanges()->where('state', 'pending')->latest('id')->first()?->changes,
             'withdraw_requested' => $unit->withdraw_requested_at !== null,
+            // Part 7.5: withdrawing while a deal is open is a request to the team (PLAN 2.2.7).
+            'deal_open' => OpenDeals::has($unit),
             'can_edit_live' => in_array($unit->state, [UnitState::Published, UnitState::Reserved], true),
             'can_withdraw' => in_array($unit->state, [UnitState::Submitted, UnitState::ChangesRequested, UnitState::Published, UnitState::Reserved], true) && $unit->withdraw_requested_at === null,
             'has_exit_report' => $unit->exitReports()->whereNotNull('pdf_path')->exists(),

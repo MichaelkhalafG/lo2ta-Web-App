@@ -137,4 +137,21 @@ return [
         'matched' => 'Deal opened',
         'closed' => 'Closed',
     ],
+    // Part 7.5 (Q16, PLAN 2.4).
+    'DealStage' => [
+        'opened' => 'Opened',
+        'buyer_confirmed' => 'Buyer confirmed',
+        'seller_accepted' => 'Seller accepted',
+        'documents_approval' => 'Documents and developer approval',
+        'signing_payment' => 'Signing and payment',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+    ],
+    'CommissionStatus' => [
+        'expected' => 'Expected',
+        'due' => 'Due',
+        'invoiced' => 'Invoiced',
+        'collected' => 'Collected',
+        'waived' => 'Waived',
+    ],
 ];

@@ -50,9 +50,11 @@ export function RevisionBlock({ rows, className }: { rows: Revision[]; className
                             <td className="py-2 pe-3 font-mono text-xs tabular-nums whitespace-nowrap">
                                 <span dir="ltr">{row.at ?? '—'}</span>
                             </td>
-                            <td className="py-2 pe-3">{row.event}</td>
+                            <td className="py-2 pe-3">
+                                <bdi>{row.event}</bdi>
+                            </td>
                             <td className="py-2 pe-3 text-muted-foreground">{row.by}</td>
-                            <td className="py-2 text-muted-foreground">{row.note ?? ''}</td>
+                            <td className="py-2 text-muted-foreground">{row.note ? <bdi>{row.note}</bdi> : ''}</td>
                         </tr>
                     ))}
                 </tbody>

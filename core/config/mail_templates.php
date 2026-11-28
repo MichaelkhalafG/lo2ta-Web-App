@@ -2,6 +2,7 @@
 
 use App\Mail\AccountActionMail;
 use App\Mail\BuyerRequestMail;
+use App\Mail\DealNoticeMail;
 use App\Mail\NewBudgetMail;
 use App\Mail\SellerUnitNoticeMail;
 use App\Mail\SystemTestMail;
@@ -32,6 +33,8 @@ return [
     'seller.unit_verified' => SellerUnitNoticeMail::class,
     'seller.withdraw_declined' => SellerUnitNoticeMail::class,
     'seller.change_rejected' => SellerUnitNoticeMail::class,
+    'deal.notice' => DealNoticeMail::class,
+    'buyer.request_closed_sold' => DealNoticeMail::class,
     'buyer.request_received' => BuyerRequestMail::class,
     'admin.unit_request' => TeamFactsMail::class,
     'admin.contact_message' => TeamFactsMail::class,

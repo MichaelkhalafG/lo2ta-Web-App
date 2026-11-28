@@ -36,8 +36,8 @@ final class Navigation
         ],
         'deals' => [
             ['matching', 'Handshake', 'dashboard.matching', 'work-clients'],
-            ['deals', 'Handshake', null, null],
-            ['commissions', 'Percent', null, 'manage-commissions'],
+            ['deals', 'Handshake', 'dashboard.deals', 'work-clients'],
+            ['commissions', 'Percent', 'dashboard.commissions', 'manage-commissions'],
         ],
         'inbox' => [
             ['unit_requests', 'Inbox', 'dashboard.requests', 'work-clients'],

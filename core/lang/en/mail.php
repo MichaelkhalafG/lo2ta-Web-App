@@ -130,4 +130,37 @@ return [
             'company' => 'Company', 'contact_name' => 'Contact person', 'job_title' => 'Job title', 'projects_count' => 'Projects',
         ],
     ],
+    // Part 7.5 (PLAN 2.3, 2.4; G12, G20): our wording, for the client to review.
+    'deal' => [
+        'opened' => [
+            'subject' => 'A deal is open on :code',
+            'buyer' => 'We opened a deal with you on the unit below. We will contact you to arrange the next steps with the owner.',
+            'seller' => 'We opened a deal on your unit :code with an interested buyer. We will contact you to arrange the next steps.',
+        ],
+        'approval' => [
+            'subject' => 'Developer approval obtained for :code',
+            'buyer' => 'The developer approved the transfer of the unit below. Next: signing and payment; we will contact you with the appointment.',
+            'seller' => 'The developer approved the transfer of your unit :code. Next: signing and payment; we will contact you with the appointment.',
+        ],
+        'completed' => [
+            'subject' => 'The transfer of :code is complete',
+            'buyer' => 'The transfer of the unit below is complete. Congratulations, and thank you for choosing Lokta.',
+            'seller' => 'The transfer of your unit :code is complete. Thank you for choosing Lokta.',
+        ],
+        'cancelled' => [
+            'subject' => 'The deal on :code is cancelled',
+            'buyer' => 'The deal on the unit below is cancelled. You can keep looking at the other opportunities on Lokta.',
+            'seller' => 'The deal on your unit :code is cancelled. Your unit is back on Lokta for other buyers.',
+        ],
+        'unit_sold' => [
+            'subject' => 'The unit :code you asked about is sold',
+            'buyer' => 'The unit below has been sold, so we closed your request on it. Other opportunities are waiting on Lokta.',
+            'seller' => 'The unit below has been sold.',
+        ],
+        'button' => [
+            'buyer' => 'Open my requests',
+            'seller' => 'Open my unit',
+            'browse' => 'See the opportunities',
+        ],
+    ],
 ];

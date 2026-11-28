@@ -233,7 +233,7 @@ class UnitsController extends Controller
                 'reject' => in_array($unit->state, [UnitState::Submitted, UnitState::ChangesRequested], true),
                 'verify' => $me->isAdmin(),
                 'flags' => $unit->state->isPublic(),
-                'withdrawal' => $unit->state === UnitState::Reserved && $unit->withdraw_requested_at !== null,
+                'withdrawal' => in_array($unit->state, [UnitState::Reserved, UnitState::Published], true) && $unit->withdraw_requested_at !== null,
                 'documents' => $unit->state !== UnitState::Draft,
             ],
         ]);
@@ -370,7 +370,7 @@ class UnitsController extends Controller
         self::visible($unit);
         $request->validate(['approve' => ['required', 'boolean'], 'reason' => ['nullable', 'string', 'max:500']]);
         $reason = $request->input('reason');
-        $actions->decideWithdrawal($unit, $request->boolean('approve'), is_string($reason) && trim($reason) !== '' ? trim($reason) : null);
+        $actions->decideWithdrawal($unit, self::me($request), $request->boolean('approve'), is_string($reason) && trim($reason) !== '' ? trim($reason) : null);
 
         return back()->with('status', Text::get('staff.saved'));
     }

@@ -123,6 +123,11 @@ Part 7.4 (people, budgets, matching, requests, 2026-11-28) adds the migration
 `/dashboard/people`, `/dashboard/people/{user}` with `suspend` and `lift`, `/dashboard/budgets`, `/dashboard/matching`,
 `/dashboard/requests` and `/dashboard/requests/{unitRequest}`.
 
+Part 7.5 (deals and commissions, 2026-11-28) adds the migration `2026_11_28_100100_create_deals_and_commissions`
+(tables `deals`, `deal_stage_events`, `commissions`; rollback proven on scratch). New dashboard routes: `/dashboard/deals`
+(list and open), `/dashboard/deals/{deal}` with `forward`, `back`, `cancel`, and `/dashboard/commissions` with
+`/dashboard/commissions/{commission}` (admin only). New e-mail templates: `deal.notice`, `buyer.request_closed_sold`.
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.

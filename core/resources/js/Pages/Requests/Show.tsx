@@ -1,7 +1,8 @@
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm, usePage } from '@inertiajs/react';
 
 import { SelectField, TextareaField } from '@/Components/form/TextField';
 import { ReasonDialog } from '@/Components/review/ReasonDialog';
+import { ConfirmAction } from '@/Components/shell/ConfirmAction';
 import { RevisionBlock } from '@/Components/review/RevisionBlock';
 import { StateBadge } from '@/Components/review/StateBadge';
 import { Alert } from '@/Components/ui/alert';
@@ -121,6 +122,20 @@ export default function RequestShow({ request, unit, buyer, staff, history }: Pr
                                 <Button type="button" variant="outline" disabled={form.processing} onClick={() => send('contacted')}>
                                     {t('requests.contacted')}
                                 </Button>
+                            ) : null}
+                            {request.open && unit && buyer ? (
+                                <ConfirmAction
+                                    title={t('deals.open')}
+                                    consequence={t('deals.open_consequence')}
+                                    confirmLabel={t('deals.open')}
+                                    tone="default"
+                                    trigger={
+                                        <Button type="button" variant="outline" className="w-full">
+                                            {t('deals.open')}
+                                        </Button>
+                                    }
+                                    onConfirm={() => router.post('/dashboard/deals', { unit_id: unit.id, buyer_id: buyer.id, request_id: request.id })}
+                                />
                             ) : null}
                             {request.open ? (
                                 <ReasonDialog
