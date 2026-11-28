@@ -12,6 +12,7 @@ use App\Models\Unit;
 use App\Models\UnitRequest;
 use App\Models\User;
 use App\Support\Dashboard\Text;
+use App\Support\Exports\Exports;
 use App\Support\Matching\Matcher;
 use App\Support\People\Suspension;
 use App\Support\Table\TableQuery;
@@ -20,6 +21,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Sellers and buyers (PLAN 1.3, 2.7; part 7.4; G4). Both roles see the people, their units, budget and requests;
@@ -29,12 +31,13 @@ class PeopleController extends Controller
 {
     private const TZ = 'Africa/Cairo';
 
-    public function index(Request $request): Response
+    public function index(Request $request): Response|StreamedResponse
     {
         $table = TableQuery::for($request)
             ->sortable(['created_at', 'name'], default: 'created_at', direction: 'desc', tiebreaker: 'id')
             ->filterable(['kind' => ['sellers', 'buyers', 'suspended']])
             ->virtual(['kind'])
+            ->exportable(Exports::personColumns(), 'people')
             ->perPage(default: 25, max: 100);
         $query = User::query()
             ->withCount([
@@ -56,6 +59,9 @@ class PeopleController extends Controller
             default => null,
         };
 
+        if ($table->wantsExport()) {
+            return $table->export($query, static fn (object $u): array => $u instanceof User ? Exports::personRow($u, $u->budget) : [], Exports::loader(['budget.areas', 'budget.compounds']));
+        }
         $map = static function (object $user): array {
             if (! $user instanceof User) {
                 return [];

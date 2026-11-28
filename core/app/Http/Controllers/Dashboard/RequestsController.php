@@ -9,6 +9,7 @@ use App\Models\AdminUser;
 use App\Models\UnitRequest;
 use App\Support\Activity\ActivityLogger;
 use App\Support\Dashboard\Text;
+use App\Support\Exports\Exports;
 use App\Support\Table\TableQuery;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -17,6 +18,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * The unit request inbox (PLAN 2.3, 2.4; part 7.4; both roles): assign, note, mark contacted, close with a reason.
@@ -27,12 +29,13 @@ class RequestsController extends Controller
 {
     private const TZ = 'Africa/Cairo';
 
-    public function index(Request $request): Response
+    public function index(Request $request): Response|StreamedResponse
     {
         $table = TableQuery::for($request)
             ->sortable(['created_at'], default: 'created_at', direction: 'desc', tiebreaker: 'id')
             ->filterable(['state' => RequestState::values(), 'mine' => ['1']])
             ->virtual(['mine'])
+            ->exportable(Exports::requestColumns(), 'requests')
             ->perPage(default: 25, max: 100);
         $query = UnitRequest::query()->with(['unit', 'buyer']);
         $search = $table->resolvedSearch();
@@ -49,6 +52,14 @@ class RequestsController extends Controller
             $query->where('assigned_to', $request->user('admin')?->getAuthIdentifier());
         }
         $staff = AdminUser::query()->pluck('name', 'id');
+        if ($table->wantsExport()) {
+            $names = [];
+            foreach (AdminUser::query()->get(['id', 'name']) as $a) {
+                $names[$a->id] = $a->name;
+            }
+
+            return $table->export($query, static fn (object $r): array => $r instanceof UnitRequest ? Exports::requestRow($r, $names) : [], Exports::loader(['unit', 'buyer']));
+        }
         $map = static function (object $r) use ($staff): array {
             if (! $r instanceof UnitRequest) {
                 return [];

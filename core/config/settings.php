@@ -85,6 +85,8 @@ return [
     // Public calculator, per address and hour (Michael 2026-11-25). It stores nothing.
     'rl_calculator_ip' => ['type' => 'int', 'group' => 'limits', 'default' => 60, 'min' => 1, 'max' => 10000],
     'form_message_max' => ['type' => 'int', 'group' => 'limits', 'default' => 2000, 'min' => 200, 'max' => 10000, 'public' => true],
+    // G5 (Michael 2026-11-27): contact and partnership messages marked handled are deleted after this many months.
+    'handled_message_retention_months' => ['type' => 'int', 'group' => 'limits', 'default' => 12, 'min' => 1, 'max' => 120],
     // Team notices (Michael 2026-11-18): one of the agreement's two official mailboxes, e.g. info@loktaeg.com. Empty
     // until the mailbox exists: then every active admin account gets the notice (RUN D14).
     'team_email' => ['type' => 'string', 'group' => 'team', 'default' => '', 'format' => 'email_or_empty'],

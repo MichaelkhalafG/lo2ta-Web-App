@@ -128,6 +128,16 @@ Part 7.5 (deals and commissions, 2026-11-28) adds the migration `2026_11_28_1001
 (list and open), `/dashboard/deals/{deal}` with `forward`, `back`, `cancel`, and `/dashboard/commissions` with
 `/dashboard/commissions/{commission}` (admin only). New e-mail templates: `deal.notice`, `buyer.request_closed_sold`.
 
+Part 7.6 (inboxes, lists, site texts, exports, 2026-11-28) adds the migration `2026_11_28_100200_add_inbox_handling`
+(contact_messages and partnership_requests: `handled_at`, `handled_by`, `staff_note`; rollback proven on scratch), the
+setting `handled_message_retention_months` (12) and the scheduled command `messages:purge` (daily 04:15 Cairo). After
+the deploy run `php artisan db:seed --class=ReferenceSeeder` (add-only): it writes the new setting's row and refreshes
+the settings cache; before that the cached settings list does not know the key and `messages:purge` stops with
+"Unknown setting" (seen on scratch). Check first with `php artisan messages:purge --dry-run`. New dashboard routes:
+`/dashboard/inbox/contact`, `/dashboard/inbox/partnership`, `/dashboard/inbox/{kind}/{id}`, `/dashboard/lists/areas`,
+`/dashboard/lists/compounds`, `/dashboard/lists/developers` (with their POST and PUT), `/dashboard/site-texts` and
+`/dashboard/site-texts/{siteText}`; `?export=csv` on the five list screens (admin only).
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.

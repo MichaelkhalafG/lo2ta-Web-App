@@ -17,6 +17,7 @@ use App\Models\UnitPhoto;
 use App\Models\UnitReview;
 use App\Support\Accounts\Links;
 use App\Support\Dashboard\Text;
+use App\Support\Exports\Exports;
 use App\Support\Review\DocumentAccess;
 use App\Support\Review\FieldDisplay;
 use App\Support\Review\ReviewActions;
@@ -29,6 +30,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Units review (PLAN 1.3, 2.4, 2.7; part 7.2). Both staff roles (can:review-units) see the queue and a unit's detail,
@@ -43,15 +45,16 @@ class UnitsController extends Controller
     /** States the queue can filter on (every state but draft). */
     private const STATES = ['submitted', 'changes_requested', 'published', 'reserved', 'sold', 'rejected', 'withdrawn'];
 
-    public function index(Request $request): Response
+    public function index(Request $request): Response|StreamedResponse
     {
         $table = TableQuery::for($request)
             ->sortable(['submitted_at', 'published_at', 'serial'], default: 'submitted_at', direction: 'desc', tiebreaker: 'id')
             ->filterable(['state' => self::STATES, 'flag' => ['withdraw_request', 'verified', 'deal_tag']])
             ->virtual(['flag'])
+            ->exportable(Exports::unitColumns(), 'units')
             ->perPage(default: 25, max: 100);
 
-        $query = Unit::query()->where('state', '!=', UnitState::Draft->value)->with(['compound', 'area', 'seller']);
+        $query = Unit::query()->where('state', '!=', UnitState::Draft->value)->with(['compound', 'area', 'seller', 'developer']);
         $search = $table->resolvedSearch();
         if ($search !== null) {
             self::search($query, $search);
@@ -86,6 +89,10 @@ class UnitsController extends Controller
                 'has_other' => $unit->developer_id === null || $unit->compound_id === null || $unit->area_id === null,
             ];
         };
+
+        if ($table->wantsExport()) {
+            return $table->export($query, static fn (object $u): array => $u instanceof Unit ? Exports::unitRow($u) : [], Exports::loader(['seller', 'developer', 'compound', 'area']));
+        }
 
         $counts = Unit::query()->selectRaw('state, count(*) as total')->where('state', '!=', UnitState::Draft->value)->groupBy('state')->pluck('total', 'state');
         $count = static function (string $state) use ($counts): int {

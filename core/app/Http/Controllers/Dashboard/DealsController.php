@@ -12,11 +12,13 @@ use App\Models\UnitRequest;
 use App\Models\User;
 use App\Support\Dashboard\Text;
 use App\Support\Deals\DealFlow;
+use App\Support\Exports\Exports;
 use App\Support\Table\TableQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Deals (PLAN 1.3, 2.4; part 7.5; both roles, can:work-clients): the list, one deal with its stage track as a revision
@@ -26,19 +28,23 @@ class DealsController extends Controller
 {
     private const TZ = 'Africa/Cairo';
 
-    public function index(Request $request): Response
+    public function index(Request $request): Response|StreamedResponse
     {
         $table = TableQuery::for($request)
             ->sortable(['opened_at', 'updated_at'], default: 'updated_at', direction: 'desc', tiebreaker: 'id')
             ->filterable(['stage' => DealStage::values(), 'open' => ['1', '0']])
             ->virtual(['open'])
+            ->exportable(Exports::dealColumns(), 'deals')
             ->perPage(default: 25, max: 100);
-        $query = Deal::query()->with(['unit', 'buyer', 'seller']);
+        $query = Deal::query()->with(['unit', 'buyer', 'seller', 'request', 'commission']);
         match ($table->resolvedFilters()['open'] ?? null) {
             '1' => $query->whereIn('stage', DealStage::openValues()),
             '0' => $query->whereNotIn('stage', DealStage::openValues()),
             default => null,
         };
+        if ($table->wantsExport()) {
+            return $table->export($query, static fn (object $d): array => $d instanceof Deal ? Exports::dealRow($d) : [], Exports::loader(['unit', 'buyer', 'seller', 'request', 'commission']));
+        }
         $map = static function (object $d): array {
             if (! $d instanceof Deal) {
                 return [];

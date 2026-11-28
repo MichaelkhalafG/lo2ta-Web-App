@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Commission;
 use App\Support\Activity\ActivityLogger;
 use App\Support\Dashboard\Text;
+use App\Support\Exports\Exports;
 use App\Support\Table\TableQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Commissions (PLAN 2.4; part 7.5; admin only, can:manage-commissions; G7, G8). One record per deal, frozen at opening;
@@ -28,12 +30,16 @@ class CommissionsController extends Controller
         'invoiced' => ['collected', 'waived'],
     ];
 
-    public function index(Request $request): Response
+    public function index(Request $request): Response|StreamedResponse
     {
         $table = TableQuery::for($request)
             ->sortable(['updated_at', 'amount'], default: 'updated_at', direction: 'desc', tiebreaker: 'id')
             ->filterable(['status' => CommissionStatus::values()])
+            ->exportable(Exports::commissionColumns(), 'commissions')
             ->perPage(default: 25, max: 100);
+        if ($table->wantsExport()) {
+            return $table->export(Commission::query(), static fn (object $c): array => $c instanceof Commission ? Exports::commissionRow($c) : [], Exports::loader(['deal.unit']));
+        }
         $map = static function (object $c): array {
             if (! $c instanceof Commission) {
                 return [];

@@ -39,5 +39,7 @@ class AppServiceProvider extends ServiceProvider
         // Sellers, buyers, budgets, matching, requests and deals (parts 7.4, 7.5): both roles; suspending is admin only (G4).
         Gate::define('work-clients', static fn (AdminUser $admin): bool => $admin->is_active);
         Gate::define('suspend-users', static fn (AdminUser $admin): bool => $admin->is_active && $admin->isAdmin());
+        // Areas, compounds and developers (part 7.6, G16): both roles see them; an admin adds and edits.
+        Gate::define('manage-lists', static fn (AdminUser $admin): bool => $admin->is_active && $admin->isAdmin());
     }
 }

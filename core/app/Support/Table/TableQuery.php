@@ -2,6 +2,7 @@
 
 namespace App\Support\Table;
 
+use App\Support\Activity\ActivityLogger;
 use App\Support\Dashboard\Text;
 use Illuminate\Contracts\Database\Query\Builder as BuilderContract;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -201,6 +202,8 @@ final class TableQuery
     {
         $applied = $this->apply($query);
         $total = $applied->getCountForPagination();
+        // G6: every export is logged with who, when, which list, the filters and the row count.
+        app(ActivityLogger::class)->record('export.csv', null, null, ['list' => $this->exportName, 'rows' => $total, 'filters' => array_filter($this->resolvedFilters(), static fn ($v): bool => $v !== null), 'search' => $this->resolvedSearch()]);
 
         return TableExport::respond($this->exportName, $total, $this->exportColumns, $this->stream($applied, $map, $prepare));
     }

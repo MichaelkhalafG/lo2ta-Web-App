@@ -9,13 +9,16 @@ use App\Http\Controllers\Dashboard\CommissionsController;
 use App\Http\Controllers\Dashboard\DealsController;
 use App\Http\Controllers\Dashboard\DuplicatesController;
 use App\Http\Controllers\Dashboard\FilesController;
+use App\Http\Controllers\Dashboard\InboxController;
 use App\Http\Controllers\Dashboard\IndicatorsController;
+use App\Http\Controllers\Dashboard\ListsController;
 use App\Http\Controllers\Dashboard\LocaleController;
 use App\Http\Controllers\Dashboard\MatchingController;
 use App\Http\Controllers\Dashboard\OverviewController;
 use App\Http\Controllers\Dashboard\PasswordLinkController;
 use App\Http\Controllers\Dashboard\PeopleController;
 use App\Http\Controllers\Dashboard\RequestsController;
+use App\Http\Controllers\Dashboard\SiteTextsController;
 use App\Http\Controllers\Dashboard\StaffController;
 use App\Http\Controllers\Dashboard\UnitsController;
 use App\Support\Seller\SellerUnits;
@@ -123,6 +126,36 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
                 Route::post('back', [DealsController::class, 'back'])->name('back');
                 Route::post('cancel', [DealsController::class, 'cancel'])->name('cancel');
             });
+        });
+
+        // Contact and partnership inboxes (part 7.6, G5): both roles.
+        Route::middleware('can:work-clients')->prefix('inbox')->name('inbox.')->group(function (): void {
+            Route::get('contact', [InboxController::class, 'index'])->defaults('kind', 'contact')->name('contact');
+            Route::get('partnership', [InboxController::class, 'index'])->defaults('kind', 'partnership')->name('partnership');
+            Route::put('{kind}/{id}', [InboxController::class, 'update'])->where(['kind' => 'contact|partnership'])->whereNumber('id')->name('update');
+        });
+
+        // Areas, compounds and developers (part 7.6, G16): both roles see them, an admin adds and edits.
+        Route::prefix('lists')->name('lists.')->group(function (): void {
+            Route::middleware('can:review-units')->group(function (): void {
+                Route::get('areas', [ListsController::class, 'areas'])->name('areas');
+                Route::get('compounds', [ListsController::class, 'compounds'])->name('compounds');
+                Route::get('developers', [ListsController::class, 'developers'])->name('developers');
+            });
+            Route::middleware('can:manage-lists')->group(function (): void {
+                Route::post('areas', [ListsController::class, 'saveArea'])->name('areas.store');
+                Route::put('areas/{area}', [ListsController::class, 'saveArea'])->whereNumber('area')->name('areas.update');
+                Route::post('compounds', [ListsController::class, 'saveCompound'])->name('compounds.store');
+                Route::put('compounds/{compound}', [ListsController::class, 'saveCompound'])->whereNumber('compound')->name('compounds.update');
+                Route::post('developers', [ListsController::class, 'saveDeveloper'])->name('developers.store');
+                Route::put('developers/{developer}', [ListsController::class, 'saveDeveloper'])->whereNumber('developer')->name('developers.update');
+            });
+        });
+
+        // Site texts (part 7.6; K7, D68): admin only.
+        Route::middleware('can:manage-site-texts')->group(function (): void {
+            Route::get('site-texts', [SiteTextsController::class, 'index'])->name('site_texts');
+            Route::put('site-texts/{siteText}', [SiteTextsController::class, 'update'])->whereNumber('siteText')->name('site_texts.update');
         });
 
         // Commissions (part 7.5; G7, G8): admin only.

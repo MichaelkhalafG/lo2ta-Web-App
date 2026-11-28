@@ -816,6 +816,17 @@ No one can switch off or demote themselves, or the last active admin.
 | D104 | Any open deal, not only a reserved unit, turns the seller's withdrawal into a request to the team (2.2.7 "while a deal is open"); approving the request cancels the deal first, with the team's reason or "the seller withdrew" | before this part a seller could withdraw a published unit at once while an early-stage deal was open on it | 1 condition |
 | D105 | Arrows in a history line point to where the deal went in each reading direction (← in Arabic, → in English); note and event text in the revision block are isolated so an English note reads right in an Arabic table | found in the browser run | 1 line |
 
+**Part 7.6 built (2026-11-28, unattended run; choices for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D106 | Contact and partnership inboxes (both roles): read, a team note, "handled" (who and when) or reopen. `messages:purge` runs daily at 04:15 Cairo and deletes messages handled more than `handled_message_retention_months` (12) ago; messages never handled are kept; each run logs the counts, never the contents; `--dry-run` counts only (G5) | G5 | 1 command, 1 setting |
+| D107 | Areas, compounds and developers: both roles see them, an admin adds and edits (`can:manage-lists`). Nothing is deleted, only hidden from sellers. A slug is made from the English name when the entry is created and never changes (public links). An area's code (2 to 4 letters, unique) is fixed once a sent unit uses the area or a district under it (G16); an area never moves to another parent | G16; a moved area would change what its units mean | 1 controller |
+| D108 | A compound intro written in the dashboard shows on the public compound page only when both languages are filled; otherwise it stays flagged as a placeholder (D30) | D30 | 1 line |
+| D109 | Site texts (admin): Arabic, English and the state, chosen on each save; `is_placeholder` follows the state; plain text with the D70 marks only; the model logs before and after | K7, D68 | 1 form |
+| D110 | CSV exports (G6, admin): each of the five lists exports what it shows (search and filters) with every data field: units with every column except the duplicate keys and the public id, plus the seller's details and the place names; sellers and buyers are one export of Sellers and buyers (filter Sellers or Buyers) with their budgets; deals, commissions and requests in full. No document files. Column names in the dashboard's language, choices as codes, times in Cairo time; the copied CSV guard against formula injection stays. Every export is logged as `export.csv` with the list, the filters, the search and the row count | G6 | 1 class |
+| D111 | Export file names carry Cairo time (they carried UTC) | the Cairo-time rule | 1 line |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1276,7 +1287,8 @@ first payment and all client texts) is a contract matter for Michael.
       the admin's edit of locked fields is open, Q25)
 - [x] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10; 2026-11-28, D94-D98)
 - [x] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18; 2026-11-28, D99-D105)
-- [ ] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16)
+- [x] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16;
+      2026-11-28, D106-D111)
 - [ ] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs
 
 **Phase 8: English, SEO, quality**
@@ -1404,8 +1416,8 @@ listed below with its source, its path here and what changed.
 | `resources/js/pages/Manage/Error.tsx` | `resources/js/Pages/Error.tsx` | rewritten: one Error page for 403/404/419/500/503 in both languages, rendered by bootstrap/app.php for dashboard routes |
 | `resources/js/pages/Manage/NotFound/Index.tsx` | (none) | copied, then removed: the Error page covers 404 |
 | `resources/js/pages/Manage/Activity/Index.tsx` | `resources/js/Pages/Activity/Index.tsx` | rewritten over our activity_log (actor kind, action, subject, field changes, reason, date range); only the screen's layout pattern kept |
-| `app/Support/Table/TableQuery.php` | `app/Support/Table/TableQuery.php` | docblock prose removed (type tags kept); Watchizer's role class replaced by our gate `export-data`; its text helper by AppSupportDashboardText |
-| `app/Support/Table/TableExport.php` | `app/Support/Table/TableExport.php` | docblock prose removed; text helper replaced; Watchizer's Coerce helper replaced by a local text() function |
+| `app/Support/Table/TableQuery.php` | `app/Support/Table/TableQuery.php` | docblock prose removed (type tags kept); Watchizer's role class replaced by our gate `export-data`; its text helper by AppSupportDashboardText; every export logged (G6, part 7.6) |
+| `app/Support/Table/TableExport.php` | `app/Support/Table/TableExport.php` | docblock prose removed; text helper replaced; Watchizer's Coerce helper replaced by a local text() function; file name in Cairo time (part 7.6) |
 
 Not copied: everything about products, orders, stock, storefronts, campaigns, the theme toggle, the developer-credit footer, the logo, the markdown and image fields, `lib/labels`, `lib/title`, Watchizer's translations, navigation class, roles and tests.
 

@@ -82,7 +82,8 @@ final class TableExport
     {
         $slug = preg_replace('/[^a-z0-9\-]+/', '-', strtolower($name)) ?? 'export';
 
-        return trim($slug, '-').'-'.now()->format('Y-m-d-Hi').'-'.$total.'-rows.csv';
+        // Cairo time, like every time the dashboard shows (PLAN 2.7).
+        return trim($slug, '-').'-'.now()->timezone('Africa/Cairo')->format('Y-m-d-Hi').'-'.$total.'-rows.csv';
     }
 
     private static function scalar(mixed $value): string

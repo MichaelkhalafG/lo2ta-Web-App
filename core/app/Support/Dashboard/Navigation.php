@@ -41,19 +41,19 @@ final class Navigation
         ],
         'inbox' => [
             ['unit_requests', 'Inbox', 'dashboard.requests', 'work-clients'],
-            ['partnership_requests', 'Mail', null, null],
-            ['contact_messages', 'Mail', null, null],
+            ['partnership_requests', 'Mail', 'dashboard.inbox.partnership', 'work-clients'],
+            ['contact_messages', 'Mail', 'dashboard.inbox.contact', 'work-clients'],
         ],
         'lists' => [
-            ['compounds', 'Building2', null, null],
-            ['developers', 'Building2', null, null],
-            ['areas', 'MapPin', null, null],
+            ['compounds', 'Building2', 'dashboard.lists.compounds', 'review-units'],
+            ['developers', 'Building2', 'dashboard.lists.developers', 'review-units'],
+            ['areas', 'MapPin', 'dashboard.lists.areas', 'review-units'],
             ['features', 'Sparkles', null, null],
         ],
         'content' => [
             ['reports', 'FileText', 'dashboard.indicators', 'manage-settings'],
             ['calculator', 'Calculator', 'dashboard.calculator', 'manage-settings'],
-            ['site_texts', 'FileText', null, 'manage-site-texts'],
+            ['site_texts', 'FileText', 'dashboard.site_texts', 'manage-site-texts'],
             ['settings', 'Settings2', null, 'manage-settings'],
         ],
         'admin' => [

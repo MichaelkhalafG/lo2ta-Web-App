@@ -80,6 +80,19 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
   request, or the rate of that day). Mark it invoiced, then collected, with a date and a reference each, or waive it
   with a reason. There is no invoice file and no part-payment.
 
+## Inboxes, lists, site texts and exports (part 7.6)
+
+- **Contact messages** and **Partnership requests** (both roles): each message also reached the team mailbox in full.
+  Read it, keep a team note, and **mark it handled**. Handled messages are deleted automatically after 12 months (a
+  setting); messages never marked handled are kept.
+- **Areas, Compounds, Developers**: both roles see the lists; an admin adds and edits. Entries are hidden, never
+  deleted. An area's code is fixed once a sent unit uses it. A compound's intro shows on its public page once both
+  languages are written.
+- **Site texts** (admin): every public text in Arabic and English with its state (placeholder, ours, awaiting legal
+  review, the client's). Plain text: "## " starts a heading, "1. " or "- " a list item, "**words:**" a bold lead.
+- **Export CSV** (admin, on Unit review, Deals, Commissions, Unit requests and Sellers and buyers): the file holds what
+  the screen shows, with every data field, never document files. Each export is recorded in the activity log.
+
 ## Calculator settings (admin only)
 
 - Each value (cancellation, refund, late-payment penalty, transfer fee, maintenance deposit, discount rate) has its
