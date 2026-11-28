@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1\Account;
 
 use App\Enums\Readiness;
 use App\Enums\RequestState;
-use App\Enums\UnitState;
 use App\Http\Controllers\Controller;
 use App\Models\SiteText;
 use App\Models\Unit;
@@ -48,7 +47,7 @@ class RequestsController extends Controller
             'fee_amount' => $r->fee_consent_amount,
             'created_at' => $r->created_at?->toIso8601String(),
             // Only what a buyer may see of the unit, and only while it is public (PLAN 2.5).
-            'unit' => $r->unit instanceof Unit && $r->unit->state->isPublic()
+            'unit' => $r->unit instanceof Unit && $r->unit->isOnSite()
                 ? ['code' => $r->unit->code, 'slug' => $r->unit->slug, 'title' => UnitFacts::title($r->unit, $locale)]
                 : ['code' => $r->unit?->code, 'slug' => null, 'title' => null],
         ])->values()->all()]);
@@ -71,7 +70,7 @@ class RequestsController extends Controller
             throw ValidationException::withMessages(['email' => self::text('requests.email_not_verified')]);
         }
 
-        $unit = Unit::query()->where('code', strtoupper(trim($request->string('code')->toString())))->where('state', UnitState::Published->value)->first();
+        $unit = Unit::query()->where('code', strtoupper(trim($request->string('code')->toString())))->listed()->first();
         if (! $unit instanceof Unit) {
             throw ValidationException::withMessages(['code' => self::text('requests.unit_unavailable')]);
         }

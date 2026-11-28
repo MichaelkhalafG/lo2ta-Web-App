@@ -92,6 +92,10 @@ class AuthController extends Controller
         }
         RateLimiter::clear($key);
         $guard->clear($email);
+        // G4: a suspended account cannot sign in (told only after the right password, so nothing leaks).
+        if ($user->isSuspended()) {
+            throw ValidationException::withMessages(['email' => self::text('accounts.suspended')]);
+        }
 
         return response()->json([
             'token' => $user->createToken('web')->plainTextToken,

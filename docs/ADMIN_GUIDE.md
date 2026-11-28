@@ -56,6 +56,18 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
   screen; then **Mark as checked**.
 - **Documents added after publishing** wait there until you review them on the unit screen.
 
+## Sellers, buyers, budgets, matching and requests (part 7.4)
+
+- **Sellers and buyers** (both roles): everyone with an account, with their units, budget, requests and history.
+- **Suspend** (admin only, reason required): the person is signed out everywhere and cannot sign in; their units leave
+  the site with their state kept. **Lift the suspension** (reason required) puts everything back as it was (G4).
+- **Buyer budgets**: what each buyer registered. **Matching** lists, for a unit, the buyers whose budget fits, or, for
+  a buyer, the units that fit. Must fit: the cash (the amount to the owner, or the lowest amount they accept, plus the
+  1%), the installment as a monthly figure, the type and the area (an area includes its districts). Compound,
+  bedrooms, delivery and target price put the best first.
+- **Unit requests**: assign a request, keep a team note (the buyer never sees it), mark it contacted, or close it with
+  a reason. Closing sends nothing to the buyer.
+
 ## Calculator settings (admin only)
 
 - Each value (cancellation, refund, late-payment penalty, transfer fee, maintenance deposit, discount rate) has its

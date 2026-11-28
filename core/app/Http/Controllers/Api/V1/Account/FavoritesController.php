@@ -26,7 +26,7 @@ class FavoritesController extends Controller
 
         $data = [];
         foreach ($units as $unit) {
-            $data[] = $unit->state->isPublic()
+            $data[] = $unit->isOnSite()
                 ? ['available' => true, 'unit' => (new UnitResource($unit))->resolve($request)]
                 : ['available' => false, 'unit' => ['code' => $unit->code]];
         }

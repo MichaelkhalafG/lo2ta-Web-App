@@ -31,6 +31,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'suspended_at' => 'immutable_datetime',
             'password' => 'hashed',
         ];
     }
@@ -57,6 +58,22 @@ class User extends Authenticatable
     public function budget(): HasOne
     {
         return $this->hasOne(BuyerBudget::class);
+    }
+
+    /**
+     * The person's unit requests as a buyer (PLAN 2.3).
+     *
+     * @return HasMany<UnitRequest, $this>
+     */
+    public function requests(): HasMany
+    {
+        return $this->hasMany(UnitRequest::class, 'buyer_id');
+    }
+
+    /** Suspended by an admin (G4): no sign-in, units held off the site. */
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
     }
 
     public function hasVerifiedEmail(): bool

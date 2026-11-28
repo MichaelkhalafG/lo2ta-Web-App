@@ -36,5 +36,8 @@ class AppServiceProvider extends ServiceProvider
         // Units review (part 7.2): both roles work the queue; publishing as verified and the badge are admin only (G1).
         Gate::define('review-units', static fn (AdminUser $admin): bool => $admin->is_active);
         Gate::define('verify-units', static fn (AdminUser $admin): bool => $admin->is_active && $admin->isAdmin());
+        // Sellers, buyers, budgets, matching, requests and deals (parts 7.4, 7.5): both roles; suspending is admin only (G4).
+        Gate::define('work-clients', static fn (AdminUser $admin): bool => $admin->is_active);
+        Gate::define('suspend-users', static fn (AdminUser $admin): bool => $admin->is_active && $admin->isAdmin());
     }
 }

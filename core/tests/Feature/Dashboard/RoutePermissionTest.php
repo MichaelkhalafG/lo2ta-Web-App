@@ -18,7 +18,7 @@ const DASHBOARD_GUEST_ROUTES = ['dashboard.locale', 'dashboard.login', 'dashboar
 const DASHBOARD_BOTH_ROLES = ['dashboard.home', 'dashboard.logout', 'dashboard.account', 'dashboard.account.password'];
 
 /** Abilities both roles hold (PLAN 2.4): files of a unit and the units review. Every other ability is admin only. */
-const DASHBOARD_BOTH_ROLE_ABILITIES = ['can:view-documents', 'can:review-units'];
+const DASHBOARD_BOTH_ROLE_ABILITIES = ['can:view-documents', 'can:review-units', 'can:work-clients'];
 
 /**
  * @return list<Route>

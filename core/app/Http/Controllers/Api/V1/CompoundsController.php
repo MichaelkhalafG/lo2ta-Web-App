@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enums\UnitState;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UnitCardResource;
 use App\Models\Area;
@@ -22,7 +21,7 @@ class CompoundsController extends Controller
     public function index(): JsonResponse
     {
         $locale = app()->getLocale();
-        $counts = Unit::query()->where('state', UnitState::Published->value)->whereNotNull('compound_id')
+        $counts = Unit::query()->listed()->whereNotNull('compound_id')
             ->selectRaw('compound_id, count(*) as n')->groupBy('compound_id')->pluck('n', 'compound_id')
             ->map(fn (mixed $n): int => is_numeric($n) ? (int) $n : 0);
 
@@ -46,7 +45,7 @@ class CompoundsController extends Controller
         if (! $compound instanceof Compound) {
             throw new NotFoundHttpException;
         }
-        $units = Unit::query()->where('state', UnitState::Published->value)->where('compound_id', $compound->id)
+        $units = Unit::query()->listed()->where('compound_id', $compound->id)
             ->with(UnitCardResource::WITH)->defaultOrder()->limit(60)->get();
         $intro = $locale === 'en' ? $compound->intro_en : $compound->intro_ar;
 

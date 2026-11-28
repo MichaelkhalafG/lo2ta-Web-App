@@ -268,6 +268,11 @@ function DecisionCard({ unit, blockers, can, lastReview, noteFields }: Props) {
                 />
             ) : null}
             {can.flags ? <FlagsBlock unit={unit} canVerify={can.verify} /> : null}
+            {can.flags ? (
+                <Link href={`/dashboard/matching?unit=${unit.id}`} className="block text-sm underline underline-offset-4">
+                    {t('matching.find_buyers')}
+                </Link>
+            ) : null}
             {can.withdrawal ? (
                 <div className="space-y-2 border-t pt-4">
                     <p className="font-medium">{t('units.actions.withdrawal')}</p>

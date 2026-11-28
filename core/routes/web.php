@@ -9,8 +9,11 @@ use App\Http\Controllers\Dashboard\DuplicatesController;
 use App\Http\Controllers\Dashboard\FilesController;
 use App\Http\Controllers\Dashboard\IndicatorsController;
 use App\Http\Controllers\Dashboard\LocaleController;
+use App\Http\Controllers\Dashboard\MatchingController;
 use App\Http\Controllers\Dashboard\OverviewController;
 use App\Http\Controllers\Dashboard\PasswordLinkController;
+use App\Http\Controllers\Dashboard\PeopleController;
+use App\Http\Controllers\Dashboard\RequestsController;
 use App\Http\Controllers\Dashboard\StaffController;
 use App\Http\Controllers\Dashboard\UnitsController;
 use App\Support\Seller\SellerUnits;
@@ -94,6 +97,21 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
             });
         });
         Route::get('duplicates', DuplicatesController::class)->middleware('can:review-units')->name('duplicates');
+
+        // Sellers and buyers, budgets, matching and the request inbox (part 7.4; G4, G9, G10).
+        Route::middleware('can:work-clients')->group(function (): void {
+            Route::get('people', [PeopleController::class, 'index'])->name('people');
+            Route::get('people/{user}', [PeopleController::class, 'show'])->whereNumber('user')->name('people.show');
+            Route::middleware('can:suspend-users')->whereNumber('user')->group(function (): void {
+                Route::post('people/{user}/suspend', [PeopleController::class, 'suspend'])->name('people.suspend');
+                Route::post('people/{user}/lift', [PeopleController::class, 'lift'])->name('people.lift');
+            });
+            Route::get('budgets', [MatchingController::class, 'budgets'])->name('budgets');
+            Route::get('matching', [MatchingController::class, 'index'])->name('matching');
+            Route::get('requests', [RequestsController::class, 'index'])->name('requests');
+            Route::get('requests/{unitRequest}', [RequestsController::class, 'show'])->whereNumber('unitRequest')->name('requests.show');
+            Route::put('requests/{unitRequest}', [RequestsController::class, 'update'])->whereNumber('unitRequest')->name('requests.update');
+        });
 
         // After publishing (part 7.3, G15, G17): figure changes, free edits to check, documents added later.
         Route::middleware('can:review-units')->prefix('changes')->name('changes')->whereNumber(['change', 'unit'])->group(function (): void {

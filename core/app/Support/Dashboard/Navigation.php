@@ -31,16 +31,16 @@ final class Navigation
             ['duplicates', 'Copy', 'dashboard.duplicates', 'review-units'],
         ],
         'people' => [
-            ['users', 'Users', null, null],
-            ['budgets', 'Wallet', null, null],
+            ['users', 'Users', 'dashboard.people', 'work-clients'],
+            ['budgets', 'Wallet', 'dashboard.budgets', 'work-clients'],
         ],
         'deals' => [
-            ['matching', 'Handshake', null, null],
+            ['matching', 'Handshake', 'dashboard.matching', 'work-clients'],
             ['deals', 'Handshake', null, null],
             ['commissions', 'Percent', null, 'manage-commissions'],
         ],
         'inbox' => [
-            ['unit_requests', 'Inbox', null, null],
+            ['unit_requests', 'Inbox', 'dashboard.requests', 'work-clients'],
             ['partnership_requests', 'Mail', null, null],
             ['contact_messages', 'Mail', null, null],
         ],

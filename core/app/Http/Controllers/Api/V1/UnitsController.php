@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\MainType;
-use App\Enums\UnitState;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UnitCardResource;
 use App\Http\Resources\UnitResource;
@@ -41,7 +40,7 @@ class UnitsController extends Controller
             'per_page' => ['nullable', 'integer', 'between:1,'.self::PER_PAGE],
         ]);
 
-        $query = Unit::query()->where('state', UnitState::Published->value)->with(UnitCardResource::WITH);
+        $query = Unit::query()->listed()->with(UnitCardResource::WITH);
         if ($request->filled('type')) {
             $query->where('main_type', $request->string('type')->toString());
         }

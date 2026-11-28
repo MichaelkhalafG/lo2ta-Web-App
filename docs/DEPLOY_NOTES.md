@@ -117,6 +117,12 @@ Part 7.3 (after publishing, 2026-11-28) adds no migration. New dashboard routes:
 `/dashboard/changes/{change}/approve`, `/dashboard/changes/{change}/reject`, `/dashboard/changes/units/{unit}/checked`,
 `/dashboard/changes/units/{unit}/restore-description`. New seller e-mail template: `seller.change_rejected`.
 
+Part 7.4 (people, budgets, matching, requests, 2026-11-28) adds the migration
+`2026_11_28_100000_add_people_suspension` (users: `suspended_at`, `suspended_reason`, `suspended_by`; units:
+`held_at`; unit_requests: `assigned_to`, `staff_note`; all nullable, rollback proven on scratch). New dashboard routes:
+`/dashboard/people`, `/dashboard/people/{user}` with `suspend` and `lift`, `/dashboard/budgets`, `/dashboard/matching`,
+`/dashboard/requests` and `/dashboard/requests/{unitRequest}`.
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.

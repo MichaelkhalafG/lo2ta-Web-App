@@ -36,7 +36,7 @@ class Unit extends Model
         'seller_id', 'contract_number', 'unit_number', 'contract_key', 'unit_key', 'active_contract_key',
         'active_unit_key', 'developer_other', 'compound_other', 'area_other', 'verified_by', 'withdraw_reason',
         'step_reached', 'rejected_at', 'withdrawn_at', 'submitted_at', 'transfer_fee_bp', 'transfer_fee_fixed', 'public_id', 'recheck_after_edit_at', 'withdraw_requested_at',
-        'sold_at',
+        'sold_at', 'held_at',
     ];
 
     /** States in which the seller may still change the six steps (published edits come later, PLAN 2.2.7). */
@@ -112,6 +112,7 @@ class Unit extends Model
             'recheck_after_edit_at' => 'immutable_datetime',
             'withdraw_requested_at' => 'immutable_datetime',
             'sold_at' => 'immutable_datetime',
+            'held_at' => 'immutable_datetime',
         ];
     }
 
@@ -227,13 +228,29 @@ class Unit extends Model
     }
 
     /**
-     * Units a visitor may open (published or reserved).
+     * Units a visitor may open (published or reserved), not held off the site while their seller is suspended (G4).
      *
      * @param  Builder<Unit>  $query
      */
     public function scopePublic(Builder $query): void
     {
-        $query->whereIn('state', UnitState::publicValues());
+        $query->whereIn('state', UnitState::publicValues())->whereNull('held_at');
+    }
+
+    /**
+     * Published units on the site: the listings, compound pages and new requests (G4: not while held).
+     *
+     * @param  Builder<Unit>  $query
+     */
+    public function scopeListed(Builder $query): void
+    {
+        $query->where('state', UnitState::Published->value)->whereNull('held_at');
+    }
+
+    /** On the site now: a public state and not held while the seller is suspended (G4). */
+    public function isOnSite(): bool
+    {
+        return $this->state->isPublic() && $this->held_at === null;
     }
 
     /**

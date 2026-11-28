@@ -794,6 +794,16 @@ No one can switch off or demote themselves, or the last active admin.
 | D92 | "Check after edit" lists the seller's free edits since the team last marked the unit checked (description and feature edits, photo uploads, deletions and reorders). "Put this description back" takes the text from that edit's own log line, on the same unit only, and runs the contact-details check again; a photo is hidden from the unit screen (G17). "Mark as checked" ends the list entry, logged | G17; a text taken from the log must pass today's rules | 1 class |
 | D93 | Documents a seller adds after publishing are listed on the same screen until they are reviewed on the unit screen | they change nothing on the listing (2.2.7) but must not be forgotten | 1 query |
 
+**Part 7.4 built (2026-11-28, unattended run; choices for review):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D94 | A suspension (G4) keeps each unit's state and sets `units.held_at`; every public query reads it (`Unit::scopePublic` for open units, `Unit::scopeListed` for listings, compound pages and new requests), and the public photo copies are removed. Lifting clears it and puts the photos back. Staff still open the unit | "reversible": lifting must restore the units exactly as they were, a deal included | 1 migration, 2 scopes |
+| D95 | Sign-in of a suspended account is refused with a plain message, and only after the right password, so the message reveals nothing to someone guessing; every token is revoked at suspension. Lifting needs a reason too; both are admin only, on their own routes (`can:suspend-users`) | G4 | 1 check |
+| D96 | Matching (G9, G10): cash needed = the amount to the owner + the 1% as the request consent computes it (`UnitFacts::buyerFee`); a monthly figure = amount × payments a year ÷ 12, rounded; a fully paid contract owes no installment; a budget with no types or areas accepts any. Ranking points: wanted compound 3, enough bedrooms 2, delivery as wanted 2 ("either" scores none), within the target price 2; ties go to the newest. A seller is never matched with their own unit; suspended buyers are left out; the best 50 are shown | G10 lists the ranking fields, not their weights | 1 class |
+| D97 | Request inbox (both roles): assign to an active staff member, a team note never shown to the buyer, "contacted" from new only, "close" needs a reason and sends nothing to the buyer (2.3 lists no such e-mail); "matched" is set when a deal opens (part 7.5). New columns `unit_requests.assigned_to` and `staff_note` | PLAN 2.4 "assign, note, close" | 1 migration |
+| D98 | Sellers and buyers: drafts are not counted as units (shown as a separate count); the person's history shows the account's own log lines (registered, e-mail confirmed, profile, password reset, sign-in locks, suspension) | a draft is the seller's work in progress (D87) | 1 query |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1252,7 +1262,7 @@ first payment and all client texts) is a contract matter for Michael.
       duplicate override is open, Q23)
 - [x] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17; 2026-11-28, D90-D93;
       the admin's edit of locked fields is open, Q25)
-- [ ] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10)
+- [x] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10; 2026-11-28, D94-D98)
 - [ ] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18)
 - [ ] 7.6 Contact and partnership inboxes, areas, compounds, developers, site texts; CSV exports (G5, G6, G16)
 - [ ] 7.7 Privacy scan over buyer e-mails (2.5), security review of the phase 7 routes, docs
