@@ -75,6 +75,37 @@ return [
             'subject' => 'تم سحب وحدتك :reference',
             'body' => 'وحدتك :reference اتشالت من الموقع زي ما طلبت. تقدر تعرضها تاني في أي وقت من حسابك.',
         ],
+        // Part 7.2 (G20): our wording, for the client to review.
+        'changes_requested' => [
+            'subject' => 'وحدتك :reference محتاجة تعديلات',
+            'body' => 'راجعنا بيانات وحدتك :reference ومحتاجين منك شوية تعديلات قبل ما ننشرها. افتح حسابك، عدّل اللي تحت، وابعتها تاني.',
+        ],
+        'rejected' => [
+            'subject' => 'مش هنقدر ننشر وحدتك :reference',
+            'body' => 'راجعنا وحدتك :reference ومش هنقدر ننشرها على لقطة. السبب مكتوب تحت. لو عندك سؤال رد على الرسالة دي.',
+        ],
+        'published' => [
+            'subject' => 'وحدتك :reference اتنشرت',
+            'body' => 'وحدتك اتنشرت على لقطة بالكود :reference. أي حد مهتم هيتواصل معانا، وإحنا هنرجعلك.',
+        ],
+        'published_verified' => [
+            'subject' => 'وحدتك :reference اتنشرت كوحدة موثّقة',
+            'body' => 'وحدتك اتنشرت على لقطة بالكود :reference ومعاها علامة "موثّقة" بعد ما راجعنا المستندات. أي حد مهتم هيتواصل معانا، وإحنا هنرجعلك.',
+        ],
+        'verified' => [
+            'subject' => 'وحدتك :reference بقت موثّقة',
+            'body' => 'حطينا علامة "موثّقة" على وحدتك :reference في الموقع.',
+        ],
+        'withdraw_declined' => [
+            'subject' => 'طلب سحب وحدتك :reference',
+            'body' => 'وصلنا طلبك بسحب الوحدة :reference، لكن عليها صفقة مفتوحة ومش هنقدر نسحبها دلوقتي. السبب مكتوب تحت، وهنتواصل معاك.',
+        ],
+        'reason' => 'السبب',
+        'fields' => 'المطلوب تعديله',
+        'documents' => 'مستندات محتاجين منها نسخة أوضح',
+        'report' => 'مرفق تقرير الخروج بعد المراجعة، وتقدر تنزّله في أي وقت من حسابك.',
+        'open_unit' => 'شوف وحدتك على الموقع',
+        'open_account' => 'افتح حسابك',
     ],
     // Phase 5 (PLAN 2.3, 2.6). Placeholder wording for the client to confirm (PLAN 6 row 24).
     'request_received' => [

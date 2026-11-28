@@ -4,12 +4,14 @@ use App\Http\Controllers\Dashboard\AccountController;
 use App\Http\Controllers\Dashboard\ActivityController;
 use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\CalculatorController;
+use App\Http\Controllers\Dashboard\DuplicatesController;
 use App\Http\Controllers\Dashboard\FilesController;
 use App\Http\Controllers\Dashboard\IndicatorsController;
 use App\Http\Controllers\Dashboard\LocaleController;
 use App\Http\Controllers\Dashboard\OverviewController;
 use App\Http\Controllers\Dashboard\PasswordLinkController;
 use App\Http\Controllers\Dashboard\StaffController;
+use App\Http\Controllers\Dashboard\UnitsController;
 use App\Support\Seller\SellerUnits;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +72,28 @@ Route::prefix('dashboard')->name('dashboard.')->group(function (): void {
             Route::put('indicators/{indicator}', [IndicatorsController::class, 'update'])->whereNumber('indicator')->name('indicators.update');
             Route::delete('indicators/{indicator}', [IndicatorsController::class, 'destroy'])->whereNumber('indicator')->name('indicators.destroy');
         });
+        // Units review (part 7.2, G1-G3, G19): both roles; publishing as verified and the badge are admin only (G1).
+        Route::middleware('can:review-units')->prefix('units')->name('units')->group(function (): void {
+            Route::get('/', [UnitsController::class, 'index']);
+            Route::prefix('{unit}')->whereNumber(['unit', 'document', 'photo'])->group(function (): void {
+                Route::get('/', [UnitsController::class, 'show'])->name('.show');
+                Route::post('request-changes', [UnitsController::class, 'requestChanges'])->name('.request_changes');
+                Route::post('reject', [UnitsController::class, 'reject'])->name('.reject');
+                Route::post('publish', [UnitsController::class, 'publish'])->name('.publish');
+                Route::put('deal-tag', [UnitsController::class, 'dealTag'])->name('.deal_tag');
+                Route::put('fields', [UnitsController::class, 'fields'])->name('.fields');
+                Route::put('places', [UnitsController::class, 'places'])->name('.places');
+                Route::put('documents/{document}', [UnitsController::class, 'document'])->name('.document');
+                Route::put('photos/{photo}', [UnitsController::class, 'photo'])->name('.photo');
+                Route::post('withdrawal', [UnitsController::class, 'withdrawal'])->name('.withdrawal');
+                Route::middleware('can:verify-units')->group(function (): void {
+                    Route::post('publish-verified', [UnitsController::class, 'publishVerified'])->name('.publish_verified');
+                    Route::put('verified', [UnitsController::class, 'verified'])->name('.verified');
+                });
+            });
+        });
+        Route::get('duplicates', DuplicatesController::class)->middleware('can:review-units')->name('duplicates');
+
         Route::middleware('can:view-documents')->group(function (): void {
             Route::get('files/documents/{document}', [FilesController::class, 'document'])->where('document', SellerUnits::ID)->name('files.document');
             Route::get('files/photos/{photo}', [FilesController::class, 'photo'])->where('photo', SellerUnits::ID)->name('files.photo');

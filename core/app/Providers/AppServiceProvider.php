@@ -33,5 +33,8 @@ class AppServiceProvider extends ServiceProvider
         }
         // Units' private files: both staff roles review units (PLAN 2.4, 2.2.15); each opening is logged.
         Gate::define('view-documents', static fn (AdminUser $admin): bool => $admin->is_active);
+        // Units review (part 7.2): both roles work the queue; publishing as verified and the badge are admin only (G1).
+        Gate::define('review-units', static fn (AdminUser $admin): bool => $admin->is_active);
+        Gate::define('verify-units', static fn (AdminUser $admin): bool => $admin->is_active && $admin->isAdmin());
     }
 }

@@ -105,6 +105,14 @@ dashboard route). Staff invite and password-link e-mails carry an absolute link 
 `APP_URL` must be the dashboard's public address and mail must work before the first invite. The first admin is still
 created with `php artisan admin:create`.
 
+Part 7.2 (units review, 2026-11-28) adds no migration. New dashboard routes (dashboard host only): `/dashboard/units`,
+`/dashboard/units/{unit}` and its actions (request-changes, reject, publish, publish-verified, verified, deal-tag,
+fields, places, documents/{document}, photos/{photo}, withdrawal), and `/dashboard/duplicates`. New seller e-mail
+templates: `seller.unit_changes_requested`, `seller.unit_rejected`, `seller.unit_published` (carries the exit report
+after review as a PDF attachment), `seller.unit_verified`, `seller.withdraw_declined`; their links are built from
+core's `FRONTEND_URL` setting (`app.frontend_url`), so it must be the public site's address. Publishing writes two PDFs
+per unit under `storage/app/private/exit-reports/` (mPDF, PHP memory as in section 2).
+
 **`APP_URL` in core's `.env` must be core's public address** (the host the browser reaches): published photo URLs
 are built from it (`{APP_URL}/storage/units/…`). A wrong value gives every card a broken image (seen locally
 2026-11-22). After a change: `php artisan config:cache`.

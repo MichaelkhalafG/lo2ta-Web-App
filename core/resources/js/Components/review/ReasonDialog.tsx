@@ -17,6 +17,8 @@ export function ReasonDialog({
     trigger,
     maxLength = 500,
     error,
+    label,
+    hint,
     onConfirm,
 }: {
     title: string;
@@ -26,6 +28,8 @@ export function ReasonDialog({
     trigger: React.ReactNode;
     maxLength?: number;
     error?: string | null;
+    label?: string;
+    hint?: string;
     onConfirm: (reason: string) => void;
 }) {
     const t = useT();
@@ -48,8 +52,8 @@ export function ReasonDialog({
                 <DialogContent title={title} className="space-y-4">
                     <div className="text-sm text-muted-foreground">{consequence}</div>
                     <TextareaField
-                        label={t('reason.label')}
-                        hint={t('reason.hint')}
+                        label={label ?? t('reason.label')}
+                        hint={hint ?? t('reason.hint')}
                         required
                         rows={3}
                         value={reason}

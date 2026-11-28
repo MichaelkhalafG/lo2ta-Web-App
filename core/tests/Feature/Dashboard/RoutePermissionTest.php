@@ -2,6 +2,7 @@
 
 use App\Models\AdminUser;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route as Router;
 
 /*
@@ -15,6 +16,9 @@ const DASHBOARD_GUEST_ROUTES = ['dashboard.locale', 'dashboard.login', 'dashboar
 
 /** Signed-in routes open to both roles: the overview, sign-out, and each person's own account. */
 const DASHBOARD_BOTH_ROLES = ['dashboard.home', 'dashboard.logout', 'dashboard.account', 'dashboard.account.password'];
+
+/** Abilities both roles hold (PLAN 2.4): files of a unit and the units review. Every other ability is admin only. */
+const DASHBOARD_BOTH_ROLE_ABILITIES = ['can:view-documents', 'can:review-units'];
 
 /**
  * @return list<Route>
@@ -61,7 +65,7 @@ it('refuses a reviewer every admin-only screen', function () {
     $reviewer = AdminUser::factory()->create();
     $checked = 0;
     foreach (dashboardRoutes() as $route) {
-        $abilities = array_filter($route->gatherMiddleware(), static fn ($m): bool => is_string($m) && str_starts_with($m, 'can:') && $m !== 'can:view-documents');
+        $abilities = array_filter($route->gatherMiddleware(), static fn ($m): bool => is_string($m) && str_starts_with($m, 'can:') && ! in_array($m, DASHBOARD_BOTH_ROLE_ABILITIES, true));
         if ($abilities === [] || ! in_array('GET', $route->methods(), true) || str_contains($route->uri(), '{')) {
             continue;
         }
@@ -70,4 +74,19 @@ it('refuses a reviewer every admin-only screen', function () {
     }
 
     expect($checked)->toBeGreaterThanOrEqual(4);
+});
+
+it('grants a reviewer only the abilities meant for both roles', function () {
+    $reviewer = AdminUser::factory()->create();
+    $abilities = [];
+    foreach (dashboardRoutes() as $route) {
+        foreach ($route->gatherMiddleware() as $m) {
+            if (is_string($m) && str_starts_with($m, 'can:')) {
+                $abilities[substr($m, 4)] = true;
+            }
+        }
+    }
+    foreach (array_keys($abilities) as $ability) {
+        expect(Gate::forUser($reviewer)->allows($ability))->toBe(in_array('can:'.$ability, DASHBOARD_BOTH_ROLE_ABILITIES, true), $ability);
+    }
 });

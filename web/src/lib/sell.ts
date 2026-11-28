@@ -37,7 +37,7 @@ export type ExitReport = {
   provisional: string[];
 };
 
-export type SellerDocument = { id: string; type: string; status: string; name: string; mime: string; bytes: number; uploaded_at: string | null };
+export type SellerDocument = { id: string; type: string; status: string; name: string; mime: string; bytes: number; uploaded_at: string | null; note: string | null };
 export type SellerPhoto = { id: string; kind: "photo" | "floor_plan"; is_cover: boolean; is_project_image: boolean; is_hidden: boolean; width: number; height: number };
 
 export type Step1 = {
@@ -109,7 +109,21 @@ export type SellerUnit = {
   can_edit_live: boolean;
   can_withdraw: boolean;
   has_exit_report: boolean;
+  /** The team's last word while it matters (changes requested, rejected); never a staff name. */
+  review: SellerReview | null;
+  /** Figures the team corrected during review, each with its reason (G3). */
+  team_changes: TeamChange[];
 };
+
+export type SellerReview = {
+  outcome: "changes_requested" | "rejected";
+  reason: string | null;
+  fields: { field: string; label: string; note: string }[];
+  documents: { type: string; label: string; note: string }[];
+  at: string;
+};
+
+export type TeamChange = { field: string; label: string; from: string | null; to: string | null; reason: string | null; at: string };
 
 export type SellerUnitSummary = {
   id: string;

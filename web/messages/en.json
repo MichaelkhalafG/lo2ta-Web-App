@@ -190,7 +190,10 @@
         "reserved": "A deal is open on the unit.",
         "sold": "The unit is sold.",
         "withdrawn": "The unit is withdrawn from the site."
-      }
+      },
+      "teamChanges": "Figures corrected by the Lokta team",
+      "teamChangesNote": "The Lokta team corrected these figures; the reason is under each one. If something looks wrong, reply to our e-mail.",
+      "teamChangesReason": "Reason: {reason}"
     },
     "requests": {
       "title": "My requests",
@@ -213,7 +216,11 @@
       "home": "Lokta · home",
       "current": "Current",
       "commission": "Lokta's commission for the seller",
-      "noOver": "No markup, ever: the most you can ask is what you paid."
+      "noOver": "No markup, ever: the most you can ask is what you paid.",
+      "reviewTitle": "The Lokta team needs a few changes",
+      "reviewRejected": "We cannot publish this unit",
+      "reviewFields": "What to change",
+      "reviewDocuments": "Documents we need a clearer copy of"
     },
     "steps": {
       "1": "Contract",

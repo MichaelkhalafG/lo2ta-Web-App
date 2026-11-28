@@ -26,9 +26,9 @@ final class Navigation
             ['overview', 'LayoutDashboard', 'dashboard.home', null],
         ],
         'units' => [
-            ['review_queue', 'ClipboardCheck', null, null],
+            ['review_queue', 'ClipboardCheck', 'dashboard.units', 'review-units'],
             ['pending_changes', 'History', null, null],
-            ['duplicates', 'Copy', null, null],
+            ['duplicates', 'Copy', 'dashboard.duplicates', 'review-units'],
         ],
         'people' => [
             ['users', 'Users', null, null],
@@ -81,7 +81,7 @@ final class Navigation
                     'label' => Text::get("nav_items.{$key}"),
                     'icon' => $icon,
                     'href' => $route !== null ? route($route, [], false) : null,
-                    'active' => $route !== null && $current === $route,
+                    'active' => $route !== null && ($current === $route || str_starts_with((string) $current, $route.'.')),
                     'badge' => null,
                 ];
             }

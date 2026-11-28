@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AccountPage } from "@/components/account/AccountPage";
 import { UnitManage } from "@/components/sell/UnitManage";
+import { ReviewNotice } from "@/components/sell/WizardFrame";
 import { WizardProvider } from "@/components/sell/WizardContext";
 import { redirect } from "@/i18n/navigation";
 import { areaTree, compoundList, developerList, featureList, publicSettings, sellChoices, siteTexts } from "@/lib/core";
@@ -53,6 +54,30 @@ export default async function AccountUnitPage({ params }: PageProps<"/[locale]/a
         ) : null}
         <span className="text-small text-text-2">{t(`stateNote.${unit.state.code}`)}</span>
       </div>
+
+      {unit.review ? <ReviewNotice review={unit.review} /> : null}
+
+      {unit.team_changes.length > 0 ? (
+        <section aria-labelledby="team-changes" className="flex flex-col gap-3 rounded-sm border border-line bg-surface-1 p-5">
+          <h2 id="team-changes" className="text-body font-semibold">
+            {t("teamChanges")}
+          </h2>
+          <p className="text-small text-text-2">{t("teamChangesNote")}</p>
+          <ul className="flex flex-col divide-y divide-line">
+            {unit.team_changes.map((c, i) => (
+              <li key={`${c.field}-${i}`} className="flex flex-col gap-1 py-3 text-small">
+                <span className="text-text-1">
+                  {c.label}:{" "}
+                  <span className="font-mono tabular-nums" dir="ltr">
+                    {c.from ?? "—"} → {c.to ?? "—"}
+                  </span>
+                </span>
+                {c.reason ? <span className="text-text-2">{t("teamChangesReason", { reason: c.reason })}</span> : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {unit.has_exit_report ? (
         <div className="flex flex-wrap items-center gap-4 rounded-sm border border-line bg-surface-1 p-5">

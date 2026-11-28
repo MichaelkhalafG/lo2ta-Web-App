@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminUser;
 use App\Models\UnitDocument;
 use App\Models\UnitPhoto;
 use App\Support\Activity\ActivityLogger;
+use App\Support\Review\DocumentAccess;
 use App\Support\Uploads\ServeFile;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -15,11 +18,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class FilesController extends Controller
 {
-    public function document(string $document, ActivityLogger $log): StreamedResponse
+    public function document(Request $request, string $document, ActivityLogger $log): StreamedResponse
     {
         $row = UnitDocument::query()->where('public_id', $document)->firstOrFail();
-        if (! is_string($row->path)) {
+        if (! is_string($row->path) || $row->purged_at !== null) {
             abort(404);
+        }
+        // G2: national ID copies are for both roles only while the unit is under review or in an open deal.
+        $admin = $request->user('admin');
+        if (! $admin instanceof AdminUser || ! DocumentAccess::mayOpen($admin, $row)) {
+            $log->record('document.view_refused', $row->unit, null, ['type' => $row->type->value, 'document' => $row->public_id]);
+            abort(403);
         }
         $log->record('document.viewed', $row->unit, null, ['type' => $row->type->value, 'document' => $row->public_id]);
 

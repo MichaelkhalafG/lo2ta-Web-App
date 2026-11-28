@@ -2,13 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\DocumentStatus;
+use App\Enums\DocumentType;
 use App\Enums\PhotoKind;
+use App\Enums\ReviewOutcome;
 use App\Enums\UnitState;
+use App\Models\ActivityLog;
 use App\Models\Feature;
 use App\Models\Unit;
 use App\Models\UnitDocument;
 use App\Models\UnitPhoto;
+use App\Models\UnitReview;
 use App\Support\Calculator\ExitCalculator;
+use App\Support\Review\FieldDisplay;
 use App\Support\Seller\StepRules;
 use BackedEnum;
 use Illuminate\Http\Request;
@@ -84,6 +90,8 @@ class SellerUnitResource extends JsonResource
                 'mime' => $d->mime,
                 'bytes' => $d->bytes,
                 'uploaded_at' => $d->created_at?->toIso8601String(),
+                // The team's note when a clearer copy is needed (part 7.2).
+                'note' => $d->status === DocumentStatus::NeedsReplacement ? $d->review_note : null,
             ])->values()->all(),
             'photos' => self::markCover($unit->photos->map(fn (UnitPhoto $p): array => [
                 'id' => $p->public_id,
@@ -103,9 +111,76 @@ class SellerUnitResource extends JsonResource
             'can_edit_live' => in_array($unit->state, [UnitState::Published, UnitState::Reserved], true),
             'can_withdraw' => in_array($unit->state, [UnitState::Submitted, UnitState::ChangesRequested, UnitState::Published, UnitState::Reserved], true) && $unit->withdraw_requested_at === null,
             'has_exit_report' => $unit->exitReports()->whereNotNull('pdf_path')->exists(),
+            // Part 7.2: the team's last word while it matters to the seller (changes requested, rejected), and every
+            // figure the team corrected, with its reason (G3). Never a staff name.
+            'review' => self::review($unit),
+            'team_changes' => self::teamChanges($unit),
             // The live exit report beside step 3 and on step 6 (board 07.1): the same calculation as the PDF.
             'exit_report' => app(ExitCalculator::class)->forUnit($unit),
         ];
+    }
+
+    /**
+     * @return array{outcome: string, reason: string|null, fields: list<array{field: string, label: string, note: string}>, documents: list<array{type: string, label: string, note: string}>, at: string}|null
+     */
+    private static function review(Unit $unit): ?array
+    {
+        if (! in_array($unit->state, [UnitState::ChangesRequested, UnitState::Rejected], true)) {
+            return null;
+        }
+        $review = $unit->reviews()->whereIn('outcome', [ReviewOutcome::ChangesRequested->value, ReviewOutcome::Rejected->value])->latest('id')->first();
+        if (! $review instanceof UnitReview) {
+            return null;
+        }
+        $notes = $review->notes ?? [];
+        $fields = [];
+        foreach (is_array($notes['fields'] ?? null) ? $notes['fields'] : [] as $field => $note) {
+            if (is_string($field) && is_string($note)) {
+                $fields[] = ['field' => $field, 'label' => FieldDisplay::label($field), 'note' => $note];
+            }
+        }
+        $documents = [];
+        foreach (is_array($notes['documents'] ?? null) ? $notes['documents'] : [] as $row) {
+            if (! is_array($row) || ! is_string($row['type'] ?? null)) {
+                continue;
+            }
+            $type = DocumentType::tryFrom($row['type']);
+            if ($type !== null) {
+                $documents[] = ['type' => $type->value, 'label' => $type->label(), 'note' => is_string($row['note'] ?? null) ? $row['note'] : ''];
+            }
+        }
+
+        return [
+            'outcome' => $review->outcome->value,
+            'reason' => $review->reason,
+            'fields' => $fields,
+            'documents' => $documents,
+            'at' => $review->created_at->toIso8601String(),
+        ];
+    }
+
+    /**
+     * @return list<array{field: string, label: string, from: string|null, to: string|null, reason: string|null, at: string}>
+     */
+    private static function teamChanges(Unit $unit): array
+    {
+        $out = [];
+        $lines = ActivityLog::query()->where('subject_type', 'units')->where('subject_id', $unit->id)->where('action', 'unit.team_edit')->latest('id')->limit(50)->get();
+        foreach ($lines as $line) {
+            foreach ($line->after ?? [] as $field => $to) {
+                $field = (string) $field;
+                $out[] = [
+                    'field' => $field,
+                    'label' => FieldDisplay::label($field),
+                    'from' => FieldDisplay::value($field, ($line->before ?? [])[$field] ?? null),
+                    'to' => FieldDisplay::value($field, $to),
+                    'reason' => $line->reason,
+                    'at' => $line->created_at->toIso8601String(),
+                ];
+            }
+        }
+
+        return $out;
     }
 
     /**

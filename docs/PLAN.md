@@ -769,6 +769,22 @@ No one can switch off or demote themselves, or the last active admin.
 | D77 | Staff accounts are never deleted, only switched off; the staff history shows the last ten events per person, sign-ins left out | the activity log keeps pointing at the person | 1 query |
 | D78 | Security tests for every later part: RoutePermissionTest fails on any signed-in dashboard route without a `can:` ability unless it is on the short list open to both roles (overview, sign-out, own account); LogCoverageTest makes every model either log itself or say which named log lines cover it | a new screen cannot slip in unchecked or unlogged | 2 tests |
 
+**Part 7.2 built (2026-11-28, unattended run; choices for review; open questions Q23 and Q24 in 8.2):**
+
+| # | Choice | Why | Reversing |
+|---|---|---|---|
+| D79 | The team corrects figures (G3) only while the unit waits for review: every review-tier field of 2.2.7, the total price and the description, checked by the seller's own step rules; after publishing only the market estimate (2.2.6), the rest is part 7.3. Contract and unit numbers are never corrected by the team (they make the duplicate keys): a wrong number goes back to the seller with "request changes" | a corrected figure must pass the same checks as the seller's; changing a key field from the dashboard could slip a duplicate past the block | 1 list |
+| D80 | "Publish" opens only when: developer, compound and area are mapped to the lists and the area has a code (2.2.8), steps 1-5 are complete, each required document is approved, no document waits for review or for a clearer copy, and one photo is not hidden. The screen lists what is missing | Q10: documents before publishing; a unit code needs a mapped area | 1 method (`publishBlockers`) |
+| D81 | Publishing forms the code and slug, gives every photo that is not hidden (the floor plan too) its public copy, and makes the "after review" exit report in both languages; the seller's language is attached to the e-mail (G19) | 2.2.8, 2.2.15, Q8 | 1 method |
+| D82 | G2 in one place (`DocumentAccess`): a reviewer opens national ID copies while the unit is submitted, back with the seller, or reserved (part 7.5 adds any open deal); an admin always, until the copy is purged. A refused opening is logged as `document.view_refused` | every attempt on an ID copy should leave a trace, not only the successful ones | 1 class |
+| D83 | The "لقطة" deal tag: both roles, logged, reason optional. "Verified" switched on e-mails the seller; switched off sends nothing (the reason stays in the history) | 2.2.6 lists a "verified" e-mail only; losing the badge needs a conversation, not a form mail | 1 condition |
+| D84 | Mapping a seller's "other" place (G16): both roles, only while the unit waits for review; the contract keys are worked out again, and a mapping that makes the unit match another active unit is refused, naming that unit to the team | the duplicate block must hold after mapping too | 1 check |
+| D85 | Reject works from "submitted" and "changes requested", releases the contract keys and sets `rejected_at`, which starts the ID retention clock (2.2.8) | a seller who never answers a change request can be closed | 1 list |
+| D86 | Request changes: a reason (required), up to 20 notes on named fields, and every document marked "clearer copy" listed with its note; the seller sees them above the wizard step and in the e-mail | 2.2.6 "reason per field or document" | 1 form |
+| D87 | Drafts never open in the dashboard (404) and are not in the queue | a draft is the seller's work in progress; nothing in it is for review yet | 1 check |
+| D88 | Field names for staff, the seller's "changed by the team" list and the e-mails are the wizard's own words, copied into core (`seller.field_labels`) | one name per field everywhere | lang lines |
+| D89 | A withdrawal request (reserved unit) is decided by either role: approved = withdrawn as if the seller did it (keys released, photos off the site, waiting changes closed, "withdrawn" e-mail); declined needs a reason, e-mailed to the seller. Part 7.5 adds closing the deal (Q24) | 2.2.7 "a request that the admin handles" | 1 route |
+
 ---
 
 ## 3. Data model (Q6: option A in 3.1, 3.2 and 3.3; in 3.4 A blocks and B warns; decided 2026-11-17)
@@ -1222,8 +1238,9 @@ first payment and all client texts) is a contract matter for Michael.
 - [x] 7.1 Staff and safety: staff list, invite and set-password link, own password change, sign-out everywhere,
       the last-admin guard; route-permission and log-coverage tests; shared review components (G13, G14;
       2026-11-27, D74-D78). Closes the staff-password open item (Michael 2026-11-24, decision B)
-- [ ] 7.2 Units review and document review; outcomes: request changes, reject, publish, publish as verified;
-      verified on and off; photo hiding; withdrawal requests; duplicates (G1-G3, G19)
+- [x] 7.2 Units review and document review; outcomes: request changes, reject, publish, publish as verified;
+      verified on and off; photo hiding; withdrawal requests; duplicates (G1-G3, G19; 2026-11-28, D79-D89; the
+      duplicate override is open, Q23)
 - [ ] 7.3 Pending changes after publish, "check after edit", re-uploaded documents (G15, G17)
 - [ ] 7.4 Sellers and buyers (suspend), budgets, matching, unit request inbox (G4, G9, G10)
 - [ ] 7.5 Deals and stages, commissions, e-mails to both parties per stage (G7, G8, G11, G12, G18)
@@ -1308,6 +1325,16 @@ opposite: "we never publish a unit before reviewing its contract, payment receip
 
 **Description length.** Not in their public material: the only minimum in the catalogue is 10 characters on the
 contact form (`contact.errors.messageShort`). The portal code that validates the description is behind `/app`.
+
+### 8.2 Open for Michael's review (unattended run 2026-11-28)
+
+Each item was decided by a safe, reversible choice so the run could go on; the choice is built (or, where marked, left
+out) and waits for Michael.
+
+| # | Question | Options (recommended first) | Taken tonight, and why |
+|---|---|---|---|
+| Q23 | Duplicate override (2.4: "can override with a reason") | A. Keep the duplicates screen read only: a wrong block is solved by correcting the earlier unit's numbers or asking the seller (no code). B. An override on the blocked draft lets that seller submit; the two units then share a contract, so their keys are stored with a suffix (one migration, one screen, a test). C. Override only the file warnings, which never block anyway (no value) | **A, built read only.** An override switches off the one guard against the same contract listed twice, and no real case has come up yet. Needs Michael's review: B can be added later without touching what exists |
+| Q24 | Who decides a seller's withdrawal request during an open deal | A. Both roles (the reviewer works deals, 2.4). B. Admin only (one route moves under `can:verify-units` or a new gate) | **A, built.** Deals are the reviewer's work in PLAN 2.4, and the seller's request should not wait for an admin. Needs Michael's review: B is a one-line change |
 
 ---
 

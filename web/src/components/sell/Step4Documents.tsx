@@ -242,7 +242,7 @@ function Slot({
               <a href={`/api/seller/${unitId}/documents/${d.id}`} className="inline-flex min-h-control-md items-center font-mono break-all text-text-1 underline-offset-4 hover:underline" dir="ltr">
                 {d.name} · {size(d.bytes)}
               </a>
-              {d.status === "needs_replacement" ? <span className="text-warning">{t("needsReplacement")}</span> : null}
+              {d.status === "needs_replacement" ? <span className="text-warning">{t("needsReplacement")}{d.note ? `: ${d.note}` : ""}</span> : null}
               {canRemove ? (
                 <button type="button" onClick={() => onRemove(d)} className="ms-auto text-text-3 hover:text-error">
                   {t("remove")}

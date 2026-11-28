@@ -19,8 +19,32 @@ For the Lokta team who review units, documents, requests and deals. It grows wit
 - A document flagged **encrypted** opens without a password but restricts printing or copying. Check that it is
   readable and matches the unit; ask the seller for an unprotected copy if it does not.
 - Every opening of a document is recorded in the activity log, national ID copies included.
+- **National ID copies** (G2): both roles open them while the unit is under review (sent, or back with the seller) or
+  in an open deal; otherwise only an admin. A refused opening is logged too.
 - Photos: in review, check every photo for building numbers, signs or documents, and hide any that shows them
   (PLAN 2.5). Hiding removes the public copy at once; the action is logged.
+
+## Unit review (both roles; part 7.2)
+
+- **Unit review** lists every unit a seller has sent (drafts stay with the seller). Filter by state; "Withdrawal
+  requests" shows the reserved units whose seller asked to withdraw.
+- Open a unit: check the figures against the documents. **Approve** each document, or **Ask for a clearer copy** with a
+  note the seller reads.
+- **Map to the lists** when the seller typed an "other" developer, compound or area: pick the managed entries. What the
+  seller typed stays private. If the entry is missing, an admin adds it first. A mapping that makes the unit match
+  another active contract is refused and names that unit.
+- **Correct figures** when the documents show a different value: write the reason; the seller sees each change and its
+  reason in My account (G3). After publishing only the market estimate is corrected here.
+- **Publish** is open once nothing is listed under "Before publishing": places mapped (the area has a code), every
+  required document approved, none waiting for review or a clearer copy, one photo not hidden. Publishing forms the
+  unit code, makes the photos public and e-mails the seller the exit report after review (G19).
+- **Publish as verified** and turning "verified" on or off are for an admin only, with a reason (G1). Who verified and
+  when are never shown on the site.
+- **Request changes** sends the unit back with a reason, optional notes per field, and the documents marked for a
+  clearer copy. **Reject** needs a reason and cannot be undone from the dashboard; the contract can then be listed again.
+- **Hide** a photo that shows a building number, a sign or a document (reason required); **Show again** puts it back.
+- **Duplicate attempts** lists every blocked attempt to send a contract another active unit holds, and every contract
+  file already on another unit. It is read only: no block is lifted from there (PLAN 8.2, Q23).
 
 ## Calculator settings (admin only)
 

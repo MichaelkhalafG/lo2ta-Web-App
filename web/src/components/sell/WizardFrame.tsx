@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { createContext, useContext, type ReactNode } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
-import { stepProgress, stepState, STEPS } from "@/lib/sell";
+import { stepProgress, stepState, STEPS, type SellerReview } from "@/lib/sell";
 import { Wordmark } from "../Wordmark";
 import { useWizard } from "./WizardContext";
 
@@ -143,6 +143,43 @@ function TopProgress({ current }: { current: number }) {
   );
 }
 
+/** What the team asked for when it sent the unit back (part 7.2): the reason, notes per field, documents to replace. */
+export function ReviewNotice({ review }: { review: SellerReview }) {
+  const t = useTranslations("sell.frame");
+
+  return (
+    <div role="status" className="flex flex-col gap-3 rounded-sm border border-warning/60 bg-surface-1 p-5">
+      <p className="font-semibold text-text-1">{review.outcome === "rejected" ? t("reviewRejected") : t("reviewTitle")}</p>
+      {review.reason ? <p className="whitespace-pre-line text-body text-text-2">{review.reason}</p> : null}
+      {review.fields.length > 0 ? (
+        <div className="flex flex-col gap-1">
+          <p className="text-small font-semibold text-text-1">{t("reviewFields")}</p>
+          <ul className="list-disc ps-5 text-small text-text-2">
+            {review.fields.map((f) => (
+              <li key={f.field}>
+                {f.label}: {f.note}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {review.documents.length > 0 ? (
+        <div className="flex flex-col gap-1">
+          <p className="text-small font-semibold text-text-1">{t("reviewDocuments")}</p>
+          <ul className="list-disc ps-5 text-small text-text-2">
+            {review.documents.map((d) => (
+              <li key={d.type}>
+                {d.label}
+                {d.note ? `: ${d.note}` : ""}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function WizardFrame({
   step,
   title,
@@ -218,6 +255,7 @@ export function WizardFrame({
               </div>
               {intro ? <p className="max-w-2xl text-body text-text-2">{intro}</p> : null}
             </header>
+            {unit.review ? <ReviewNotice review={unit.review} /> : null}
             {children}
           </section>
           {aside ? (

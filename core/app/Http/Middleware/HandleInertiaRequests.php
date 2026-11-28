@@ -19,7 +19,7 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /** Abilities the dashboard UI asks about (the server enforces them again on every route). */
-    private const ABILITIES = ['manage-settings', 'manage-site-texts', 'manage-admins', 'manage-commissions', 'view-activity', 'export-data'];
+    private const ABILITIES = ['manage-settings', 'manage-site-texts', 'manage-admins', 'manage-commissions', 'view-activity', 'export-data', 'review-units', 'verify-units'];
 
     /**
      * Shared with every dashboard page: language and direction, the signed-in admin, the sidebar for their role,

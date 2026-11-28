@@ -75,6 +75,37 @@ return [
             'subject' => 'Your unit :reference is withdrawn',
             'body' => 'Your unit :reference is off the site, as you asked. You can list it again any time from your account.',
         ],
+        // Part 7.2 (G20): our wording, for the client to review.
+        'changes_requested' => [
+            'subject' => 'Your unit :reference needs a few changes',
+            'body' => 'We reviewed your unit :reference and need a few changes before we publish it. Open your account, change what is listed below and send it again.',
+        ],
+        'rejected' => [
+            'subject' => 'We cannot publish your unit :reference',
+            'body' => 'We reviewed your unit :reference and cannot publish it on Lokta. The reason is below. If you have a question, reply to this e-mail.',
+        ],
+        'published' => [
+            'subject' => 'Your unit :reference is published',
+            'body' => 'Your unit is on Lokta with the code :reference. Interested buyers contact us, and we come back to you.',
+        ],
+        'published_verified' => [
+            'subject' => 'Your unit :reference is published as verified',
+            'body' => 'Your unit is on Lokta with the code :reference and the "verified" mark, after we reviewed its documents. Interested buyers contact us, and we come back to you.',
+        ],
+        'verified' => [
+            'subject' => 'Your unit :reference is now verified',
+            'body' => 'We added the "verified" mark to your unit :reference on the site.',
+        ],
+        'withdraw_declined' => [
+            'subject' => 'Your request to withdraw :reference',
+            'body' => 'We received your request to withdraw :reference, but a deal is open on it and we cannot withdraw it now. The reason is below, and we will contact you.',
+        ],
+        'reason' => 'Reason',
+        'fields' => 'What to change',
+        'documents' => 'Documents we need a clearer copy of',
+        'report' => 'The exit report after our review is attached; you can download it any time from your account.',
+        'open_unit' => 'See your unit on the site',
+        'open_account' => 'Open your account',
     ],
     // Phase 5 (PLAN 2.3, 2.6). Placeholder wording for the client to confirm (PLAN 6 row 24).
     'request_received' => [
